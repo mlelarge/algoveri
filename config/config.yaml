@@ -1,0 +1,6 @@
+# Configuration for algoveri
+# Path to verus installation directory (folder containing the `verus` executable).
+VERUS_PATH: /usr/local/bin
+
+# Where to write verifier results (will be created if missing)
+RESULTS_DIR: results/verus

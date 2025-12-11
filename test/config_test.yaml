@@ -1,0 +1,4 @@
+# Test config for verus verifier. Fill in a valid VERUS_PATH when running
+# real verification, e.g. VERUS_PATH: /opt/verus/bin
+VERUS_PATH: /scratch/gpfs/ARORA/haoyu/verus
+RESULTS_DIR: test_results/verus
