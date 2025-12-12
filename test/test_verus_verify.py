@@ -132,6 +132,7 @@ def test_verus_verifier_writes_file_and_returns_result():
     # The file should have been created on disk
     written = Path(result["file"])
     assert written.exists()
+    return
     # cleanup artifact
     try:
         written.unlink()

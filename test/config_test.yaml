@@ -1,5 +1,5 @@
 # Global Output Directory
-results_dir: "results"
+results_dir: "test_results"
 
 # Verus Configuration
 verus:
@@ -21,3 +21,16 @@ verus:
   # Local Fallback Settings
   local:
     bin_path: "/usr/local/bin/verus"
+
+lean:
+  method: "apptainer"
+  timeout: 300 # Lean + Mathlib can be slow to initialize
+  
+  apptainer:
+    image_path: "/scratch/gpfs/ARORA/haoyu/apptainer_imgs/lean.sif"
+    
+    # The folder containing the toolchains (folders like .elan, toolchains, update-hashes)
+    elan_home: "/scratch/gpfs/ARORA/haoyu/apptainer_imgs/elan_home"
+    
+    # The pre-built project folder (must contain lakefile.lean)
+    project_path: "/scratch/gpfs/ARORA/haoyu/apptainer_imgs/lean_project"
