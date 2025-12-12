@@ -208,6 +208,7 @@ __marimo__/
 
 api_keys.sh
 slurm_output/
+apptainer/
 
 # commenting out non-tested stuff
 src/eval_logic

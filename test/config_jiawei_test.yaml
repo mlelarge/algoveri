@@ -1,0 +1,36 @@
+# Global Output Directory
+results_dir: "test_results"
+
+# Verus Configuration
+verus:
+  # Execution method: 'apptainer', 'docker' (future), or 'local'
+  method: "apptainer"
+  timeout: 60
+
+  # Apptainer Specific Settings
+  apptainer:
+    # Path to the .sif image file
+    image_path: "/scratch/gpfs/ARORA/haoyu/jiawei/apptainer_test/verus.sif"
+    
+    # The host folder containing 'cargo' and 'toolchains'
+    rust_home: "/scratch/gpfs/ARORA/haoyu/jiawei/apptainer_test/rust_home"
+    
+    # Where to mount rust_home inside the container (arbitrary, but must match env vars)
+    container_mount_point: "/rust_env"
+
+  # Local Fallback Settings
+  local:
+    bin_path: "/usr/local/bin/verus"
+
+lean:
+  method: "apptainer"
+  timeout: 300 # Lean + Mathlib can be slow to initialize
+  
+  apptainer:
+    image_path: "/scratch/gpfs/ARORA/haoyu/jiawei/apptainer_test/lean.sif"
+    
+    # The folder containing the toolchains (folders like .elan, toolchains, update-hashes)
+    elan_home: "/scratch/gpfs/ARORA/haoyu/apptainer_test/elan_home"
+    
+    # The pre-built project folder (must contain lakefile.lean)
+    project_path: "/scratch/gpfs/ARORA/haoyu/apptainer_test/lean_project"
