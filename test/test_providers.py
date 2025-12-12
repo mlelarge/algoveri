@@ -1,4 +1,4 @@
-from src.llm.providers import GeminiProvider
+from src.llm.providers import GeminiProvider, OpenAICompatibleProvider
 
 
 
@@ -12,5 +12,15 @@ def test_gemini():
     print(res['text'])
     print(mtchat.get_total_price())
 
+def test_openai():
+    provider = OpenAICompatibleProvider()
+    mtchat = provider.new_chat(model="gpt-4o", system_prompt="You are a helpful assistant.")
+    
+    res = mtchat.send_message("Hello, how are you?")
+    print(res['text'])
+    res = mtchat.send_message("Can you write a short poem about the stars?")
+    print(res['text'])
+    print(mtchat.get_total_price())
+
 if __name__ == "__main__":
-    test_gemini()
+    test_openai()
