@@ -212,3 +212,7 @@ api_keys.sh
 src/eval_logic
 run_benchmark.py
 pricing.json
+
+test/top100.jsonl
+test/output_compiled.json
+test/test.txt

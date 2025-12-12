@@ -1,143 +1,172 @@
 """Verus (Rust + verus) verifier adapter.
 
-This verifier writes the provided `source` string to a temporary `.rs` file
-under the configured results directory and invokes the `verus` executable.
-
-Configuration lookup order for `VERUS_PATH` and `RESULTS_DIR`:
-  1. explicit kwargs passed to the constructor
-  2. environment variables `VERUS_PATH` and `RESULTS_DIR`
-  3. `config/config.yaml` file in repo root (simple key: value parser)
-  4. sensible defaults
+Supports Apptainer, Docker, and Local execution strategies via hierarchical config.
 """
 from .base import BaseVerifier
-from typing import Dict, Any, Optional
+from typing import Dict, Any, Optional, List
 from pathlib import Path
 import subprocess
-import tempfile
-import os
 import time
-
-
-def _read_simple_config(path: Path) -> Dict[str, str]:
-    """Read a simple YAML config file and return flat string dict.
-
-    Behavior:
-      - If `PyYAML` is available, parse with `yaml.safe_load` and return
-        a stringified mapping of top-level keys.
-      - If PyYAML is not available or parsing fails, fall back to a
-        simple `key: value` line parser (the previous implementation).
-
-    The function intentionally keeps the return type simple (str->str)
-    because callers expect string-like values for paths.
-    """
-    cfg: Dict[str, str] = {}
-    if not path.exists():
-        return cfg
-
-    raw = path.read_text()
-    if not raw.strip():
-        return cfg
-
-    # Prefer PyYAML if available (handles full YAML syntax)
-    try:
-        import yaml  # type: ignore
-
-        parsed = yaml.safe_load(raw)
-        if isinstance(parsed, dict):
-            for k, v in parsed.items():
-                # convert values to simple strings to keep callers simple
-                cfg[str(k)] = "" if v is None else str(v)
-            return cfg
-    except Exception:
-        # fall through to the simple parser on any error
-        pass
-
-    # Fallback simple parser (legacy behavior)
-    for line in raw.splitlines():
-        line = line.strip()
-        if not line or line.startswith("#"):
-            continue
-        if ":" in line:
-            k, v = line.split(":", 1)
-            cfg[k.strip()] = v.strip()
-    return cfg
-
+import os
+import yaml # Requires: pip install pyyaml
 
 class VerusVerifier(BaseVerifier):
-    def __init__(self, verus_path: Optional[str] = None, results_dir: Optional[str] = None, config_path: Optional[str] = None, timeout: int = 60):
-        # Resolve config from kwargs, env, config file, defaults
-        self.timeout = int(timeout)
-        config_file = Path(config_path) if config_path else Path(__file__).resolve().parents[2] / "config" / "config.yaml"
-        file_cfg = _read_simple_config(config_file)
-
-        self.verus_path = (
-            verus_path
-            or os.environ.get("VERUS_PATH")
-            or file_cfg.get("VERUS_PATH")
-            or "/usr/local/bin"
-        )
-
+    def __init__(self, config_path: Optional[str] = None):
+        """Initialize the VerusVerifier.
+        
+        Args:
+            config_path: Path to the YAML config file. If None, defaults to 
+                         repo_root/config/config.yaml
+        """
+        self.config = self._load_config(config_path)
+        
+        # Load Verus specific config
+        self.verus_cfg = self.config.get("verus", {})
+        self.timeout = self.verus_cfg.get("timeout", 60)
+        self.method = self.verus_cfg.get("method", "local")
+        
+        # Resolve global results directory
         self.results_dir = (
-            results_dir
+            self.config.get("results_dir")
             or os.environ.get("RESULTS_DIR")
-            or file_cfg.get("RESULTS_DIR")
             or "results/verus"
         )
-
-        # Ensure results dir exists
         Path(self.results_dir).mkdir(parents=True, exist_ok=True)
 
-    def _verus_executable(self) -> Path:
-        # verus binary expected at VERUS_PATH/verus or just verus_path if file
-        p = Path(self.verus_path)
-        if p.is_file() and os.access(p, os.X_OK):
-            return p
-        candidate = p / "verus"
-        if candidate.exists() and os.access(candidate, os.X_OK):
-            return candidate
-        # fallback to system PATH lookup
-        from shutil import which
+    def _load_config(self, path: Optional[str]) -> Dict[str, Any]:
+        """Load hierarchical YAML config safely."""
+        if path:
+            p = Path(path)
+        else:
+            # Default to config/config.yaml relative to this file's location
+            # Assuming structure: repo/src/verifiers/verus_verifier.py -> repo/config/config.yaml
+            p = Path(__file__).resolve().parents[2] / "config" / "config.yaml"
+        
+        if not p.exists():
+            print(f"Warning: Config file not found at {p}")
+            return {}
+            
+        try:
+            with open(p, 'r') as f:
+                return yaml.safe_load(f) or {}
+        except Exception as e:
+            print(f"Warning: Failed to parse config file: {e}")
+            return {}
 
-        sys_cand = which("verus")
-        if sys_cand:
-            return Path(sys_cand)
-        raise FileNotFoundError(f"verus executable not found at {self.verus_path} or in PATH")
+    def _build_command(self, source_file: Path) -> List[str]:
+        """Construct the execution command based on the configured method."""
+        
+        if self.method == "apptainer":
+            cfg = self.verus_cfg.get("apptainer", {})
+            image = cfg.get("image_path")
+            host_rust_home = cfg.get("rust_home")
+            mount_point = cfg.get("container_mount_point", "/rust_env")
+
+            # Validation
+            if not image or not Path(image).exists():
+                raise FileNotFoundError(f"Apptainer image not found at: {image}")
+            if not host_rust_home or not Path(host_rust_home).exists():
+                raise FileNotFoundError(f"Rust home dir not found at: {host_rust_home}")
+
+            # Construct Apptainer Command
+            # apptainer exec --bind <host>:<container> --env ... image.sif verus <file>
+            cmd = [
+                "apptainer", "exec",
+                "--bind", f"{host_rust_home}:{mount_point}",
+                "--env", f"CARGO_HOME={mount_point}/cargo",
+                "--env", f"RUSTUP_HOME={mount_point}",
+                str(image),
+                "verus",
+                str(source_file.resolve()) # Use absolute path for safety
+            ]
+            return cmd
+
+        elif self.method == "docker":
+            # Placeholder for future Docker implementation
+            raise NotImplementedError("Docker support not yet implemented")
+
+        elif self.method == "local":
+            # Fallback to local execution
+            raise NotImplementedError("Docker support not yet implemented")
+            cfg = self.verus_cfg.get("local", {})
+            bin_path = cfg.get("bin_path", "verus")
+            return [str(bin_path), str(source_file.resolve())]
+
+        else:
+            raise ValueError(f"Unknown verification method: {self.method}")
 
     def verify(self, source: str, spec: str, filename: Optional[str] = None, **kwargs: Any) -> Dict[str, Any]:
-        """Write `source` to an .rs file and run the verus verifier on it.
-
-        Returns a dict with keys:
-          - `ok`: bool
-          - `reason`: str (optional)
-          - `raw`: raw subprocess output
-          - `file`: path to the written .rs file
-        """
-        # Determine file name
+        """Write source to a file and run the verifier."""
+        
+        # 1. Prepare File Name
         ts = int(time.time() * 1000)
         safe_name = (filename or "submission").replace("/", "_")
         out_name = f"{safe_name}_{ts}.rs"
-        out_path = Path(self.results_dir) / out_name
-
+        
+        # Ensure results dir is absolute so apptainer mounts work reliably if needed
+        out_path = Path(self.results_dir).resolve() / out_name
+        
+        # 2. Write Source Code
         out_path.write_text(source)
 
+        # 3. Build Command
         try:
-            verus_exec = self._verus_executable()
-        except FileNotFoundError as e:
-            return {"ok": False, "reason": str(e), "raw": None, "file": str(out_path)}
+            cmd = self._build_command(out_path)
+        except Exception as e:
+            return {
+                "ok": False, 
+                "reason": f"Configuration Error: {str(e)}", 
+                "raw": None, 
+                "file": str(out_path)
+            }
 
-        cmd = [str(verus_exec), str(out_path)]
+        # 4. Execute
         try:
-            proc = subprocess.run(cmd, capture_output=True, text=True, timeout=self.timeout)
+            proc = subprocess.run(
+                cmd, 
+                capture_output=True, 
+                text=True, 
+                timeout=self.timeout
+            )
+            
             stdout = proc.stdout
             stderr = proc.stderr
             rc = proc.returncode
+            
             raw = {"stdout": stdout, "stderr": stderr, "returncode": rc}
+            
+            # 5. Determine Success
+            # Verus usually returns 0 on success.
+            # Sometimes it returns 0 but prints verification errors to stdout, 
+            # so we check stdout for failure keywords if RC is 0 (optional based on Verus version)
             ok = (rc == 0)
-            reason = None if ok else f"verus exited with code {rc}"
-            return {"ok": ok, "reason": reason, "raw": raw, "file": str(out_path)}
-        except subprocess.TimeoutExpired as e:
-            return {"ok": False, "reason": f"timeout after {self.timeout}s", "raw": None, "file": str(out_path)}
+            reason = None
+            
+            if not ok:
+                reason = f"Verus exited with code {rc}"
+            elif "verification failed" in stdout.lower():
+                # Some verifier versions might exit 0 even if verification fails
+                ok = False
+                reason = "Verification failed (found in stdout)"
+
+            return {
+                "ok": ok, 
+                "reason": reason, 
+                "raw": raw, 
+                "file": str(out_path)
+            }
+
+        except subprocess.TimeoutExpired:
+            return {
+                "ok": False, 
+                "reason": f"Timeout after {self.timeout}s", 
+                "raw": None, 
+                "file": str(out_path)
+            }
         except Exception as e:
-            return {"ok": False, "reason": str(e), "raw": None, "file": str(out_path)}
-
-
+            return {
+                "ok": False, 
+                "reason": f"Execution Error: {str(e)}", 
+                "raw": None, 
+                "file": str(out_path)
+            }
