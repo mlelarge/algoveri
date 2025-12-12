@@ -30,7 +30,7 @@ lean:
     image_path: "/scratch/gpfs/ARORA/haoyu/jiawei/apptainer_test/lean.sif"
     
     # The folder containing the toolchains (folders like .elan, toolchains, update-hashes)
-    elan_home: "/scratch/gpfs/ARORA/haoyu/apptainer_test/elan_home"
+    elan_home: "/scratch/gpfs/ARORA/haoyu/jiawei/apptainer_test/elan_home"
     
     # The pre-built project folder (must contain lakefile.lean)
-    project_path: "/scratch/gpfs/ARORA/haoyu/apptainer_test/lean_project"
+    project_path: "/scratch/gpfs/ARORA/haoyu/jiawei/apptainer_test/lean_project"
