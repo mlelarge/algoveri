@@ -34,3 +34,11 @@ lean:
     
     # The pre-built project folder (must contain lakefile.lean)
     project_path: "/scratch/gpfs/ARORA/haoyu/jiawei/apptainer_test/lean_project"
+
+dafny:
+  timeout: 60
+  method: apptainer # or 'local'
+  apptainer:
+    image_path: "/scratch/gpfs/ARORA/haoyu/jiawei/apptainer_test/dafny.sif" # The image we just pulled
+  local:
+    bin_path: "dafny"
