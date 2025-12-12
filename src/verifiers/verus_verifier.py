@@ -73,7 +73,7 @@ class VerusVerifier(BaseVerifier):
             cmd = [
                 "apptainer", "exec",
                 "--bind", f"{host_rust_home}:{mount_point}",
-                "--env", f"CARGO_HOME={mount_point}/cargo",
+                #"--env", f"CARGO_HOME={mount_point}/cargo",
                 "--env", f"RUSTUP_HOME={mount_point}",
                 str(image),
                 "verus",
