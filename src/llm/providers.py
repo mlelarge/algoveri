@@ -20,7 +20,7 @@ class MultiTurnChat:
       - get_history() -> list[dict] with keys ('role','content', ...)
       - close() -> optional cleanup
     """
-    def send_message(self, text: str, role: str = "user") -> Dict[str, Any]:
+    def send_message(self, text: str, role: str = "user", temperature: float = 1.0) -> Dict[str, Any]:
         raise NotImplementedError()
 
     def get_history(self) -> List[Dict[str, Any]]:
@@ -60,7 +60,7 @@ class OpenAIMultiTurnChat(MultiTurnChat):
         if system_prompt:
             self._history.append({"role": "system", "content": system_prompt})
 
-    def send_message(self, text: str, role: str = "user") -> Dict[str, Any]:
+    def send_message(self, text: str, role: str = "user", temperature: float = 1.0) -> Dict[str, Any]:
         # 1. Update local state
         self._history.append({"role": role, "content": text})
 
@@ -69,7 +69,7 @@ class OpenAIMultiTurnChat(MultiTurnChat):
             response = self._client.chat.completions.create(
                 model=self._model,
                 messages=self._history,
-                temperature=1.0, # Generally 0 for benchmarks
+                temperature=temperature, # Generally 0 for benchmarks
             )
         except Exception as e:
             # Handle API errors gracefully if needed
@@ -141,7 +141,7 @@ class GeminiMultiTurnChat(MultiTurnChat):
         self._client = genai_client
         self._model_name = model_name
 
-    def send_message(self, text: str, role: str = "user") -> Dict[str, Any]:
+    def send_message(self, text: str, role: str = "user", temperature: float = 1.0) -> Dict[str, Any]:
         """
         Send a message into the underlying gemini/genai chat session.
         Returns a dict: {'text': <assistant text>, 'role': 'assistant', 'raw': <raw response>}
@@ -232,10 +232,3 @@ class GeminiProvider(ProviderBase):
         # nothing to close at provider level
         return None
 
-
-class VLLMProvider(ProviderBase):
-    def __init__(self, endpoint: Optional[str] = None, **kwargs: Any):
-        super().__init__(endpoint=endpoint, **kwargs)
-
-    def new_chat(self, *args: Any, **kwargs: Any) -> MultiTurnChat:
-        raise NotImplementedError("vLLM multi-turn chat not implemented in this adapter.")
