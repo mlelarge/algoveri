@@ -32,8 +32,8 @@ class LeanEval(BaseEval):
     def make_sys_prompt(self) -> str:
         return LEAN_SYSTEM_PROMPT
 
-    def make_initial_prompt(self, problem: str) -> str:
-            user_p = LEAN_INITIAL_PROMPT.format(formal_problem=problem)
+    def make_initial_prompt(self, natural_language, formal_code) -> str:
+            user_p = LEAN_INITIAL_PROMPT.format(natural_language=natural_language, formal_code=formal_code)
             return user_p
     
     def make_revision_prompt(self, compiler_messages: str) -> str:

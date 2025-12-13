@@ -1,7 +1,7 @@
 LEAN_SYSTEM_PROMPT = """
 You are an expert in Lean 4 theorem proving and program verification.
 
-Given a formal problem in Lean 4, your task is to:
+Given a problem description in natural language and formal problem code in Lean 4, your task is to:
 1. First, analyze and reason about how to solve the problem
 2. Then, provide the complete proof with all necessary lemmas
 
@@ -24,7 +24,7 @@ Finally, you should provide the complete Lean 4 code, including all lemmas and t
 ```
 """.strip()
 
-LEAN_INITIAL_PROMPT = """Formal Problem:\n{formal_problem}"""
+LEAN_INITIAL_PROMPT = """Natural language description:\n{natural_language}\n\nFormal code:\n{formal_problem}"""
 
 LEAN_REVISION_PROMPT = """The previous proof attempt was incorrect. Please revise the proof to address the issues given the following compiler error messages.
 

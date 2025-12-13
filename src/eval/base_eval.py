@@ -20,7 +20,7 @@ class BaseEval(ABC):
         raise NotImplementedError()
 
     @abstractmethod
-    def make_initial_prompt(self, problem: str) -> str:
+    def make_initial_prompt(self, natural_language, formal_code) -> str:
         raise NotImplementedError()
     
     @abstractmethod
@@ -51,11 +51,11 @@ class BaseEval(ABC):
 
         return res
 
-    def run_single(self, problem: str, model: str, filename: str, spec: str = "") -> Dict[str, str]:
+    def run_single(self, natural_language: str, formal_code: str, model: str, filename: str, spec: str = "") -> Dict[str, str]:
         """Run a single problem through multi-turn loop until verified or exhausted using model."""
         sys_prompt = self.make_sys_prompt()
         # initial user prompt
-        prompt = self.make_initial_prompt(problem)
+        prompt = self.make_initial_prompt(natural_language, formal_code)
         
         mt_chat = self.llm_client.new_chat(model=model, system_prompt=sys_prompt)
 
