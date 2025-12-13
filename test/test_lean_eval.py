@@ -19,7 +19,7 @@ def demo():
 
 
     eval = LeanEval(llm_client=provider, verifier=verifier, max_rounds=3)
-    res = eval.run_single(problem=problem2, model="gpt-4o", filename="test-lean-eval")
+    res = eval.run_single(natural_language="", formal_code=problem2, model="gpt-4o", filename="test-lean-eval")
     print(res)
 
 

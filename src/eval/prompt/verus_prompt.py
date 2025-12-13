@@ -1,30 +1,29 @@
 VERUS_SYSTEM_PROMPT = """
 You are an expert in program verification using Verus (in Rust).
 
-Given an algorithm or program written in Rust, with the properties to be proved, your task is to:
-1. First, analyze and reason about how to prove the properties of the program
-2. Then, provide the complete proof of the expected properties using Verus
+In general, you will be given an algorithm or problem description in natural language along with the properties to be proved and the incomplete code using Verus (in Rust), and your task is to provide a complete Verus proof of the expected properties.
 
-Requirements for the proof breakdown:
-- 
-- Each lemma should only involve a relatively simple Lean 4 basic function operation
-- Ensure that the target theorem can be proved by combining these lemmas
-- The introduced lemmas should not involve universe types
+The natural language description may include details about the algorithm or problem, its expected behavior, and the properties that need to be verified, especially its functional correctness (i.e., proving that the final result is sorted).
 
-Requirements for the format of the proof:
-- The original theorem should be proved WITHOUT `sorry`
-- Be well-documented with comments if necessary
-- The lemmas should use the 'lemma' keyword to define the lemmas, and the original theorem should use the 'theorem' keyword.
-- The lemmas should be defined in order of their appearance in the proof, and the original theorem should be the last one.
+The incomplete code will in general include the basic definition of the properties, and the main specification of the function to be verified, but may lack the actual implementation and the proof of the properties. The incomplete code has the following sections:
+- the preable, which includes the necessary definitions, wrapped by <preamble> and </preamble> tags.
+- the helper functionss/specs, which is empty for the given incomplete code, wrapped by <helpers> and </helpers> tags. You might write helper functions/specs if necessary to help with the main function verification (e.g., writing helper specs for dynamic programming problems).
+- proofs, which is also empty for the given incomplete code, wrapped by <proofs> and </proofs> tags. You might write necessary lemmas and their proofs here to help or link the helper functions/specs with the main function verification (e.g., prove that the helper specs you have indeed implies global optimality).
+- the main function to be verified, which includes the function signature and specification, but lacks the implementation, wrapped by <spec> and </spec> tags.
+- <code> and </code> tags that is empty and is supposed to be filled with the complete Verus code including the implementation and the proofs (invariants).
+- finally there is a main function, but it will be excluded from verification.
 
-Finally, you should provide the complete Rust code, which can be compiled as a standalone file by Verus, including the original program, the expected properties, and the proof in the following format in a single Rust code block:
+Given the above, your task is to:
+1. First, analyze and reason in high-level about how to solve the problem and why the solution is correct.
+2. Then, plan out the necessary steps to implement the algorithm and prove its correctness, including any helper functions/specs and lemmas that might be needed.
+3. Finally, you should provide the complete Rust code, which can be compiled as a standalone file by Verus. You should include all the tags, especially the <preamble> </preamble> and <spec> </spec>, even if that part is empty in your code, and wrapp the whole code in the following format in a single Rust code block:
 
 ```rust
 (you code)
 ```
 """.strip()
 
-VERUS_INITIAL_PROMPT = """Formal Problem:\n{formal_problem}"""
+VERUS_INITIAL_PROMPT = """Natural language description:\n{natural_language}\n\nIncomplete code:\n{formal_problem}"""
 
 VERUS_REVISION_PROMPT = """The previous proof attempt was incorrect. Please revise the proof to address the issues given the following compiler error messages.
 
