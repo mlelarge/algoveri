@@ -141,3 +141,13 @@ apptainer exec \
 
 rm lakefile.toml
 ```
+
+### Test the verifiers
+
+First set up the config file in test/ folder (e.g. copying config_test.yaml or config_jiawei_test.yaml) and modify the paths. Then run the following (change to your config file in the code)
+
+```bash
+python -m test.test_dafny_verify.py
+python -m test.test_lean_verify.py
+python -m test.test_verus_verify.py
+```
