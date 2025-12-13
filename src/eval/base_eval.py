@@ -11,7 +11,7 @@ class BaseEval(ABC):
 
     def __init__(self, llm_client, verifier=None, max_rounds: int = 5):
         # llm_client is a provider
-        self.llm = llm_client
+        self.llm_client = llm_client
         self.verifier = verifier
         self.max_rounds = max_rounds
     
@@ -31,12 +31,8 @@ class BaseEval(ABC):
     def parse_llm_response(self, response: str) -> Dict[str, str]:
         """Parse LLM response and extract language code and any other channels.
 
-        Should return a dict with at least the 'code' key and the original response.
+        Should return a dict with at least the 'code' key and the original response in 'original'.
         """
-        raise NotImplementedError()
-
-    @abstractmethod
-    def postprocess_code(self, code: str) -> str:
         raise NotImplementedError()
     
     @abstractmethod
@@ -53,11 +49,9 @@ class BaseEval(ABC):
         # verifier should expose a `verify(code: str) -> dict` interface
         res = self.verifier.verify(source=code,spec=spec,filename=filename)
 
-        parsed_res = self.parse_verifier_response(res)
-        # Expect result to contain a boolean `verified` key or similar
-        return parsed_res
+        return res
 
-    def run_single(self, problem: str, model: str) -> Dict[str, str]:
+    def run_single(self, problem: str, model: str, filename: str, spec: str = "") -> Dict[str, str]:
         """Run a single problem through multi-turn loop until verified or exhausted using model."""
         sys_prompt = self.make_sys_prompt()
         # initial user prompt
@@ -69,10 +63,18 @@ class BaseEval(ABC):
             # send messages to LLM and receive response
             response = mt_chat.send_message(prompt)['text']
             parsed = self.parse_llm_response(response)
-            code = self.postprocess_code(parsed.get("code", ""))
+            code = parsed.get("code", "")
 
             # call verifier
-            ver_res = self.call_verifier(code)
+            if code:
+                ver_res = self.call_verifier(code, filename, spec=spec)
+            else:
+                ver_res = {
+                    "ok": False, 
+                    "reason": f"Cannot parse code from LLM response.", 
+                    "raw": None, 
+                    "file": ""
+                }
 
             parsed_ver_res = self.parse_verifier_response(ver_res)
             verified = parsed_ver_res.get("verified", False)
@@ -81,7 +83,7 @@ class BaseEval(ABC):
             followup = parsed_ver_res.get("feedback", "")
 
             if verified:
-                history = mt_chat.get_message_history()
+                history = mt_chat.get_history()
                 return {
                     "verified": True,
                     "details": {
@@ -94,7 +96,7 @@ class BaseEval(ABC):
 
             prompt = self.make_revision_prompt(followup)
 
-        history = mt_chat.get_message_history()
+        history = mt_chat.get_history()
         return {
                     "verified": False,
                     "details": {

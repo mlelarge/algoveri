@@ -2,7 +2,7 @@ from __future__ import annotations
 import re
 from typing import Dict, Any
 
-from .base_eval import BaseEval, EvalResult
+from .base_eval import BaseEval
 
 # import prompts
 from .prompt.lean_prompt import *
@@ -22,28 +22,6 @@ try:
 except Exception:
     LeanVerifier = None
 
-###############################
-# Helper functions for processing prompts
-###############################
-
-def parse_response(response: str) -> dict:
-    code = ""
-    comment = response
-    # Prefer ```lean4``` then ```lean``` fenced blocks
-    m = re.search(r"```\s*lean4\s*(.*?)```", response, re.S | re.I)
-    if not m:
-        m = re.search(r"```\s*lean\s*(.*?)```", response, re.S | re.I)
-
-    if m:
-        code = m.group(1).strip()
-        comment = (response[:m.start()] + response[m.end():]).strip()
-    else:
-        m2 = re.search(r"```(.*?)```", response, re.S | re.I)
-        if m2:
-            code = m2.group(1).strip()
-            comment = (response[:m2.start()] + response[m2.end():]).strip()
-    return {"code": code, "comment": comment}
-###############################
 
 class LeanEval(BaseEval):
     def __init__(self, llm_client, verifier=None, max_rounds: int = 5):
@@ -68,7 +46,7 @@ class LeanEval(BaseEval):
         m = re.search(r"```\s*lean4\s*(.*?)```", response, re.S | re.I)
         if not m:
             m = re.search(r"```\s*lean\s*(.*?)```", response, re.S | re.I)
-    
+
         if m:
             code = m.group(1).strip()
             comment = (response[:m.start()] + response[m.end():]).strip()
@@ -79,25 +57,30 @@ class LeanEval(BaseEval):
                 comment = (response[:m2.start()] + response[m2.end():]).strip()
         return {"code": code, "comment": comment}
 
-    def postprocess_code(self, code: str) -> str:
-        # Basic postprocessing: remove leading/trailing fences or markers
-        # and ensure newlines at end
-        code = re.sub(r"^```.*\n", "", code)
-        code = re.sub(r"\n```$", "", code)
-        return code.strip() + "\n"
+    def parse_verifier_response(self, response: Dict[str, Any]) -> Dict[str, Any]:
+        if not isinstance(response, dict):
+            return {"verified": False, "feedback": "Response is not a dict.", "raw": None}
+        if "ok" not in response:
+            return {"verified": False, "feedback": "Response missing 'ok' field.", "raw": None}
+        ok = response["ok"]
+        raw = response.get("raw", None)
+        if not ok:
+            if not raw:
+                reason = response.get("reason", "No reason provided.")
+                return {"verified": False, "feedback": reason, "raw": None}
+            else:
+                stdout_message = raw.get("stdout", "")
+                stderr_message = raw.get("stderr", "")
+                feedback_msg = f"Stdout:\n{stdout_message}\n\nStderr:\n {stderr_message}"
+                return {"verified": False, "feedback": feedback_msg, "raw": raw}
+        sorry_msg = "declaration uses 'sorry'"
+        if not raw:
+            return {"verified": False, "feedback": "Bug in verifier.", "raw": None}
+        stdout_message = raw.get("stdout", "")
+        stderr_message = raw.get("stderr", "")
+        if sorry_msg in stdout_message or sorry_msg in stderr_message:
+            feedback_msg = "The proof contains 'sorry'.\nStdout:\n{stdout_message}\n\nStderr:\n {stderr_message}"
+            return {"verified": False, "feedback": feedback_msg, "raw": raw}
 
-    def call_verifier(self, code: str) -> EvalResult:
-        # Use BaseEval.call_verifier which wraps verifier.verify
-        res = super().call_verifier(code)
-        # Optionally parse verifier feedback into a friendly structure
-        # Many verifiers return dicts; normalize
-        details = res.details
-        if isinstance(details, dict):
-            # try to produce a short message string in details['message']
-            if "message" not in details:
-                # compose message from keys
-                msg = ", ".join(f"{k}: {v}" for k, v in details.items())
-                details["message"] = msg
-        return EvalResult(verified=res.verified, details=details)
+        return {"verified": True, "feedback": "Verified successfully.", "raw": raw}
 
-    # run_single inherited from BaseEval is adequate
