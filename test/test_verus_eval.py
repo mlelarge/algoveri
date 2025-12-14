@@ -5,7 +5,7 @@ from src.llm.providers import GeminiProvider, OpenAICompatibleProvider, VLLMProv
 from src.verifiers.verus_verifier import VerusVerifier
 
 
-problem_nl = "You task is to implement the algorithm for longest increasing subsequence problem and verify its correctness in Verus. For simplicity, the sequence only contains integer, and we only consider strictly increasing subsequence. The algorithm only needs to return the length of the longest increasing subsequence. In the incomplete code, it contains the definition of a valid increasing subsequence. You task is to implement the longest increasing subsequence algorithm and verify that the code indeed returns the length of the longest increasing subsequence, i.e, any increasing subsequence has length at most the return of the algorithm."
+problem_nl = "You task is to implement the algorithm for longest increasing subsequence problem and verify its correctness in Verus. For simplicity, the sequence only contains integer, and we only consider strictly increasing subsequence. The algorithm only needs to return the length of the longest increasing subsequence. In the incomplete code, it contains the definition of a valid increasing subsequence. You task is to implement the longest increasing subsequence algorithm and verify that the code indeed returns the length of the longest increasing subsequence, i.e, any increasing subsequence has length at most the return of the algorithm, and there exists an increasing subsequence that has the length equal to the returned value."
 
 problem_code = """use vstd::prelude::*;
 
@@ -43,6 +43,7 @@ verus! {
         requires seq.len() <= 0x7FFFFFFFFFFFFFFF
         ensures
             forall|sub: Seq<int>| #[trigger] is_valid_is(seq@, sub) && sub.len() > 0 ==> sub.len() <= result,
+            exists|sub: Seq<int>| #[trigger] is_valid_is(seq@, sub) && sub.len() == result,
     // <spec>
     // <code>
     {
