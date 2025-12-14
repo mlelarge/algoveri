@@ -60,7 +60,6 @@ class VerusVerifier(BaseVerifier):
             cfg = self.verus_cfg.get("apptainer", {})
             image = cfg.get("image_path")
             host_rust_home = cfg.get("rust_home")
-            mount_point = cfg.get("container_mount_point", "/rust_env")
 
             # Validation
             if not image or not Path(image).exists():
@@ -69,12 +68,14 @@ class VerusVerifier(BaseVerifier):
                 raise FileNotFoundError(f"Rust home dir not found at: {host_rust_home}")
 
             # Construct Apptainer Command
-            # apptainer exec --bind <host>:<container> --env ... image.sif verus <file>
+            # Bind cargo and toolchains separately to match installation configuration
+            # This matches the setup in README where rust_home contains cargo/ and toolchains/ subdirs
             cmd = [
                 "apptainer", "exec",
-                "--bind", f"{host_rust_home}:{mount_point}",
-                #"--env", f"CARGO_HOME={mount_point}/cargo",
-                "--env", f"RUSTUP_HOME={mount_point}",
+                "--bind", f"{host_rust_home}/cargo:/rust/cargo",
+                "--bind", f"{host_rust_home}/toolchains:/rust/toolchains",
+                "--env", "CARGO_HOME=/rust/cargo",
+                "--env", "RUSTUP_HOME=/rust/toolchains",
                 str(image),
                 "verus",
                 str(source_file.resolve()) # Use absolute path for safety

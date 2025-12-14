@@ -14,7 +14,7 @@ def demo():
     provider = OpenAICompatibleProvider()
 
 
-    cfg_path = Path(__file__).resolve().parent / "config_jiawei_test.yaml"
+    cfg_path = Path(__file__).resolve().parent / "config_test.yaml"
     verifier = LeanVerifier(config_path=str(cfg_path))
 
 
