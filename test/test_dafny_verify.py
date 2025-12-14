@@ -17,7 +17,7 @@ def test_dafny_verifier_writes_file_and_returns_result():
 
     This test uses `test/config_test.yaml` (created as part of the test suite).
     """
-    cfg_path = Path(__file__).resolve().parent / "config_jiawei_test.yaml"
+    cfg_path = Path(__file__).resolve().parent / "config_test.yaml"
     verifier = DafnyVerifier(config_path=str(cfg_path))
 
     sample_source = code
