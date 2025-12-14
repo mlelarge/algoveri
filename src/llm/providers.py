@@ -176,7 +176,7 @@ class GeminiMultiTurnChat(MultiTurnChat):
         return hist
     
     def get_total_tokens(self):
-        return self._client.models.count_tokens(model=self._model_name, contents=self._chat.get_history()) if self._client else 0.0
+        return self._client.models.count_tokens(model=self._model_name, contents=self._chat.get_history()).total_tokens if self._client else 0
 
     def close(self) -> None:
         # genai chat objects currently do not require explicit close; keep for API parity
