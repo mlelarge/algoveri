@@ -103,6 +103,7 @@ class BaseEval(ABC):
                         "llm_response": parsed,
                         "verifier_response": parsed_ver_res,
                         "history": history,
+                        "tokens": mt_chat.get_total_tokens(),
                     },
                 }
 
@@ -116,6 +117,7 @@ class BaseEval(ABC):
                         "llm_response": parsed,
                         "verifier_response": parsed_ver_res,
                         "history": history,
+                        "tokens": mt_chat.get_total_tokens(),
                     },
                 }
 

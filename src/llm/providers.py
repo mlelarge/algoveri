@@ -26,7 +26,7 @@ class MultiTurnChat:
     def get_history(self) -> List[Dict[str, Any]]:
         raise NotImplementedError()
     
-    def get_total_price(self) -> float:
+    def get_total_tokens(self) -> float:
         raise NotImplementedError()
 
     def close(self) -> None:
@@ -99,7 +99,7 @@ class OpenAIMultiTurnChat(MultiTurnChat):
         # Return copy to prevent external mutation
         return [msg.copy() for msg in self._history]
     
-    def get_total_price(self) -> float:
+    def get_total_tokens(self) -> float:
         # Placeholder for price logic. 
         # You could implement specific pricing per model (e.g. gpt-4o vs 4o-mini)
         # For now, we return total tokens as a proxy or 0.0
@@ -175,7 +175,7 @@ class GeminiMultiTurnChat(MultiTurnChat):
             pass
         return hist
     
-    def get_total_price(self):
+    def get_total_tokens(self):
         return self._client.models.count_tokens(model=self._model_name, contents=self._chat.get_history()) if self._client else 0.0
 
     def close(self) -> None:
