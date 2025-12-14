@@ -60,9 +60,9 @@ class BaseEval(ABC):
         if debug:
             print(f"Creating chat session with model: {model}")
         
-        mt_chat = self.llm_client.new_chat(model=model, system_prompt=sys_prompt)
+        mt_chat = self.llm_client.new_chat(model=model, system_prompt=None)
         if debug:
-            print(f"System Prompt:\n{sys_prompt}\n")
+            print(f"General Instruction:\n{sys_prompt}\n")
             print(f"Initial User Prompt:\n{prompt}\n")
 
         for round_i in range(self.max_rounds):

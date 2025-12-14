@@ -24,8 +24,8 @@ class VerusEval(BaseEval):
         return VERUS_SYSTEM_PROMPT
 
     def make_initial_prompt(self, natural_language, formal_code) -> str:
-            user_p = VERUS_INITIAL_PROMPT.format(natural_language=natural_language, formal_code=formal_code)
-            return user_p
+        user_p = self.make_sys_prompt() + '\n\n' + VERUS_INITIAL_PROMPT.format(natural_language=natural_language, formal_code=formal_code)
+        return user_p
     
     def make_revision_prompt(self, compiler_messages: str) -> str:
         return VERUS_REVISION_PROMPT.format(compiler_error_messages=compiler_messages)

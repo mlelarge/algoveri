@@ -231,7 +231,7 @@ def test_verus_verifier_writes_file_and_returns_result():
     It does not require a working `verus` binary; it only asserts that the
     verifier produces a dict with expected keys and that the output file exists.
     """
-    cfg_path = Path(__file__).resolve().parent / "config_jiawei_test.yaml"
+    cfg_path = Path(__file__).resolve().parent / "config_test.yaml"
     verifier = VerusVerifier(config_path=str(cfg_path))
 
     sample_source = code

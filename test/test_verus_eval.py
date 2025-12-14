@@ -67,6 +67,7 @@ verus! {
 
 def demo():
     provider = GeminiProvider()
+    #provider = OpenAICompatibleProvider()
 
 
     cfg_path = Path(__file__).resolve().parent / "config_test.yaml"
@@ -74,8 +75,14 @@ def demo():
 
 
     eval = VerusEval(llm_client=provider, verifier=verifier, max_rounds=15)
+
+    #res = eval.run_single(natural_language=problem_nl, formal_code=problem_code, model="gpt-5.2", filename="test-rust-eval", debug=True)
     res = eval.run_single(natural_language=problem_nl, formal_code=problem_code, model="gemini-3-pro-preview", filename="test-rust-eval", debug=True)
-    print(res)
+    
+    # Save res to json file
+    import json
+    with open("verus_eval_lis_gemini-3.json", "w") as f:
+        json.dump(res, f, indent=4)
 
 
 if __name__ == '__main__':
