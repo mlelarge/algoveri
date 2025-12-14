@@ -23,7 +23,7 @@ Given the above, your task is to:
 ```
 """.strip()
 
-VERUS_INITIAL_PROMPT = """Natural language description:\n{natural_language}\n\nIncomplete code:\n{formal_problem}"""
+VERUS_INITIAL_PROMPT = """Natural language description:\n{natural_language}\n\nIncomplete code:\n{formal_code}"""
 
 VERUS_REVISION_PROMPT = """The previous proof attempt was incorrect. Please revise the proof to address the issues given the following compiler error messages.
 
