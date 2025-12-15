@@ -7,11 +7,15 @@ from .base_eval import BaseEval
 # import prompts
 from .prompt.verus_prompt import *
 
-# attempt to import Lean verifier
+# attempt to import Verus verifier (relative import within package)
 try:
-    from verifiers.verus_verifier import VerusVerifier
+    from ..verifiers.verus_verifier import VerusVerifier
 except Exception:
-    VerusVerifier = None
+    try:
+        # fallback to absolute import if package layout differs
+        from verifiers.verus_verifier import VerusVerifier
+    except Exception:
+        VerusVerifier = None
 
 
 class VerusEval(BaseEval):

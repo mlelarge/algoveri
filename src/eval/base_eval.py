@@ -120,6 +120,3 @@ class BaseEval(ABC):
                         "tokens": mt_chat.get_total_tokens(),
                     },
                 }
-
-    def run_batch(self, problems: list[str]) -> list[Dict[str, str]]:
-        return [self.run_single(p) for p in problems]
