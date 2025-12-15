@@ -24,7 +24,7 @@ Finally, you should provide the complete Lean 4 code, including all lemmas and t
 ```
 """.strip()
 
-LEAN_INITIAL_PROMPT = """Natural language description:\n{natural_language}\n\nFormal code:\n{formal_problem}"""
+LEAN_INITIAL_PROMPT = """Natural language description:\n{natural_language}\n\nFormal code:\n{formal_code}"""
 
 LEAN_REVISION_PROMPT = """The previous proof attempt was incorrect. Please revise the proof to address the issues given the following compiler error messages.
 

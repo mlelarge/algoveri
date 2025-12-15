@@ -1,5 +1,5 @@
 #!/bin/bash
-#SBATCH --job-name=vllm_worker
+#SBATCH --job-name=vllm_worker-gptoss
 #SBATCH --nodes=1
 #SBATCH --ntasks=1
 #SBATCH --cpus-per-task=24
@@ -7,10 +7,10 @@
 #SBATCH --gres=gpu:2
 #SBATCH --time=23:59:00
 #SBATCH --partition=pli-c
-#SBATCH --mail-type=FAIL
-#SBATCH --mail-user=haoyu@princeton.edu
+#SBATCH --mail-type=BEGIN,FAIL
+#SBATCH --mail-user=st3812@princeton.edu
 #SBATCH --output=slurm_output/%x-%j.out
-
+#SBATCH --account=pli
 
 # Port for this vLLM worker. Ensure it's unique if running multiple workers on the same node.
 # This command asks the OS for an available port and saves it to the variable.
@@ -28,8 +28,8 @@ TENSOR_PARALLEL_SIZE=2 # Should match --gpus-per-task
 
 # Activate your Python/Conda environment where vLLM is installed.
 # Replace with your specific environment activation command.
-source /scratch/gpfs/st3812/packages/miniconda/etc/profile.d/conda.sh
-conda activate /scratch/gpfs/st3812/packages/miniconda/envs/oss
+source /scratch/gpfs/CHIJ/st3812/packages/miniconda/etc/profile.d/conda.sh
+conda activate /scratch/gpfs/CHIJ/st3812/packages/miniconda/envs/oss
 
 echo "Environment activated."
 
@@ -47,10 +47,9 @@ python -m vllm.entrypoints.openai.api_server \
     --gpu-memory-utilization 0.8 \
     --trust-remote-code &
 
-echo "vLLM use port: ${WORKER_PORT}"
-
 # Capture the Process ID (PID) of the backgrounded vLLM server
 VLLM_PID=$!
 echo "vLLM server started with PID: ${VLLM_PID}"
+
 
 wait ${VLLM_PID}

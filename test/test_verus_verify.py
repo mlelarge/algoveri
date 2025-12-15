@@ -224,6 +224,71 @@ verus! {
     }
 }"""
 
+
+code = """use vstd::prelude::*;
+
+verus! {
+    // <preamble>
+    spec fn is_sorted(seq: Seq<i32>) -> bool {
+        // Same as your binary search preamble
+        forall|i: int, j: int| #![trigger seq[i], seq[j]] 
+            0 <= i <= j < seq.len() ==> seq[i] <= seq[j]
+    }
+    // </preamble>
+
+    // <spec>
+    fn linear_search_lower_bound(seq: &Vec<i32>, target: i32) -> (result: usize)
+        requires 
+            seq.len() <= 0x7FFFFFFF, 
+            is_sorted(seq@),
+        ensures
+            result <= seq.len(),
+            // Mimicking Binary Search: Use #![trigger seq[i]]
+            forall|i: int| #![trigger seq[i]] 0 <= i < result ==> seq[i] < target,
+            forall|i: int| #![trigger seq[i]] result <= i < seq.len() ==> seq[i] >= target,
+    // </spec>
+    // <code>
+    {
+        let mut idx = 0;
+
+        while idx < seq.len()
+            invariant
+                0 <= idx <= seq.len(),
+                is_sorted(seq@),
+                // Mimicking Binary Search Invariant 1 (Left side)
+                forall|i: int| #![trigger seq[i]] 0 <= i < idx ==> seq[i] < target,
+        {
+            if seq[idx] >= target {
+                // We found the split point.
+                // We need to prove the second post-condition: forall k >= idx, seq[k] >= target.
+                // We assert this property directly, just like a loop invariant.
+                assert(forall|k: int| #![trigger seq[k]] idx <= k < seq.len() ==> seq[k] >= target) by {
+                    // Proof hint:
+                    // Verus needs to see that seq[idx] <= seq[k] implies the result.
+                    // We must cast 'idx as int' because 'seq' (as a spec Seq) takes int indices.
+                    assert(seq[idx as int] >= target); 
+                    // This triggers is_sorted for (idx, k) because seq[k] is in the trigger 
+                    // and seq[idx] is in the context.
+                }
+                return idx;
+            }
+            
+            idx = idx + 1;
+        }
+
+        idx
+    }
+    // </code>
+
+    #[verifier::external]
+    fn main() {
+        let mut v = Vec::new();
+        v.push(1); v.push(3); v.push(5); v.push(7);
+        let idx = linear_search_lower_bound(&v, 4);
+        println!("Index: {}", idx);
+    }
+}"""
+
 def test_verus_verifier_writes_file_and_returns_result():
     """Verify that VerusVerifier writes the source file and returns a result dict.
 

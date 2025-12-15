@@ -23,9 +23,9 @@ Given the above, your task is to:
 ```
 """.strip()
 
-VERUS_INITIAL_PROMPT = """Natural language description:\n{natural_language}\n\nIncomplete code:\n{formal_problem}"""
+VERUS_INITIAL_PROMPT = """Natural language description:\n{natural_language}\n\nIncomplete code:\n{formal_code}"""
 
-VERUS_REVISION_PROMPT = """The previous proof attempt was incorrect. Please revise the proof to address the issues given the following compiler error messages.
+VERUS_REVISION_PROMPT = """The previous proof attempt was incorrect. Please revise the proof to address the issues given the following compiler error messages. Remember to provide the complete Rust code, which can be compiled as a standalone file by Verus. You should include all the tags, especially the <preamble> </preamble> and <spec> </spec>, even if that part is empty in your code.
 
 Compiler Error Messages:
 {compiler_error_messages}

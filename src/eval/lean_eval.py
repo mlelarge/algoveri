@@ -16,11 +16,14 @@ except Exception:
     except Exception:
         prompt_helper = None
 
-# attempt to import Lean verifier
+# attempt to import Lean verifier (relative import)
 try:
-    from verifiers.lean_verifier import LeanVerifier
+    from ..verifiers.lean_verifier import LeanVerifier
 except Exception:
-    LeanVerifier = None
+    try:
+        from verifiers.lean_verifier import LeanVerifier
+    except Exception:
+        LeanVerifier = None
 
 
 class LeanEval(BaseEval):

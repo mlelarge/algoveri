@@ -51,13 +51,19 @@ class BaseEval(ABC):
 
         return res
 
-    def run_single(self, natural_language: str, formal_code: str, model: str, filename: str, spec: str = "") -> Dict[str, str]:
+    def run_single(self, natural_language: str, formal_code: str, model: str, filename: str, spec: str = "", debug: bool=False) -> Dict[str, str]:
         """Run a single problem through multi-turn loop until verified or exhausted using model."""
         sys_prompt = self.make_sys_prompt()
         # initial user prompt
         prompt = self.make_initial_prompt(natural_language, formal_code)
+
+        if debug:
+            print(f"Creating chat session with model: {model}")
         
-        mt_chat = self.llm_client.new_chat(model=model, system_prompt=sys_prompt)
+        mt_chat = self.llm_client.new_chat(model=model, system_prompt=None)
+        if debug:
+            print(f"General Instruction:\n{sys_prompt}\n")
+            print(f"Initial User Prompt:\n{prompt}\n")
 
         for round_i in range(self.max_rounds):
             # send messages to LLM and receive response
@@ -79,6 +85,12 @@ class BaseEval(ABC):
             parsed_ver_res = self.parse_verifier_response(ver_res)
             verified = parsed_ver_res.get("verified", False)
 
+            if debug:
+                print(f"Round {round_i+1} LLM Response:\n{response}\n")
+                print(f"Parsed Code:\n{code}\n")
+                print(f"Verifier Response:\n{ver_res}\n")
+                print(f"Parsed Verifier Result:\n{parsed_ver_res}\n")
+
             # otherwise ask LLM to fix using feedback
             followup = parsed_ver_res.get("feedback", "")
 
@@ -91,6 +103,7 @@ class BaseEval(ABC):
                         "llm_response": parsed,
                         "verifier_response": parsed_ver_res,
                         "history": history,
+                        "tokens": mt_chat.get_total_tokens(),
                     },
                 }
 
@@ -104,8 +117,6 @@ class BaseEval(ABC):
                         "llm_response": parsed,
                         "verifier_response": parsed_ver_res,
                         "history": history,
+                        "tokens": mt_chat.get_total_tokens(),
                     },
                 }
-
-    def run_batch(self, problems: list[str]) -> list[Dict[str, str]]:
-        return [self.run_single(p) for p in problems]

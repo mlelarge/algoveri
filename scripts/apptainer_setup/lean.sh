@@ -1,11 +1,10 @@
 # Step 1. pull the lean image
 apptainer pull lean.sif docker://leanprovercommunity/lean4
 
-# Step 2. Create the main folder
+# Step 2. Create the main folder and download the specific Lean 4 release (Linux version)
 mkdir -p elan_home
 cd elan_home
 
-# Step 3. Download the specific Lean 4 release (Linux version)
 wget https://github.com/leanprover/lean4/releases/download/v4.25.0-rc2/lean-4.25.0-rc2-linux.tar.zst
 
 tar -xvf lean-4.25.0-rc2-linux.tar.zst
