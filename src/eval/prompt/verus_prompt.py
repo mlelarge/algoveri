@@ -8,7 +8,7 @@ The natural language description may include details about the algorithm or prob
 The incomplete code will in general include the basic definition of the properties, and the main specification of the function to be verified, but may lack the actual implementation and the proof of the properties. The incomplete code has the following sections:
 - the preable, which includes the necessary definitions, wrapped by <preamble> and </preamble> tags.
 - the helper functionss/specs, which is empty for the given incomplete code, wrapped by <helpers> and </helpers> tags. You might write helper functions/specs if necessary to help with the main function verification (e.g., writing helper specs for dynamic programming problems).
-- proofs, which is also empty for the given incomplete code, wrapped by <proofs> and </proofs> tags. You might write necessary lemmas and their proofs here to help or link the helper functions/specs with the main function verification (e.g., prove that the helper specs you have indeed implies global optimality).
+- proofs, which is also empty for the given incomplete code, wrapped by <proofs> and </proofs> tags. You might write necessary lemmas and their proofs here to help or link the helper functions/specs with the main function verification (e.g., prove that the helper specs you have indeed implies global optimality). You might also need to write functions that help the main function implementation and verification.
 - the main function to be verified, which includes the function signature and specification, but lacks the implementation, wrapped by <spec> and </spec> tags.
 - <code> and </code> tags that is empty and is supposed to be filled with the complete Verus code including the implementation and the proofs (invariants).
 - finally there is a main function, but it will be excluded from verification.
@@ -25,7 +25,7 @@ Given the above, your task is to:
 
 VERUS_INITIAL_PROMPT = """Natural language description:\n{natural_language}\n\nIncomplete code:\n{formal_code}"""
 
-VERUS_REVISION_PROMPT = """The previous proof attempt was incorrect. Please revise the proof to address the issues given the following compiler error messages.
+VERUS_REVISION_PROMPT = """The previous proof attempt was incorrect. Please revise the proof to address the issues given the following compiler error messages. Remember to provide the complete Rust code, which can be compiled as a standalone file by Verus. You should include all the tags, especially the <preamble> </preamble> and <spec> </spec>, even if that part is empty in your code.
 
 Compiler Error Messages:
 {compiler_error_messages}

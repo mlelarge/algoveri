@@ -58,20 +58,27 @@ class DafnyVerifier(BaseVerifier):
         if self.method == "apptainer":
             cfg = self.dafny_cfg.get("apptainer", {})
             image = cfg.get("image_path")
+            container_mount_point = cfg.get("container_mount_point", "/work")
             
             # Validation
             if not image or not Path(image).exists():
                 raise FileNotFoundError(f"Apptainer image not found at: {image}")
 
-            # Construct Apptainer Command
-            # Note: Apptainer usually automounts $HOME. If results_dir is outside $HOME,
-            # you may need to add explicit "--bind" args here similar to the Verus adapter.
+            # Ensure results_dir is absolute for reliable mounting
+            results_dir_abs = Path(self.results_dir).resolve()
+            
+            # Construct Apptainer Command with explicit bind mount
+            # This avoids permission issues in SLURM cluster environments where
+            # automatic mounting of /tmp or NFS filesystems may fail
+            source_file_name = source_file.name
+            
             cmd = [
                 "apptainer", "exec",
+                "--bind", f"{results_dir_abs}:{container_mount_point}",
                 str(image),
                 "dafny",
                 "verify",
-                str(source_file.resolve())  # Use absolute path
+                f"{container_mount_point}/{source_file_name}"  # Use container path
             ]
             return cmd
 

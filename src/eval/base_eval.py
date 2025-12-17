@@ -60,9 +60,9 @@ class BaseEval(ABC):
         if debug:
             print(f"Creating chat session with model: {model}")
         
-        mt_chat = self.llm_client.new_chat(model=model, system_prompt=sys_prompt)
+        mt_chat = self.llm_client.new_chat(model=model, system_prompt=None)
         if debug:
-            print(f"System Prompt:\n{sys_prompt}\n")
+            print(f"General Instruction:\n{sys_prompt}\n")
             print(f"Initial User Prompt:\n{prompt}\n")
 
         for round_i in range(self.max_rounds):
@@ -103,6 +103,7 @@ class BaseEval(ABC):
                         "llm_response": parsed,
                         "verifier_response": parsed_ver_res,
                         "history": history,
+                        "tokens": mt_chat.get_total_tokens(),
                     },
                 }
 
@@ -116,8 +117,6 @@ class BaseEval(ABC):
                         "llm_response": parsed,
                         "verifier_response": parsed_ver_res,
                         "history": history,
+                        "tokens": mt_chat.get_total_tokens(),
                     },
                 }
-
-    def run_batch(self, problems: list[str]) -> list[Dict[str, str]]:
-        return [self.run_single(p) for p in problems]

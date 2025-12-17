@@ -10,7 +10,9 @@ def test_gemini():
     print(res['text'])
     res = mtchat.send_message("Can you write a short poem about the stars?")
     print(res['text'])
-    print(mtchat.get_total_price())
+    print(mtchat.get_total_tokens())
+    print(mtchat.get_total_tokens().total_tokens)
+    print(type(mtchat.get_total_tokens().total_tokens))
 
 def test_openai():
     provider = OpenAICompatibleProvider()
@@ -33,4 +35,4 @@ def test_vllm():
     print(mtchat.get_total_price())
 
 if __name__ == "__main__":
-    test_vllm()
+    test_gemini()
