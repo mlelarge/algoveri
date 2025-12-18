@@ -8,6 +8,7 @@ to run the multi-round evaluation loop.
 """
 from __future__ import annotations
 from pathlib import Path
+import sys
 from typing import Optional, Dict, Any
 import json
 import os
@@ -60,7 +61,19 @@ class Runner:
         `problem_dir` may be a path to a directory containing `verus_nl.txt` and `verus_spec.rs`.
         Returns the evaluation result dict and writes a JSON file to results.
         """
-        p = Path(problem_dir)
+        # If stdin is piped (not a TTY) and contains a path, prefer it.
+        try:
+            if not sys.stdin.isatty():
+                piped = sys.stdin.read().strip()
+                if piped:
+                    p = Path(piped)
+                else:
+                    p = Path(problem_dir)
+            else:
+                p = Path(problem_dir)
+        except Exception:
+            p = Path(problem_dir)
+
         if not p.exists() or not p.is_dir():
             raise FileNotFoundError(f"Problem directory not found: {p}")
 
