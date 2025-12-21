@@ -4,7 +4,7 @@ from src.llm.providers import GeminiProvider, OpenAICompatibleProvider, VLLMProv
 
 def test_gemini():
     provider = GeminiProvider()
-    mtchat = provider.new_chat(model="gemini-2.5-flash", system_prompt="You are a helpful assistant.")
+    mtchat = provider.new_chat(model="gemini-3-flash-preview", system_prompt="You are a helpful assistant.")
     
     res = mtchat.send_message("Hello, how are you?")
     print(res['text'])

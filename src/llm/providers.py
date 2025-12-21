@@ -140,6 +140,10 @@ class GeminiMultiTurnChat(MultiTurnChat):
         self._chat = genai_chat
         self._client = genai_client
         self._model_name = model_name
+        self.cached_content_token_count = 0
+        self.prompt_token_count = 0
+        self.thoughts_token_count = 0
+        self.candidates_token_count = 0
 
     def send_message(self, text: str, role: str = "user", temperature: float = 1.0) -> Dict[str, Any]:
         """
@@ -148,6 +152,14 @@ class GeminiMultiTurnChat(MultiTurnChat):
         """
         # genai.Client.chat.send_message returns an object with .text per user's snippet
         resp = self._chat.send_message(text)
+        if resp.usage_metadata.cached_content_token_count:
+            self.cached_content_token_count += resp.usage_metadata.cached_content_token_count
+        if resp.usage_metadata.prompt_token_count:
+            self.prompt_token_count += resp.usage_metadata.prompt_token_count
+        if resp.usage_metadata.thoughts_token_count:
+            self.thoughts_token_count += resp.usage_metadata.thoughts_token_count
+        if resp.usage_metadata.candidates_token_count:
+            self.candidates_token_count += resp.usage_metadata.candidates_token_count
         text_out = getattr(resp, "text", None) or (resp.get("text") if isinstance(resp, dict) else str(resp))
         return {"text": text_out, "role": "assistant", "raw": resp}
 
@@ -176,7 +188,8 @@ class GeminiMultiTurnChat(MultiTurnChat):
         return hist
     
     def get_total_tokens(self):
-        return self._client.models.count_tokens(model=self._model_name, contents=self._chat.get_history()).total_tokens if self._client else 0
+        #return self._client.models.count_tokens(model=self._model_name, contents=self._chat.get_history()).total_tokens if self._client else 0
+        return {"cached_content": self.cached_content_token_count, "prompt": self.prompt_token_count, "thoughts": self.thoughts_token_count, "candidates": self.candidates_token_count}
 
     def close(self) -> None:
         # genai chat objects currently do not require explicit close; keep for API parity

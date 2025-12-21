@@ -39,10 +39,10 @@ class LeanEval(BaseEval):
             user_p = LEAN_INITIAL_PROMPT.format(natural_language=natural_language, formal_code=formal_code)
             return user_p
     
-    def make_revision_prompt(self, compiler_messages: str) -> str:
+    def make_revision_prompt(self, compiler_messages: str, formal_code: str = None) -> str:
         return LEAN_REVISION_PROMPT.format(compiler_error_messages=compiler_messages)
 
-    def parse_llm_response(self, response: str) -> Dict[str, str]:
+    def parse_llm_response(self, response: str, formal_code: str = None) -> Dict[str, str]:
         code = ""
         comment = response
         # Prefer ```lean4``` then ```lean``` fenced blocks

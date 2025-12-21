@@ -28,7 +28,7 @@ class BaseEval(ABC):
         raise NotImplementedError()
 
     @abstractmethod
-    def parse_llm_response(self, response: str) -> Dict[str, str]:
+    def parse_llm_response(self, response: str, formal_code: str = None) -> Dict[str, str]:
         """Parse LLM response and extract language code and any other channels.
 
         Should return a dict with at least the 'code' key and the original response in 'original'.
@@ -68,13 +68,20 @@ class BaseEval(ABC):
         for round_i in range(self.max_rounds):
             # send messages to LLM and receive response
             response = mt_chat.send_message(prompt)['text']
-            parsed = self.parse_llm_response(response)
+            parsed = self.parse_llm_response(response, formal_code)
             code = parsed.get("code", "")
 
             # call verifier
             if code:
                 ver_res = self.call_verifier(code, filename, spec=spec)
             else:
+                if parsed.get("comment", ""):
+                    ver_res = {
+                        "ok": False, 
+                        "reason": parsed.get("comment", ""), 
+                        "raw": None, 
+                        "file": ""
+                    }
                 ver_res = {
                     "ok": False, 
                     "reason": f"Cannot parse code from LLM response.", 
