@@ -84,14 +84,18 @@ class Runner:
         # Determine evaluator using self.language
         evaler = self._make_evaluator(language=self.language, max_rounds=max_rounds)
 
+        #
+        friendly_model_name = model.split("/")[-1]
+
         # Use filename as last part of problem directory
         # e.g., for algoveri_data/binary_search, use "binary_search"
         problem_name = p.name
-        filename = f"{problem_name}_eval"
+        print(f"Running {self.language} problem in {problem_name} using model {friendly_model_name}")
+        filename = f"{friendly_model_name}_{problem_name}_eval"
 
         result = evaler.run_single(natural_language=natural, formal_code=spec_code, model=model, filename=filename, spec=problem_name, debug=debug)
 
-        out_path = self.results_root / f"{problem_name}_{self.language}.json"
+        out_path = self.results_root / f"{friendly_model_name}_{problem_name}_{self.language}.json"
         out_path.write_text(json.dumps(result, indent=4))
         return result
 
