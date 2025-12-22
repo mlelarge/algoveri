@@ -61,7 +61,7 @@ sleep 20
 WORKER_PORT=$(python -c 'import socket; s=socket.socket(); s.bind(("", 0)); print(s.getsockname()[1]); s.close()')
 echo "Found and assigned free port: ${WORKER_PORT}"
 
-MODEL_PATH="/scratch/gpfs/ARORA/haoyu/Qwen3-235B-A22B"
+MODEL_PATH="/scratch/gpfs/ARORA/haoyu/Qwen3-235B-A22B-Instruct-2507"
 
 # 7. Run vLLM Server
 # The server runs on the head node, so we use the head node IP here
@@ -74,9 +74,7 @@ apptainer exec --nv --bind /scratch:/scratch \
     --port ${WORKER_PORT} \
     --tensor-parallel-size 4 \
     --pipeline-parallel-size 2 \
-    --reasoning-parser deepseek_r1 \
-    --rope-scaling '{"rope_type":"yarn","factor":4.0,"original_max_position_embeddings":32768}' \
-    --max-model-len 131072 \
+    --max-model-len 262144 \
     --trust-remote-code \
     --host 0.0.0.0 &
 
