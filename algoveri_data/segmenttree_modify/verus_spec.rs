@@ -1,8 +1,4 @@
-from pathlib import Path
-
-from src.verifiers.verus_verifier import VerusVerifier
-
-code = """use vstd::prelude::*;
+use vstd::prelude::*;
 
 verus! {
     // Following is the block for necessary definitions
@@ -93,52 +89,6 @@ verus! {
 
     // Following is the block for the main specification
     // <spec>
-    
-    // 1. Build: Creates a new segment tree for range [l, r) initialized to 0
-    fn build(l: u64, r: u64) -> (res: Box<Node>)
-        requires 
-            l < r
-        ensures
-            res.is_segment_tree(),
-            res.low == l,
-            res.high == r,
-            // All values in the map are initialized to 0
-            forall |k: int| l <= k < r ==> res.view()[k] == 0,
-    // <code>
-    {
-        assume(false);
-        // Return a dummy value to satisfy the type checker
-        Box::new(Node { 
-            val: 0, 
-            low: l, 
-            high: r, 
-            left: None, 
-            right: None 
-        })
-    }
-    // </code>
-
-    // 2. Query: Returns the Max value in range [ql, qr)
-    fn query(node: &Box<Node>, ql: u64, qr: u64) -> (res: u64)
-        requires
-            node.is_segment_tree(),
-            ql < qr,
-            node.low <= ql,
-            qr <= node.high,
-        ensures
-            // Correctness: result is >= everything in the query range
-            forall |k: int| ql <= k < qr ==> node.view()[k] <= res,
-            // Tightness: result actually exists in the query range
-            exists |k: int| ql <= k < qr && node.view()[k] == res,
-    // <code>
-    {
-        assume(false);
-        // Return a dummy value to satisfy the type checker
-        0
-    }
-    // </code>
-
-    // 3. Modify: Updates index `idx` to value `v`, returning a new tree (functional update)
     fn modify(node: Box<Node>, idx: u64, v: u64) -> (res: Box<Node>)
         requires
             node.is_segment_tree(),
@@ -149,48 +99,12 @@ verus! {
             res.high == node.high,
             // The view matches the old view, but with the specific key updated
             res.view() =~= node.view().insert(idx as int, v),
+    // </spec>
     // <code>
     {
-        assume(false);
-        // Return a dummy value to satisfy the type checker
-        node
+        // Implement and verify the modify function for segment tree
     }
     // </code>
 
-    // </spec>
-
-    #[verifier::external]
     fn main() {}
-}"""
-
-def test_verus_verifier_writes_file_and_returns_result():
-    """Verify that VerusVerifier writes the source file and returns a result dict.
-
-    This test uses `test/config_test.yaml` (created as part of the test suite).
-    It does not require a working `verus` binary; it only asserts that the
-    verifier produces a dict with expected keys and that the output file exists.
-    """
-    cfg_path = Path(__file__).resolve().parent / "config_jiawei_test.yaml"
-    verifier = VerusVerifier(config_path=str(cfg_path))
-
-    sample_source = code
-    result = verifier.verify(source=sample_source, spec="dummy-spec", filename="unit_test")
-
-    print(result)
-
-    assert isinstance(result, dict)
-    assert "ok" in result and isinstance(result["ok"], bool)
-    assert "file" in result
-
-    # The file should have been created on disk
-    written = Path(result["file"])
-    assert written.exists()
-    return
-    # cleanup artifact
-    try:
-        written.unlink()
-    except Exception:
-        pass
-
-if __name__ == '__main__':
-    test_verus_verifier_writes_file_and_returns_result()
+}
