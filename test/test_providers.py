@@ -39,4 +39,5 @@ def test_vllm():
 
 
 if __name__ == "__main__":
-    test_vllm()
+    #test_vllm()
+    test_gemini()
