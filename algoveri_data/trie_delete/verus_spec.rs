@@ -1,8 +1,4 @@
-from pathlib import Path
-
-from src.verifiers.verus_verifier import VerusVerifier
-
-code = """use vstd::prelude::*;
+use vstd::prelude::*;
 
 verus! {
     // Following is the block for necessary definitions
@@ -64,10 +60,7 @@ verus! {
             Set::new(|key: Seq<u8>| self.contains(key))
         }
     }
-    // </preamble>
 
-    // Following is the block for potential helper specifications
-    // <helpers>
     pub open spec fn opt_view(node: Option<Box<Node>>) -> Set<Seq<u8>> {
         match node {
             Some(n) => n.view(),
@@ -75,7 +68,6 @@ verus! {
         }
     }
 
-    // Helper to check consistency of the whole tree (including the root)
     pub open spec fn opt_well_formed(node: Option<Box<Node>>) -> bool {
         match node {
             Some(n) => {
@@ -87,6 +79,11 @@ verus! {
             None => true,
         }
     }
+    // </preamble>
+
+    // Following is the block for potential helper specifications
+    // <helpers>
+    
     // </helpers>
 
     // Following is the block for proofs of lemmas
@@ -95,41 +92,6 @@ verus! {
     // </proofs>
 
     // Following is the block for the main specification
-    // <spec>
-    fn search(tree: Option<Box<Node>>, key: Seq<u8>) -> (res: bool)
-        requires
-            opt_well_formed(tree),
-        ensures
-            res == opt_view(tree).contains(key),
-    // </spec>
-    // <code>
-    {
-        assume(false);
-        false
-    }
-    // </code>
-
-    // <spec>
-    fn insert(tree: Option<Box<Node>>, key: Seq<u8>) -> (res: Box<Node>)
-        requires
-            opt_well_formed(tree),
-        ensures
-            // The result must satisfy the pruning invariant
-            res.well_formed(),
-            !res.is_empty(), // Insert always results in a non-empty tree
-            res.view() =~= opt_view(tree).insert(key),
-    // </spec>
-    // <code>
-    {
-        assume(false);
-        // Return a dummy value to satisfy the Rust type checker
-        Box::new(Node { 
-            is_end: false, 
-            children: Vec::new() 
-        })
-    }
-    // </code>
-
     // <spec>
     fn delete(tree: Option<Box<Node>>, key: Seq<u8>) -> (res: Option<Box<Node>>)
         requires
@@ -141,43 +103,9 @@ verus! {
     // </spec>
     // <code>
     {
-        assume(false);
-        None
+        // Implement and verify the delete function for Trie data structure
     }
     // </code>
 
-    #[verifier::external]
     fn main() {}
-}"""
-
-def test_verus_verifier_writes_file_and_returns_result():
-    """Verify that VerusVerifier writes the source file and returns a result dict.
-
-    This test uses `test/config_test.yaml` (created as part of the test suite).
-    It does not require a working `verus` binary; it only asserts that the
-    verifier produces a dict with expected keys and that the output file exists.
-    """
-    cfg_path = Path(__file__).resolve().parent / "config_jiawei_test.yaml"
-    verifier = VerusVerifier(config_path=str(cfg_path))
-
-    sample_source = code
-    result = verifier.verify(source=sample_source, spec="dummy-spec", filename="unit_test")
-
-    print(result)
-
-    assert isinstance(result, dict)
-    assert "ok" in result and isinstance(result["ok"], bool)
-    assert "file" in result
-
-    # The file should have been created on disk
-    written = Path(result["file"])
-    assert written.exists()
-    return
-    # cleanup artifact
-    try:
-        written.unlink()
-    except Exception:
-        pass
-
-if __name__ == '__main__':
-    test_verus_verifier_writes_file_and_returns_result()
+}
