@@ -1,12 +1,8 @@
-from pathlib import Path
-
-from src.verifiers.verus_verifier import VerusVerifier
-
-code = """use vstd::prelude::*;
+use vstd::prelude::*;
 
 verus! {
+    // Following is the block for necessary definitions
     // <preamble>
-    
     pub struct Graph {
         pub adj: Vec<Vec<usize>>, 
     }
@@ -46,7 +42,6 @@ verus! {
 
     // 3. Reachability 
     pub open spec fn reachable(g: Seq<Seq<int>>, start: int, end: int) -> bool {
-        // FIXED: Added #[trigger] to is_path
         exists |p: Seq<int>| 
             #[trigger] is_path(g, p) 
             && p[0] == start 
@@ -55,7 +50,6 @@ verus! {
 
     // 4. Shortest Path 
     pub open spec fn is_shortest_distance(g: Seq<Seq<int>>, start: int, end: int, d: int) -> bool {
-        // FIXED: Added #[trigger] to is_path inside the exists
         &&& (exists |p: Seq<int>| 
                 #[trigger] is_path(g, p) 
                 && p[0] == start 
@@ -69,25 +63,19 @@ verus! {
     }
     // </preamble>
 
-    // <spec>
-    // PROBLEM 1: Depth First Search (Reachability)
-    fn dfs_check_reachability(graph: &Graph, start: usize, target: usize) -> (res: bool)
-        requires
-            graph.well_formed(),
-            start < graph.size(),
-            target < graph.size(),
-        ensures
-            res == reachable(graph.view(), start as int, target as int),
-    // </spec>
-    // <code>
-    {
-        assume(false); 
-        false 
-    }
-    // </code>
+    // Following is the block for potential helper specifications
+    // <helpers>
 
+    // </helpers>
+
+    // Following is the block for proofs of lemmas, or functions that help the implementation or verification of the main specification
+    // <proofs>
+
+    // </proofs>
+
+    // Following is the block for the main specification
     // <spec>
-    // PROBLEM 2: Breadth First Search (Shortest Path)
+    // Breadth First Search (Shortest Path)
     fn bfs_shortest_path(graph: &Graph, start: usize, target: usize) -> (res: Option<u64>)
         requires
             graph.well_formed(),
@@ -105,42 +93,9 @@ verus! {
     // </spec>
     // <code>
     {
-        assume(false); 
-        None 
+        // Implement and verify the BFS algorithm to find the shortest path in the graph
     }
     // </code>
 
     fn main() {}
-}"""
-
-def test_verus_verifier_writes_file_and_returns_result():
-    """Verify that VerusVerifier writes the source file and returns a result dict.
-
-    This test uses `test/config_test.yaml` (created as part of the test suite).
-    It does not require a working `verus` binary; it only asserts that the
-    verifier produces a dict with expected keys and that the output file exists.
-    """
-    cfg_path = Path(__file__).resolve().parent / "config_jiawei_test.yaml"
-    verifier = VerusVerifier(config_path=str(cfg_path))
-
-    sample_source = code
-    result = verifier.verify(source=sample_source, spec="dummy-spec", filename="unit_test")
-
-    print(result)
-
-    assert isinstance(result, dict)
-    assert "ok" in result and isinstance(result["ok"], bool)
-    assert "file" in result
-
-    # The file should have been created on disk
-    written = Path(result["file"])
-    assert written.exists()
-    return
-    # cleanup artifact
-    try:
-        written.unlink()
-    except Exception:
-        pass
-
-if __name__ == '__main__':
-    test_verus_verifier_writes_file_and_returns_result()
+}
