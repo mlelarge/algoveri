@@ -79,7 +79,6 @@ verus! {
     // <code>
     {
         // TODO: Implement Coin Change DP here.
-        -1
     }
     // </code>
 

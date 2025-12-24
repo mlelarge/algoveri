@@ -76,7 +76,6 @@ verus! {
     // <code>
     {
         // TODO: Implement the Unbounded Knapsack DP algorithm here.
-        0
     }
     // </code>
 

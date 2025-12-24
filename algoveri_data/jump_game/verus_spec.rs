@@ -52,7 +52,6 @@ verus! {
     // <code>
     {
         // TODO: Implement Jump Game greedy algorithm here.
-        false
     }
     // </code>
 

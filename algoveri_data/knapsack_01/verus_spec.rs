@@ -73,7 +73,6 @@ verus! {
     // <code>
     {
         // TODO: Implement the 0/1 Knapsack DP algorithm here.
-        0
     }
     // </code>
 
