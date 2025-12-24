@@ -1,6 +1,7 @@
 use vstd::prelude::*;
 
 verus! {
+    // Following is the block for necessary definitions
     // <preamble>
     pub struct Node {
         pub val: u8,                // The character at this node
@@ -119,10 +120,17 @@ verus! {
     }
     // </preamble>
 
+    // Following is the block for potential helper specifications
     // <helpers>
-    
+
     // </helpers>
 
+    // Following is the block for proofs of lemmas, or functions that help the implementation or verification of the main specification
+    // <proofs>
+
+    // </proofs>
+
+    // Following is the block for the main specification
     // <spec>
     fn search(tree: Option<Box<Node>>, key: Seq<u8>) -> (res: bool)
         requires
