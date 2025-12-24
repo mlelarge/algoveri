@@ -1,8 +1,4 @@
-from pathlib import Path
-
-from src.verifiers.verus_verifier import VerusVerifier
-
-code = """use vstd::prelude::*;
+use vstd::prelude::*;
 
 verus! {
     // <preamble>
@@ -107,9 +103,7 @@ verus! {
             Set::new(|key: Seq<u8>| self.contains(key))
         }
     }
-    // </preamble>
 
-    // <helpers>
     pub open spec fn opt_view(node: Option<Box<Node>>) -> Set<Seq<u8>> {
         match node {
             Some(n) => n.view(),
@@ -123,42 +117,11 @@ verus! {
             None => true,
         }
     }
+    // </preamble>
+
+    // <helpers>
+    
     // </helpers>
-
-    // <spec>
-    fn search(tree: Option<Box<Node>>, key: Seq<u8>) -> (res: bool)
-        requires
-            opt_well_formed(tree),
-        ensures
-            res == opt_view(tree).contains(key),
-    // </spec>
-    // <code>
-    {
-        assume(false);
-        false 
-    }
-    // </code>
-
-    // <spec>
-    // Insert: Adds a key to the TST.
-    // Note: If the key is empty, this implementation effectively ignores it or returns the tree unchanged,
-    // as the TST structure defined requires characters to traverse.
-    fn insert(tree: Option<Box<Node>>, key: Seq<u8>) -> (res: Box<Node>)
-        requires
-            opt_well_formed(tree),
-            key.len() > 0, // Simplified precondition: TST nodes handle non-empty keys
-        ensures
-            res.well_formed(),
-            !res.is_empty(),
-            res.view() =~= opt_view(tree).insert(key),
-    // </spec>
-    // <code>
-    {
-        assume(false);
-        // Dummy return
-        Box::new(Node { val: 0, is_end: false, left: None, mid: None, right: None })
-    }
-    // </code>
 
     // <spec>
     // Delete: Removes a key and performs eager pruning (removing nodes that become empty).
@@ -171,43 +134,9 @@ verus! {
     // </spec>
     // <code>
     {
-        assume(false);
-        None 
+        // Implement and verify the delete function for Ternary Search Tree (TST).
     }
     // </code>
 
-    #[verifier::external]
     fn main() {}
-}"""
-
-def test_verus_verifier_writes_file_and_returns_result():
-    """Verify that VerusVerifier writes the source file and returns a result dict.
-
-    This test uses `test/config_test.yaml` (created as part of the test suite).
-    It does not require a working `verus` binary; it only asserts that the
-    verifier produces a dict with expected keys and that the output file exists.
-    """
-    cfg_path = Path(__file__).resolve().parent / "config_jiawei_test.yaml"
-    verifier = VerusVerifier(config_path=str(cfg_path))
-
-    sample_source = code
-    result = verifier.verify(source=sample_source, spec="dummy-spec", filename="unit_test")
-
-    print(result)
-
-    assert isinstance(result, dict)
-    assert "ok" in result and isinstance(result["ok"], bool)
-    assert "file" in result
-
-    # The file should have been created on disk
-    written = Path(result["file"])
-    assert written.exists()
-    return
-    # cleanup artifact
-    try:
-        written.unlink()
-    except Exception:
-        pass
-
-if __name__ == '__main__':
-    test_verus_verifier_writes_file_and_returns_result()
+}
