@@ -5,10 +5,11 @@
 #SBATCH --cpus-per-task=40
 #SBATCH --mem=400G
 #SBATCH --gres=gpu:4
-#SBATCH --time=02:00:00
+#SBATCH --time=23:59:00
 #SBATCH --partition=pli-c
-#SBATCH --account=pli
 #SBATCH --output=slurm_output/%x-%j.out
+#SBATCH --mail-type=ALL
+#SBATCH --mail-user=haoyu@princeton.edu
 
 # 1. Define the container path
 CONTAINER="/scratch/gpfs/ARORA/haoyu/apptainer_imgs/vllm.sif"

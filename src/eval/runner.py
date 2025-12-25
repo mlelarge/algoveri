@@ -10,6 +10,7 @@ from __future__ import annotations
 from pathlib import Path
 import sys
 from typing import Optional, Dict, Any
+import asyncio
 import json
 import os
 
@@ -96,10 +97,18 @@ class Runner:
         if num_passes == 1:
             result = evaler.run_single(natural_language=natural, formal_code=spec_code, model=model, filename=filename, spec=problem_name, debug=debug)
         else:
-            result = []
-            for _ in range(num_passes):
-                result_single = evaler.run_single(natural_language=natural, formal_code=spec_code, model=model, filename=filename, spec=problem_name, debug=debug)
-                result.append(result_single)
+            # run multiple passes concurrently using a threadpool so that the
+            # synchronous run_single can execute in parallel
+            async def _run_passes():
+                loop = asyncio.get_running_loop()
+
+                async def _run_one(_idx: int):
+                    return await loop.run_in_executor(None, evaler.run_single, natural, spec_code, model, filename, problem_name, debug)
+
+                tasks = [_run_one(i) for i in range(int(num_passes))]
+                return await asyncio.gather(*tasks)
+
+            result = asyncio.run(_run_passes())
 
         out_path = self.results_root / f"{friendly_model_name}_{problem_name}_{self.language}.json"
         out_path.write_text(json.dumps(result, indent=4))
