@@ -217,6 +217,7 @@ pricing.json
 
 # some random stuff
 test_results/
+results_save_old/
 test/top100.jsonl
 test/output_compiled.json
 test/test.txt

@@ -10,6 +10,9 @@ from src.eval.runner import Runner
 def run_task(args):
     if args.model.startswith("gemini"):
         llm_provider = GeminiProvider()
+    elif args.model.lower().split('/')[-1].startswith("qwen"):
+        assert args.url, "url must be provided"
+        llm_provider = VLLMProvider(endpoint=args.url)
     else:
         raise ValueError(f"Unknown model {args.model}")
     
@@ -29,7 +32,7 @@ def run_task(args):
         # fallback to default
         problem_dir = default_dir
 
-    res = runner.run_problem(problem_dir=str(problem_dir), max_rounds=args.max_rounds, model=args.model, debug=True)
+    res = runner.run_problem(problem_dir=str(problem_dir), max_rounds=args.max_rounds, num_passes=args.num_passes, model=args.model, debug=True)
     print(res)
 
 
@@ -37,9 +40,11 @@ if __name__ == "__main__":
     argparser = argparse.ArgumentParser()
     argparser.add_argument("--model", type=str, default="gemini-3-flash-preview")
     argparser.add_argument("--max_rounds", type=int, default=15)
+    argparser.add_argument("--num_passes", type=int, default=1)
     argparser.add_argument("--debug", action="store_true")
     argparser.add_argument("--cfg_path", type=str, default="/scratch/gpfs/ARORA/haoyu/algoveri/test/config_test.yaml")
     argparser.add_argument("--results_root", type=str, default="test_results/verus")
     argparser.add_argument("--language", type=str, default="verus")
+    argparser.add_argument("--url", type=str, default="")
     args = argparser.parse_args()
     run_task(args)

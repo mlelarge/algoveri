@@ -49,7 +49,7 @@ class Runner:
         # Unknown language: raise for now
         raise NotImplementedError(f"Problem file reading not implemented for language: {self.language}")
 
-    def run_problem(self, problem_dir: str, max_rounds: int = 5, model: str = "gemini-2.5-flash", debug: bool = False) -> Dict[str, Any]:
+    def run_problem(self, problem_dir: str, max_rounds: int = 5, num_passes: int = 1, model: str = "gemini-2.5-flash", debug: bool = False) -> Dict[str, Any]:
         """Run a single problem directory using the generic BaseEval factory.
 
         By default this will attempt to construct an evaluator appropriate for
@@ -93,7 +93,13 @@ class Runner:
         print(f"Running {self.language} problem in {problem_name} using model {friendly_model_name}")
         filename = f"{friendly_model_name}_{problem_name}_eval"
 
-        result = evaler.run_single(natural_language=natural, formal_code=spec_code, model=model, filename=filename, spec=problem_name, debug=debug)
+        if num_passes == 1:
+            result = evaler.run_single(natural_language=natural, formal_code=spec_code, model=model, filename=filename, spec=problem_name, debug=debug)
+        else:
+            result = []
+            for _ in range(num_passes):
+                result_single = evaler.run_single(natural_language=natural, formal_code=spec_code, model=model, filename=filename, spec=problem_name, debug=debug)
+                result.append(result_single)
 
         out_path = self.results_root / f"{friendly_model_name}_{problem_name}_{self.language}.json"
         out_path.write_text(json.dumps(result, indent=4))
