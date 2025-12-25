@@ -1,10 +1,7 @@
-from pathlib import Path
-
-from src.verifiers.verus_verifier import VerusVerifier
-
-code = """use vstd::prelude::*;
+use vstd::prelude::*;
 
 verus! {
+    // Following is the block for necessary definitions
     // <preamble>
     pub struct BipartiteGraph {
         // Number of nodes on the Left (U) and Right (V)
@@ -77,6 +74,17 @@ verus! {
     }
     // </preamble>
 
+    // Following is the block for potential helper specifications
+    // <helpers>
+
+    // </helpers>
+
+    // Following is the block for proofs of lemmas, or functions that help the implementation or verification of the main specification
+    // <proofs>
+
+    // </proofs>
+
+    // Following is the block for the main specification
     // <spec>
     // PROBLEM: Maximum Bipartite Matching
     // Input: A bipartite graph defined by sizes and Left->Right adjacency.
@@ -92,42 +100,9 @@ verus! {
     // </spec>
     // <code>
     {
-        assume(false);
-        0
+        // Implement and verify the algorithm for max bipartite matching.
     }
     // </code>
 
     fn main() {}
-}"""
-
-def test_verus_verifier_writes_file_and_returns_result():
-    """Verify that VerusVerifier writes the source file and returns a result dict.
-
-    This test uses `test/config_test.yaml` (created as part of the test suite).
-    It does not require a working `verus` binary; it only asserts that the
-    verifier produces a dict with expected keys and that the output file exists.
-    """
-    cfg_path = Path(__file__).resolve().parent / "config_jiawei_test.yaml"
-    verifier = VerusVerifier(config_path=str(cfg_path))
-
-    sample_source = code
-    result = verifier.verify(source=sample_source, spec="dummy-spec", filename="unit_test")
-
-    print(result)
-
-    assert isinstance(result, dict)
-    assert "ok" in result and isinstance(result["ok"], bool)
-    assert "file" in result
-
-    # The file should have been created on disk
-    written = Path(result["file"])
-    assert written.exists()
-    return
-    # cleanup artifact
-    try:
-        written.unlink()
-    except Exception:
-        pass
-
-if __name__ == '__main__':
-    test_verus_verifier_writes_file_and_returns_result()
+}
