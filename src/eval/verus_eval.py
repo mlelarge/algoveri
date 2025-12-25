@@ -34,11 +34,32 @@ class VerusEval(BaseEval):
     def make_revision_prompt(self, compiler_messages: str) -> str:
         return VERUS_REVISION_PROMPT.format(compiler_error_messages=compiler_messages)
 
-    def parse_llm_response(self, response: str) -> Dict[str, str]:
+    def parse_llm_response(self, response: str, formal_code: str = None) -> Dict[str, str]:
+        """Parse the LLM response and ensure tags are present/normalized.
+
+        Behavior:
+        - If `formal_code` is provided, extract expected `<preamble>` and
+          `<spec>` contents from it.
+        - Extract the Rust fenced code block (or any fenced block) from the
+          LLM response as `code`.
+        - If `code` contains `<preamble>` and/or `<spec>` tags, replace the
+          inner contents with the expected values extracted from
+          `formal_code` (if non-empty).
+        - If expected content exists but the corresponding tag is missing in
+          `code`, return `code: ""` and a `comment` instructing the model
+          to include the missing tag(s).
+        """
+        # extract expected pieces from the template if available
+        preamble_pattern = re.compile(r'<preamble>.*?</preamble>', re.DOTALL)
+        spec_pattern = re.compile(r'<spec>.*?</spec>', re.DOTALL)
+
+        extracted_preamble = preamble_pattern.search(formal_code) if formal_code else None
+        extracted_spec = spec_pattern.search(formal_code) if formal_code else None
+
+        # extract code block
         code = ""
         comment = response
         m = re.search(r"```\s*rust\s*(.*?)```", response, re.S | re.I)
-
         if m:
             code = m.group(1).strip()
             comment = (response[:m.start()] + response[m.end():]).strip()
@@ -47,7 +68,35 @@ class VerusEval(BaseEval):
             if m2:
                 code = m2.group(1).strip()
                 comment = (response[:m2.start()] + response[m2.end():]).strip()
-        return {"code": code, "comment": comment}
+
+
+        # Now check presence of tags and either replace or report missing
+        missing_tags = []
+        modified = code
+
+        preamble_in_code = preamble_pattern.search(modified)
+        if not (preamble_in_code and extracted_preamble):
+            missing_tags.append("preamble")
+        elif preamble_in_code and extracted_preamble:
+            modified = preamble_pattern.sub(extracted_preamble.group(0), modified)
+        
+        spec_in_code = spec_pattern.search(modified)
+        if not (spec_in_code and extracted_spec):
+            missing_tags.append("spec")
+        elif spec_in_code and extracted_spec:
+            modified = spec_pattern.sub(extracted_spec.group(0), modified)
+
+
+        if missing_tags:
+            # instructive comment for the model
+            if len(missing_tags) == 1:
+                tag = missing_tags[0]
+                comment = f"do not find {tag} tag in the generated code; please include <{tag}>...</{tag}> containing the corresponding section from the formal template."
+            else:
+                comment = f"do not find tags {', '.join(missing_tags)} in the generated code; please include them (e.g. <preamble>...</preamble> and <spec>...</spec>) with the corresponding contents from the formal template."
+            return {"code": "", "comment": comment}
+
+        return {"code": modified, "comment": comment}
 
     def parse_verifier_response(self, response: Dict[str, Any]) -> Dict[str, Any]:
         if not isinstance(response, dict):

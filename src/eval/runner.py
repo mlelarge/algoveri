@@ -8,7 +8,9 @@ to run the multi-round evaluation loop.
 """
 from __future__ import annotations
 from pathlib import Path
+import sys
 from typing import Optional, Dict, Any
+import asyncio
 import json
 import os
 
@@ -48,7 +50,7 @@ class Runner:
         # Unknown language: raise for now
         raise NotImplementedError(f"Problem file reading not implemented for language: {self.language}")
 
-    def run_problem(self, problem_dir: str, max_rounds: int = 5, model: str = "gemini-2.5-flash", debug: bool = False) -> Dict[str, Any]:
+    def run_problem(self, problem_dir: str, max_rounds: int = 5, num_passes: int = 1, model: str = "gemini-2.5-flash", debug: bool = False) -> Dict[str, Any]:
         """Run a single problem directory using the generic BaseEval factory.
 
         By default this will attempt to construct an evaluator appropriate for
@@ -60,7 +62,19 @@ class Runner:
         `problem_dir` may be a path to a directory containing `verus_nl.txt` and `verus_spec.rs`.
         Returns the evaluation result dict and writes a JSON file to results.
         """
-        p = Path(problem_dir)
+        # If stdin is piped (not a TTY) and contains a path, prefer it.
+        try:
+            if not sys.stdin.isatty():
+                piped = sys.stdin.read().strip()
+                if piped:
+                    p = Path(piped)
+                else:
+                    p = Path(problem_dir)
+            else:
+                p = Path(problem_dir)
+        except Exception:
+            p = Path(problem_dir)
+
         if not p.exists() or not p.is_dir():
             raise FileNotFoundError(f"Problem directory not found: {p}")
 
@@ -71,14 +85,32 @@ class Runner:
         # Determine evaluator using self.language
         evaler = self._make_evaluator(language=self.language, max_rounds=max_rounds)
 
+        #
+        friendly_model_name = model.split("/")[-1]
+
         # Use filename as last part of problem directory
         # e.g., for algoveri_data/binary_search, use "binary_search"
         problem_name = p.name
-        filename = f"{problem_name}_eval"
+        print(f"Running {self.language} problem in {problem_name} using model {friendly_model_name}")
+        filename = f"{friendly_model_name}_{problem_name}_eval"
 
-        result = evaler.run_single(natural_language=natural, formal_code=spec_code, model=model, filename=filename, spec=problem_name, debug=debug)
+        if num_passes == 1:
+            result = evaler.run_single(natural_language=natural, formal_code=spec_code, model=model, filename=filename, spec=problem_name, debug=debug)
+        else:
+            # run multiple passes concurrently using a threadpool so that the
+            # synchronous run_single can execute in parallel
+            async def _run_passes():
+                loop = asyncio.get_running_loop()
 
-        out_path = self.results_root / f"{problem_name}_{self.language}.json"
+                async def _run_one(_idx: int):
+                    return await loop.run_in_executor(None, evaler.run_single, natural, spec_code, model, filename, problem_name, debug)
+
+                tasks = [_run_one(i) for i in range(int(num_passes))]
+                return await asyncio.gather(*tasks)
+
+            result = asyncio.run(_run_passes())
+
+        out_path = self.results_root / f"{friendly_model_name}_{problem_name}_{self.language}.json"
         out_path.write_text(json.dumps(result, indent=4))
         return result
 
