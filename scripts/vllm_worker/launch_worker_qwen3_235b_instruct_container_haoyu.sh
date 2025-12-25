@@ -2,10 +2,10 @@
 #SBATCH --job-name=vllm_worker
 #SBATCH --nodes=1
 #SBATCH --ntasks-per-node=1
-#SBATCH --cpus-per-task=40
-#SBATCH --mem=400G
+#SBATCH --cpus-per-task=80
+#SBATCH --mem=800G
 #SBATCH --gres=gpu:8
-#SBATCH --time=02:00:00
+#SBATCH --time=23:59:00
 #SBATCH --partition=pli-c
 #SBATCH --output=slurm_output/%x-%j.out
 #SBATCH --mail-type=ALL

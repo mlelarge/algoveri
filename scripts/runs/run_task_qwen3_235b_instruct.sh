@@ -1,3 +1,3 @@
-echo "/scratch/gpfs/ARORA/haoyu/algoveri/algoveri_data/bst_delete" | python -m src.run_task --num_passes 10 --model /scratch/gpfs/ARORA/haoyu/Qwen3-235B-A22B-Instruct-2507 --url http://della-j17g2:43373/v1
-echo "/scratch/gpfs/ARORA/haoyu/algoveri/algoveri_data/bst_insert" | python -m src.run_task --num_passes 10 --model /scratch/gpfs/ARORA/haoyu/Qwen3-235B-A22B-Instruct-2507 --url http://della-j17g2:43373/v1
-echo "/scratch/gpfs/ARORA/haoyu/algoveri/algoveri_data/bst_search" | python -m src.run_task --num_passes 10 --model /scratch/gpfs/ARORA/haoyu/Qwen3-235B-A22B-Instruct-2507 --url http://della-j17g2:43373/v1
+echo "/scratch/gpfs/ARORA/haoyu/algoveri/algoveri_data/bst_zig" | python -m src.run_task --num_passes 10 --model /scratch/gpfs/ARORA/haoyu/Qwen3-235B-A22B-Instruct-2507 --url http://della-k14g1:44329/v1
+echo "/scratch/gpfs/ARORA/haoyu/algoveri/algoveri_data/bst_zigzig" | python -m src.run_task --num_passes 10 --model /scratch/gpfs/ARORA/haoyu/Qwen3-235B-A22B-Instruct-2507 --url http://della-k14g1:44329/v1
+echo "/scratch/gpfs/ARORA/haoyu/algoveri/algoveri_data/bst_zigzag" | python -m src.run_task --num_passes 10 --model /scratch/gpfs/ARORA/haoyu/Qwen3-235B-A22B-Instruct-2507 --url http://della-k14g1:44329/v1
