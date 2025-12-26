@@ -1,8 +1,4 @@
-from pathlib import Path
-
-from src.verifiers.verus_verifier import VerusVerifier
-
-code = """use vstd::prelude::*;
+use vstd::prelude::*;
 
 verus! {
     // Following is the block for necessary definitions
@@ -95,7 +91,7 @@ verus! {
 
     // Following is the block for the main specification
     // <spec>
-    // Operation 1: Rotate Left (Fixup)
+    // Operation: Rotate Left (Fixup)
     // Distinct from BST rotate because it MUST prove black_height is preserved.
     fn fixup_rotate_left(node: Box<Node>) -> (res: Box<Node>)
         requires
@@ -112,11 +108,13 @@ verus! {
             res.left.get_Some_0().is_red,
     // </spec>
     // <code>
-    { assume(false); node }
+    {
+        // Implement and verify the left rotation operation
+    }
     // </code>
 
     // <spec>
-    // Operation 2: Rotate Right (Fixup)
+    // Operation: Rotate Right (Fixup)
     fn fixup_rotate_right(node: Box<Node>) -> (res: Box<Node>)
         requires
             node.is_bst(),
@@ -129,11 +127,13 @@ verus! {
             res.right.get_Some_0().is_red,
     // </spec>
     // <code>
-    { assume(false); node }
+    {
+        // Implement and verify the right rotation operation
+    }
     // </code>
 
     // <spec>
-    // Operation 3: Flip Colors
+    // Operation: Flip Colors
     fn flip_colors(node: Box<Node>) -> (res: Box<Node>)
         requires
             node.left.is_some() && node.right.is_some(),
@@ -149,11 +149,13 @@ verus! {
             res.left.get_Some_0().is_red != node.left.get_Some_0().is_red,
     // </spec>
     // <code>
-    { assume(false); node }
+    {
+        // Implement and verify the color flipping operation
+    }
     // </code>
 
     // <spec>
-    // Operation 4: Insert
+    // Operation: Insert
     // Returns a valid LLRBT subtree (root color might be Red)
     fn insert(tree: Option<Box<Node>>, v: u64) -> (res: Box<Node>)
         requires
@@ -164,11 +166,13 @@ verus! {
             res.is_llrbt(), 
     // </spec>
     // <code>
-    { assume(false); Box::new(Node { val: v, is_red: true, left: None, right: None }) }
+    {
+        // Implement and verify the insertion operation
+    }
     // </code>
 
     // <spec>
-    // Operation 5: Delete
+    // Operation: Delete
     fn delete(tree: Option<Box<Node>>, v: u64) -> (res: Option<Box<Node>>)
         requires
             match tree { Some(n) => n.is_llrbt(), None => true },
@@ -181,40 +185,10 @@ verus! {
             match res { Some(n) => n.is_llrbt(), None => true },
     // </spec>
     // <code>
-    { assume(false); None }
+    {
+        // Implement and verify the deletion operation
+    }
     // </code>
 
     fn main() {}
-}"""
-
-def test_verus_verifier_writes_file_and_returns_result():
-    """Verify that VerusVerifier writes the source file and returns a result dict.
-
-    This test uses `test/config_test.yaml` (created as part of the test suite).
-    It does not require a working `verus` binary; it only asserts that the
-    verifier produces a dict with expected keys and that the output file exists.
-    """
-    cfg_path = Path(__file__).resolve().parent / "config_jiawei_test.yaml"
-    verifier = VerusVerifier(config_path=str(cfg_path))
-
-    sample_source = code
-    result = verifier.verify(source=sample_source, spec="dummy-spec", filename="unit_test")
-
-    print(result)
-
-    assert isinstance(result, dict)
-    assert "ok" in result and isinstance(result["ok"], bool)
-    assert "file" in result
-
-    # The file should have been created on disk
-    written = Path(result["file"])
-    assert written.exists()
-    return
-    # cleanup artifact
-    try:
-        written.unlink()
-    except Exception:
-        pass
-
-if __name__ == '__main__':
-    test_verus_verifier_writes_file_and_returns_result()
+}
