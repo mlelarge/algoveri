@@ -10,7 +10,6 @@
 #SBATCH --output=slurm_output/%x-%j.out
 #SBATCH --mail-type=ALL
 #SBATCH --mail-user=haoyu@princeton.edu
-#SBATCH --qos=pli-cp
 
 source /scratch/gpfs/ARORA/haoyu/miniconda3/etc/profile.d/conda.sh
 conda activate algoveri
@@ -161,6 +160,26 @@ start_vllm
 # run_task_robust "/scratch/gpfs/ARORA/haoyu/algoveri/algoveri_data/longest_increasing_subsequence"
 # run_task_robust "/scratch/gpfs/ARORA/haoyu/algoveri/algoveri_data/maximum_subarray_sum"
 # run_task_robust "/scratch/gpfs/ARORA/haoyu/algoveri/algoveri_data/rod_cutting"
+
+# run_task_robust "/scratch/gpfs/ARORA/haoyu/algoveri/algoveri_data/llrbt_delete"
+# run_task_robust "/scratch/gpfs/ARORA/haoyu/algoveri/algoveri_data/llrbt_insert"
+# run_task_robust "/scratch/gpfs/ARORA/haoyu/algoveri/algoveri_data/llrbt_rotateleft"
+# run_task_robust "/scratch/gpfs/ARORA/haoyu/algoveri/algoveri_data/llrbt_rotateright"
+# run_task_robust "/scratch/gpfs/ARORA/haoyu/algoveri/algoveri_data/llrbt_flipcolor"
+
+# run_task_robust "/scratch/gpfs/ARORA/haoyu/algoveri/algoveri_data/dfs"
+# run_task_robust "/scratch/gpfs/ARORA/haoyu/algoveri/algoveri_data/bfs"
+# run_task_robust "/scratch/gpfs/ARORA/haoyu/algoveri/algoveri_data/cycle_detection"
+run_task_robust "/scratch/gpfs/ARORA/haoyu/algoveri/algoveri_data/bipartite_check"
+run_task_robust "/scratch/gpfs/ARORA/haoyu/algoveri/algoveri_data/topological_sort"
+run_task_robust "/scratch/gpfs/ARORA/haoyu/algoveri/algoveri_data/dijkstra"
+run_task_robust "/scratch/gpfs/ARORA/haoyu/algoveri/algoveri_data/bellman_ford"
+run_task_robust "/scratch/gpfs/ARORA/haoyu/algoveri/algoveri_data/prim"
+run_task_robust "/scratch/gpfs/ARORA/haoyu/algoveri/algoveri_data/kruskal"
+run_task_robust "/scratch/gpfs/ARORA/haoyu/algoveri/algoveri_data/max_matching"
+run_task_robust "/scratch/gpfs/ARORA/haoyu/algoveri/algoveri_data/edmond_karp"
+run_task_robust "/scratch/gpfs/ARORA/haoyu/algoveri/algoveri_data/push_relabel"
+run_task_robust "/scratch/gpfs/ARORA/haoyu/algoveri/algoveri_data/scc_tarjan"
 
 # 3. Final Cleanup
 echo ">>>All tasks finished. Shutting down server..."
