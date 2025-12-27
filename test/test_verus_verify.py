@@ -6,13 +6,17 @@ code = """use vstd::prelude::*;
 
 verus! {
     // <preamble>
-    pub open spec fn divides(d: int, n: int) -> bool {
-        n % d == 0
-    }
-
-    pub open spec fn is_prime(n: int) -> bool {
-        &&& n > 1
-        &&& forall |d: int| 1 < d < n ==> !divides(d, n)
+    // We define the GCD recursively. This serves as the "Ground Truth".
+    // This definition mirrors the Euclidean algorithm, which is the standard
+    // mathematical definition for computation.
+    pub open spec fn spec_gcd(a: nat, b: nat) -> nat
+        decreases b
+    {
+        if b == 0 {
+            a
+        } else {
+            spec_gcd(b, a % b)
+        }
     }
     // </preamble>
 
@@ -20,35 +24,15 @@ verus! {
 
     // </helpers>
 
-    // <proofs>
-    // Helper lemma: If x < i*i is composite, its smallest prime factor must be < i.
-    pub proof fn lemma_composite_implies_small_prime_factor(x: int, i: int)
-        requires 
-            x < i * i,
-            !is_prime(x),
-            x > 1
-        // We trigger on divides(p, x) so that if the solver sees x being divided by some p,
-        // it considers this existence statement.
-        ensures exists |p: int| is_prime(p) && p < i && #[trigger] divides(p, x)
-    {
-        assume(false); 
-    }
-    // </proofs>
-
     // <spec>
-    fn sieve_of_eratosthenes(n: usize) -> (primes: Vec<bool>)
-        requires n <= 100_000 
+    fn compute_gcd(a: u64, b: u64) -> (res: u64)
         ensures
-            primes.len() == n,
-            // Functional Correctness: 
-            // We trigger on primes[i]. This means if someone accesses primes[k],
-            // the solver will instantiate this quantifier to learn that primes[k] == is_prime(k).
-            forall |i: int| 0 <= i < n ==> #[trigger] primes[i as int] == is_prime(i)
+            res == spec_gcd(a as nat, b as nat)
     // </spec>
     // <code>
     {
         assume(false);
-        Vec::new()
+        0
     }
     // </code>
 
