@@ -1,10 +1,7 @@
-from pathlib import Path
-
-from src.verifiers.verus_verifier import VerusVerifier
-
-code = """use vstd::prelude::*;
+use vstd::prelude::*;
 
 verus! {
+    // Following is the block for necessary definitions
     // <preamble>
     pub open spec fn to_int(s: Seq<i64>) -> Seq<int> {
         Seq::new(s.len(), |i: int| s[i] as int)
@@ -23,7 +20,6 @@ verus! {
     }
 
     // Helper: Enforce bounds on coefficients to prevent overflow.
-    // FIXED: Added #[trigger]
     pub open spec fn coeffs_bounded(s: Seq<int>) -> bool {
         forall |i: int| 0 <= i < s.len() ==> -1_000_000 <= #[trigger] s[i] <= 1_000_000
     }
@@ -48,14 +44,17 @@ verus! {
     }
     // </preamble>
 
+    // Following is the block for potential helper specifications
     // <helpers>
     
     // </helpers>
 
+    // Following is the block for proofs of lemmas
     // <proofs>
 
     // </proofs>
 
+    // Following is the block for the main specification
     // <spec>
     fn poly_multiply(a: Vec<i64>, b: Vec<i64>) -> (res: Vec<i64>)
         requires
@@ -75,42 +74,9 @@ verus! {
     // </spec>
     // <code>
     {
-        assume(false);
-        Vec::new()
+        // Implement and verify the Karatsuba polynomial multiplication here.
     }
     // </code>
 
     fn main() {}
-}"""
-
-def test_verus_verifier_writes_file_and_returns_result():
-    """Verify that VerusVerifier writes the source file and returns a result dict.
-
-    This test uses `test/config_test.yaml` (created as part of the test suite).
-    It does not require a working `verus` binary; it only asserts that the
-    verifier produces a dict with expected keys and that the output file exists.
-    """
-    cfg_path = Path(__file__).resolve().parent / "config_jiawei_test.yaml"
-    verifier = VerusVerifier(config_path=str(cfg_path))
-
-    sample_source = code
-    result = verifier.verify(source=sample_source, spec="dummy-spec", filename="unit_test")
-
-    print(result)
-
-    assert isinstance(result, dict)
-    assert "ok" in result and isinstance(result["ok"], bool)
-    assert "file" in result
-
-    # The file should have been created on disk
-    written = Path(result["file"])
-    assert written.exists()
-    return
-    # cleanup artifact
-    try:
-        written.unlink()
-    except Exception:
-        pass
-
-if __name__ == '__main__':
-    test_verus_verifier_writes_file_and_returns_result()
+}
