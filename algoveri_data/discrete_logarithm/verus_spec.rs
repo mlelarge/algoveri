@@ -1,10 +1,7 @@
-from pathlib import Path
-
-from src.verifiers.verus_verifier import VerusVerifier
-
-code = """use vstd::prelude::*;
+use vstd::prelude::*;
 
 verus! {
+    // Following is the block for necessary definitions
     // <preamble>
     // Recursive definition of Modular Exponentiation: (b^e) % m
     pub open spec fn spec_pow_mod(b: int, e: int, m: int) -> int
@@ -23,22 +20,17 @@ verus! {
     }
     // </preamble>
 
+    // Following is the block for potential helper specifications
     // <helpers>
 
     // </helpers>
 
+    // Following is the block for proofs of lemmas, or functions that help the implementation or verification of the main specification
     // <proofs>
-    // Lemma: Modular multiplication property
-    // (a * b) % n == ((a % n) * (b % n)) % n
-    // This is often needed to prove the optimization where we % p at every step of the loop.
-    pub proof fn lemma_mod_mul(a: int, b: int, n: int)
-        requires n > 0
-        ensures (a * b) % n == ((a % n) * (b % n)) % n
-    {
-        assume(false); 
-    }
+
     // </proofs>
 
+    // Following is the block for the main specification
     // <spec>
     // Find x such that g^x = h (mod p).
     // If multiple exist, find the smallest x.
@@ -64,42 +56,9 @@ verus! {
     // </spec>
     // <code>
     {
-        assume(false);
-        None
+        // Implement and verify the naive algorithm to compute the discrete logarithm
     }
     // </code>
 
     fn main() {}
-}"""
-
-def test_verus_verifier_writes_file_and_returns_result():
-    """Verify that VerusVerifier writes the source file and returns a result dict.
-
-    This test uses `test/config_test.yaml` (created as part of the test suite).
-    It does not require a working `verus` binary; it only asserts that the
-    verifier produces a dict with expected keys and that the output file exists.
-    """
-    cfg_path = Path(__file__).resolve().parent / "config_jiawei_test.yaml"
-    verifier = VerusVerifier(config_path=str(cfg_path))
-
-    sample_source = code
-    result = verifier.verify(source=sample_source, spec="dummy-spec", filename="unit_test")
-
-    print(result)
-
-    assert isinstance(result, dict)
-    assert "ok" in result and isinstance(result["ok"], bool)
-    assert "file" in result
-
-    # The file should have been created on disk
-    written = Path(result["file"])
-    assert written.exists()
-    return
-    # cleanup artifact
-    try:
-        written.unlink()
-    except Exception:
-        pass
-
-if __name__ == '__main__':
-    test_verus_verifier_writes_file_and_returns_result()
+}
