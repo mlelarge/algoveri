@@ -66,6 +66,7 @@ start_vllm() {
         echo "   ... loading model ($retries/90)"
     done
     echo ">>> [System] vLLM is READY!"
+    sleep 60
 }
 
 # --- FUNCTION 2: Run Task with Retry Logic ---
@@ -82,6 +83,7 @@ run_task_robust() {
     while [ $attempt -le $MAX_RETRIES ]; do
         # Execute the python command
         # We assume src.run_task uses the --url arg we pass below
+        sleep 60
         echo "$INPUT_PATH" | python -m src.run_task \
             --num_passes 10 \
             --model "${MODEL_PATH}" \
@@ -131,7 +133,7 @@ start_vllm
 
 # 2. Run Benchmarks using the robust function
 # run_task_robust "/scratch/gpfs/ARORA/haoyu/algoveri/algoveri_data/maxheap_popmax"
-run_task_robust "/scratch/gpfs/ARORA/haoyu/algoveri/algoveri_data/bst_delete"
+#run_task_robust "/scratch/gpfs/ARORA/haoyu/algoveri/algoveri_data/bst_delete"
 # run_task_robust "/scratch/gpfs/ARORA/haoyu/algoveri/algoveri_data/bst_insert"
 # run_task_robust "/scratch/gpfs/ARORA/haoyu/algoveri/algoveri_data/stack_push"
 # run_task_robust "/scratch/gpfs/ARORA/haoyu/algoveri/algoveri_data/stack_pop"
@@ -180,7 +182,18 @@ run_task_robust "/scratch/gpfs/ARORA/haoyu/algoveri/algoveri_data/bipartite_chec
 # run_task_robust "/scratch/gpfs/ARORA/haoyu/algoveri/algoveri_data/max_matching"
 # run_task_robust "/scratch/gpfs/ARORA/haoyu/algoveri/algoveri_data/edmond_karp"
 # run_task_robust "/scratch/gpfs/ARORA/haoyu/algoveri/algoveri_data/push_relabel"
-run_task_robust "/scratch/gpfs/ARORA/haoyu/algoveri/algoveri_data/scc_tarjan"
+# run_task_robust "/scratch/gpfs/ARORA/haoyu/algoveri/algoveri_data/scc_tarjan"
+
+run_task_robust "/scratch/gpfs/ARORA/haoyu/algoveri/algoveri_data/integer_exponential"
+run_task_robust "/scratch/gpfs/ARORA/haoyu/algoveri/algoveri_data/fast_exponential"
+run_task_robust "/scratch/gpfs/ARORA/haoyu/algoveri/algoveri_data/trial_division_naive"
+run_task_robust "/scratch/gpfs/ARORA/haoyu/algoveri/algoveri_data/trial_division_optimized"
+run_task_robust "/scratch/gpfs/ARORA/haoyu/algoveri/algoveri_data/trial_division_optimized"
+run_task_robust "/scratch/gpfs/ARORA/haoyu/algoveri/algoveri_data/sieve_method"
+run_task_robust "/scratch/gpfs/ARORA/haoyu/algoveri/algoveri_data/polymul_naive"
+run_task_robust "/scratch/gpfs/ARORA/haoyu/algoveri/algoveri_data/polymul_karatsuba"
+run_task_robust "/scratch/gpfs/ARORA/haoyu/algoveri/algoveri_data/discrete_logarithm"
+run_task_robust "/scratch/gpfs/ARORA/haoyu/algoveri/algoveri_data/linerasys_gf2"
 
 # 3. Final Cleanup
 echo ">>>All tasks finished. Shutting down server..."
