@@ -10,7 +10,7 @@
 #SBATCH --output=slurm_output/%x-%j.out
 #SBATCH --mail-type=ALL
 #SBATCH --mail-user=haoyu@princeton.edu
-#SBATCH --qos=pli-cp
+##### $ #SBATCH --qos=pli-cp
 
 source /scratch/gpfs/ARORA/haoyu/miniconda3/etc/profile.d/conda.sh
 conda activate algoveri
