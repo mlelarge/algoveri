@@ -54,17 +54,9 @@ verus! {
     // <code>
     {
         // TODO: Implement the LCS DP algorithm here.
-        0
     }
     // </code>
 
-    #[verifier::external]
-    fn main() {
-        // No execution needed for benchmark, just a placeholder or simple test
-        let s = vec!['a', 'b', 'c'];
-        let t = vec!['a', 'c'];
-        let input = Input { s, t };
-        let _ = solve_longest_common_subsequence(&input);
-    }
+    fn main() {}
 
 } // verus!
