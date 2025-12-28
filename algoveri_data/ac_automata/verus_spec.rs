@@ -1,8 +1,4 @@
-from pathlib import Path
-
-from src.verifiers.verus_verifier import VerusVerifier
-
-code = """use vstd::prelude::*;
+use vstd::prelude::*;
 
 verus! {
     // Following is the block for necessary definitions
@@ -34,6 +30,9 @@ verus! {
     fn ac_automata_search(haystack: &Vec<u8>, patterns: &Vec<Vec<u8>>) -> (results: Vec<(usize, usize)>)
         requires
             patterns.len() > 0,
+            haystack.len() < 1000000,
+            patterns.len() < 1000000,
+            forall|i: int| 0 <= i < patterns.len() ==> patterns[i].len() < 1000000,
         ensures
             // Soundness: Every result returned is a valid match
             forall|i: int| 0 <= i < results.len() ==> {
@@ -52,42 +51,9 @@ verus! {
     // </spec>
     // <code>
     {
-        assume(false);
-        vec![]
+        // Implement and verify AC automata
     }
     // </code>
 
     fn main() {}
-}"""
-
-def test_verus_verifier_writes_file_and_returns_result():
-    """Verify that VerusVerifier writes the source file and returns a result dict.
-
-    This test uses `test/config_test.yaml` (created as part of the test suite).
-    It does not require a working `verus` binary; it only asserts that the
-    verifier produces a dict with expected keys and that the output file exists.
-    """
-    cfg_path = Path(__file__).resolve().parent / "config_jiawei_test.yaml"
-    verifier = VerusVerifier(config_path=str(cfg_path))
-
-    sample_source = code
-    result = verifier.verify(source=sample_source, spec="dummy-spec", filename="unit_test")
-
-    print(result)
-
-    assert isinstance(result, dict)
-    assert "ok" in result and isinstance(result["ok"], bool)
-    assert "file" in result
-
-    # The file should have been created on disk
-    written = Path(result["file"])
-    assert written.exists()
-    return
-    # cleanup artifact
-    try:
-        written.unlink()
-    except Exception:
-        pass
-
-if __name__ == '__main__':
-    test_verus_verifier_writes_file_and_returns_result()
+}
