@@ -1,18 +1,10 @@
-from pathlib import Path
-
-from src.verifiers.verus_verifier import VerusVerifier
-
-code = """ use vstd::prelude::*;
+use vstd::prelude::*;
 
 verus! {
     // Following is the block for necessary definitions
     // <preamble>
     spec fn is_sorted(s: Seq<i32>) -> bool {
         forall|i: int, j: int| 0 <= i < j < s.len() ==> s[i] <= s[j]
-    }
-    
-    spec fn is_sorted_range(s: Seq<i32>, start: int, end: int) -> bool {
-        forall|i: int, j: int| start <= i < j < end ==> s[i] <= s[j]
     }
 
     spec fn is_valid_index_permutation(p: Seq<int>, n: int) -> bool {
@@ -63,43 +55,10 @@ verus! {
             is_kth_smallest(old(v)@, k as int, res),
     // </spec>
     // <code>
-    // <code>
     {
-        assume(false);
-        0
+        // Implement and verify the algorithm to find the k-th smallest element
     }
+    // </code>
 
     fn main() {}
-}"""
-
-def test_verus_verifier_writes_file_and_returns_result():
-    """Verify that VerusVerifier writes the source file and returns a result dict.
-
-    This test uses `test/config_test.yaml` (created as part of the test suite).
-    It does not require a working `verus` binary; it only asserts that the
-    verifier produces a dict with expected keys and that the output file exists.
-    """
-    cfg_path = Path(__file__).resolve().parent / "config_jiawei_test.yaml"
-    verifier = VerusVerifier(config_path=str(cfg_path))
-
-    sample_source = code
-    result = verifier.verify(source=sample_source, spec="dummy-spec", filename="unit_test")
-
-    print(result)
-
-    assert isinstance(result, dict)
-    assert "ok" in result and isinstance(result["ok"], bool)
-    assert "file" in result
-
-    # The file should have been created on disk
-    written = Path(result["file"])
-    assert written.exists()
-    return
-    # cleanup artifact
-    try:
-        written.unlink()
-    except Exception:
-        pass
-
-if __name__ == '__main__':
-    test_verus_verifier_writes_file_and_returns_result()
+}
