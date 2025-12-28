@@ -1,9 +1,0 @@
-Problem: Longest Common Subsequence (LCS)
-
-You are given two strings s and t. Find the length of the longest common subsequence of s and t.
-
-A subsequence is a sequence that can be derived from another sequence by deleting some or no elements without changing the order of the remaining elements.
-
-Constraints:
-- 1 <= |s|, |t| <= 3000
-- s and t consist of lowercase English letters.
