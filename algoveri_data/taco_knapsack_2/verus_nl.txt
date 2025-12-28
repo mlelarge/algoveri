@@ -1,0 +1,13 @@
+Problem: Knapsack 2
+
+There are N items, numbered 1, 2, ..., N. For each i (1 <= i <= N), Item i has a weight of w_i and a value of v_i.
+The capacity of the knapsack is W.
+
+Find the maximum possible sum of the values of items that Taro takes home, such that the total weight is at most W.
+
+Constraints:
+- 1 <= N <= 100
+- 1 <= W <= 10^9 (Large Weight!)
+- 1 <= w_i <= W
+- 1 <= v_i <= 1000
+- All values are integers.
