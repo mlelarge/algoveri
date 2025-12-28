@@ -34,6 +34,11 @@ verus! {
     // The main verification target.
     // Returns a tuple (start_index, length) representing the longest palindrome.
     fn longest_palindromic_substring(s: Seq<u8>) -> (res: (usize, usize))
+        requires
+            // CONSTRAINT: Hard limit of 1,000,000. 
+            // Even with Manacher's expansion (2*N + 1), the required size 
+            // is ~2,000,001, which fits easily in u32/usize.
+            s.len() <= 1_000_000,
         ensures
             // 1. The result defines a valid substring of the input.
             is_valid_subrange(s, res.0 as int, res.1 as int),

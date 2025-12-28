@@ -56,6 +56,10 @@ verus! {
     // Following is the block for the main specification
     // <spec>
     fn bracket_match(s: Seq<u8>) -> (res: bool)
+        requires
+            // CONSTRAINT: Hard limit of 1,000,000 ensures no integer overflow
+            // when counting or indexing.
+            s.len() <= 1_000_000,
         ensures
             res == is_matched(s),
     // </spec>
