@@ -7,11 +7,36 @@ code = """use vstd::prelude::*;
 verus! {
     // Following is the block for necessary definitions
     // <preamble>
-    spec fn matches_at(haystack: Seq<u8>, needle: Seq<u8>, start_index: int) -> bool {
-        &&& 0 <= start_index
-        &&& start_index + needle.len() <= haystack.len()
-        &&& forall|i: int| 0 <= i < needle.len() ==> 
-            haystack[start_index + i] == needle[i]
+    spec fn is_sorted(s: Seq<i32>) -> bool {
+        forall|i: int, j: int| 0 <= i < j < s.len() ==> s[i] <= s[j]
+    }
+    
+    spec fn is_sorted_range(s: Seq<i32>, start: int, end: int) -> bool {
+        forall|i: int, j: int| start <= i < j < end ==> s[i] <= s[j]
+    }
+
+    spec fn is_valid_index_permutation(p: Seq<int>, n: int) -> bool {
+        &&& p.len() == n
+        &&& (forall|i: int| 0 <= i < n ==> 0 <= #[trigger] p[i] < n)
+        &&& (forall|i: int, j: int| 0 <= i < j < n ==> #[trigger] p[i] != #[trigger] p[j])
+    }
+
+    spec fn is_permutation(v1: Seq<i32>, v2: Seq<i32>) -> bool {
+        exists|p: Seq<int>| 
+            is_valid_index_permutation(p, v1.len() as int) 
+            && v1.len() == v2.len()
+            && (forall|i: int| 0 <= i < v1.len() ==> v2[i] == v1[#[trigger] p[i]])
+    }
+
+    // Mathematical definition: "val" is the k-th smallest element of "s" if
+    // the sorted version of "s" has "val" at index "k".
+    spec fn is_kth_smallest(s: Seq<i32>, k: int, val: i32) -> bool {
+        exists|sorted_s: Seq<i32>|
+            is_permutation(s, sorted_s)
+            // Manual trigger added here to satisfy the solver without warning
+            && #[trigger] is_sorted(sorted_s)
+            && 0 <= k < s.len()
+            && sorted_s[k] == val
     }
     // </preamble>
 
@@ -41,7 +66,6 @@ verus! {
         assume(false);
         vec![]
     }
-    // </code>
 
     #[verifier::external]
     fn main() {

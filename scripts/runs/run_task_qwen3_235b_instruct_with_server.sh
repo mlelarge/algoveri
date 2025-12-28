@@ -195,8 +195,16 @@ start_vllm
 # run_task_robust "/scratch/gpfs/ARORA/haoyu/algoveri/algoveri_data/polymul_karatsuba"
 # run_task_robust "/scratch/gpfs/ARORA/haoyu/algoveri/algoveri_data/discrete_logarithm"
 # run_task_robust "/scratch/gpfs/ARORA/haoyu/algoveri/algoveri_data/linerasys_gf2"
+run_task_robust "/scratch/gpfs/ARORA/haoyu/algoveri/algoveri_data/matrix_multiplication"
 
 run_task_robust "/scratch/gpfs/ARORA/haoyu/algoveri/algoveri_data/bracket_matching"
+run_task_robust "/scratch/gpfs/ARORA/haoyu/algoveri/algoveri_data/longest_palindrome_substring"
+run_task_robust "/scratch/gpfs/ARORA/haoyu/algoveri/algoveri_data/string_search_naive"
+run_task_robust "/scratch/gpfs/ARORA/haoyu/algoveri/algoveri_data/kmp"
+run_task_robust "/scratch/gpfs/ARORA/haoyu/algoveri/algoveri_data/ac_automata"
+
+run_task_robust "/scratch/gpfs/ARORA/haoyu/algoveri/algoveri_data/lca"
+run_task_robust "/scratch/gpfs/ARORA/haoyu/algoveri/algoveri_data/house_robber"
 
 # 3. Final Cleanup
 echo ">>>All tasks finished. Shutting down server..."
