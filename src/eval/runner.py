@@ -50,7 +50,7 @@ class Runner:
         # Unknown language: raise for now
         raise NotImplementedError(f"Problem file reading not implemented for language: {self.language}")
 
-    def run_problem(self, problem_dir: str, max_rounds: int = 5, num_passes: int = 1, model: str = "gemini-2.5-flash", debug: bool = False) -> Dict[str, Any]:
+    def run_problem(self, problem_dir: str, max_rounds: int = 5, num_passes: int = 1, model: str = "gemini-2.5-flash", system_prompt: str = "", debug: bool = False) -> Dict[str, Any]:
         """Run a single problem directory using the generic BaseEval factory.
 
         By default this will attempt to construct an evaluator appropriate for
@@ -95,7 +95,7 @@ class Runner:
         filename = f"{friendly_model_name}_{problem_name}_eval"
 
         if num_passes == 1:
-            result = evaler.run_single(natural_language=natural, formal_code=spec_code, model=model, filename=filename, spec=problem_name, debug=debug)
+            result = evaler.run_single(natural_language=natural, formal_code=spec_code, model=model, filename=filename, spec=problem_name, system_prompt=system_prompt, debug=debug)
         else:
             # run multiple passes concurrently using a threadpool so that the
             # synchronous run_single can execute in parallel
@@ -103,7 +103,7 @@ class Runner:
                 loop = asyncio.get_running_loop()
 
                 async def _run_one(_idx: int):
-                    return await loop.run_in_executor(None, evaler.run_single, natural, spec_code, model, filename, problem_name, debug)
+                    return await loop.run_in_executor(None, evaler.run_single, natural, spec_code, model, filename, problem_name, system_prompt, debug)
 
                 tasks = [_run_one(i) for i in range(int(num_passes))]
                 return await asyncio.gather(*tasks)
@@ -114,7 +114,7 @@ class Runner:
         out_path.write_text(json.dumps(result, indent=4))
         return result
 
-    def run_folder(self, folder: str, max_rounds: int = 5, model: str = "gemini-2.5-flash", debug: bool = False) -> Dict[str, Dict[str, Any]]:
+    def run_folder(self, folder: str, max_rounds: int = 5, model: str = "gemini-2.5-flash", system_prompt: str = "", debug: bool = False) -> Dict[str, Dict[str, Any]]:
         """Run every problem directory inside `folder`.
 
         For each immediate subdirectory that contains the expected files, run `run_problem`.
@@ -135,7 +135,7 @@ class Runner:
             try:
                 # _read_problem_files will raise if required files are missing
                 _ = self._read_problem_files(child)
-                res = self.run_problem(str(child), max_rounds=max_rounds, model=model, debug=debug)
+                res = self.run_problem(str(child), max_rounds=max_rounds, model=model, system_prompt=system_prompt, debug=debug)
                 results[child.name] = res
             except Exception as e:
                 results[child.name] = {"error": str(e)}

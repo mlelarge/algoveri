@@ -223,3 +223,4 @@ test/output_compiled.json
 test/test.txt
 vericoding-benchmark/
 raw_codes/
+tiktoken_cache/

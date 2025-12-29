@@ -51,7 +51,7 @@ class BaseEval(ABC):
 
         return res
 
-    def run_single(self, natural_language: str, formal_code: str, model: str, filename: str, spec: str = "", debug: bool=False) -> Dict[str, str]:
+    def run_single(self, natural_language: str, formal_code: str, model: str, filename: str, spec: str = "", system_prompt: str = "", debug: bool=False) -> Dict[str, str]:
         """Run a single problem through multi-turn loop until verified or exhausted using model."""
         sys_prompt = self.make_sys_prompt()
         # initial user prompt
@@ -60,7 +60,7 @@ class BaseEval(ABC):
         if debug:
             print(f"Creating chat session with model: {model}")
         
-        mt_chat = self.llm_client.new_chat(model=model, system_prompt=None)
+        mt_chat = self.llm_client.new_chat(model=model, system_prompt=system_prompt)
         if debug:
             print(f"General Instruction:\n{sys_prompt}\n")
             print(f"Initial User Prompt:\n{prompt}\n")
