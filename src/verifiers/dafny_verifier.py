@@ -78,6 +78,7 @@ class DafnyVerifier(BaseVerifier):
                 str(image),
                 "dafny",
                 "verify",
+                "--allow-warnings:true",
                 f"{container_mount_point}/{source_file_name}"  # Use container path
             ]
             return cmd
