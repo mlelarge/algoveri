@@ -103,7 +103,7 @@ class OpenAIMultiTurnChat(MultiTurnChat):
         # Placeholder for price logic. 
         # You could implement specific pricing per model (e.g. gpt-4o vs 4o-mini)
         # For now, we return total tokens as a proxy or 0.0
-        return self._total_usage["input"] + self._total_usage["output"]
+        return {"input": self._total_usage["input"], "output": self._total_usage["output"]}
 
 
 class OpenAICompatibleProvider(ProviderBase):

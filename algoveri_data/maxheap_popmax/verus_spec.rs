@@ -50,7 +50,7 @@ verus! {
     // </spec>
     // <code>
     {
-        // TODO: Implement the bst insert operation here.
+        // TODO: Implement the popmax operation max heap here.
     }
     // </code>
 

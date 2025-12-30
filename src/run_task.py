@@ -48,6 +48,8 @@ Always prioritize using tools to provide the most accurate and helpful response.
     elif args.model.lower().split('/')[-1].startswith("gpt-oss"):
         assert args.url, "url must be provided"
         llm_provider = VLLMProvider(endpoint=args.url)
+    elif args.model.startswith("gpt-5") or args.model.startswith("gpt-4"):
+        llm_provider = OpenAICompatibleProvider(model=args.model)
     else:
         raise ValueError(f"Unknown model {args.model}")
     
