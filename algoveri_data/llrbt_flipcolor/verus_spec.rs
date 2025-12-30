@@ -91,48 +91,6 @@ verus! {
 
     // Following is the block for the main specification
     // <spec>
-    // Operation: Rotate Left (Fixup)
-    // Distinct from BST rotate because it MUST prove black_height is preserved.
-    fn fixup_rotate_left(node: Box<Node>) -> (res: Box<Node>)
-        requires
-            node.is_bst(),
-            node.right.is_some() && node.right.get_Some_0().is_red,
-            !node.is_red, // Usually called on a black node
-        ensures
-            // Structural
-            res.is_bst(),
-            res.view() =~= node.view(),
-            // Colors & Balance
-            res.black_height() == node.black_height(), // The Critical Proof
-            res.is_red == node.is_red,
-            res.left.get_Some_0().is_red,
-    // </spec>
-    // <code>
-    {
-        // Implement and verify the left rotation operation
-    }
-    // </code>
-
-    // <spec>
-    // Operation: Rotate Right (Fixup)
-    fn fixup_rotate_right(node: Box<Node>) -> (res: Box<Node>)
-        requires
-            node.is_bst(),
-            node.left.is_some() && node.left.get_Some_0().is_red,
-        ensures
-            res.is_bst(),
-            res.view() =~= node.view(),
-            res.black_height() == node.black_height(), // The Critical Proof
-            res.is_red == node.is_red,
-            res.right.get_Some_0().is_red,
-    // </spec>
-    // <code>
-    {
-        // Implement and verify the right rotation operation
-    }
-    // </code>
-
-    // <spec>
     // Operation: Flip Colors
     fn flip_colors(node: Box<Node>) -> (res: Box<Node>)
         requires
@@ -151,42 +109,6 @@ verus! {
     // <code>
     {
         // Implement and verify the color flipping operation
-    }
-    // </code>
-
-    // <spec>
-    // Operation: Insert
-    // Returns a valid LLRBT subtree (root color might be Red)
-    fn insert(tree: Option<Box<Node>>, v: u64) -> (res: Box<Node>)
-        requires
-            match tree { Some(n) => n.is_llrbt(), None => true },
-        ensures
-            res.view() =~= (match tree { Some(n) => n.view().insert(v), None => Set::empty().insert(v) }),
-            // Simplified ensures using the predicate
-            res.is_llrbt(), 
-    // </spec>
-    // <code>
-    {
-        // Implement and verify the insertion operation
-    }
-    // </code>
-
-    // <spec>
-    // Operation: Delete
-    fn delete(tree: Option<Box<Node>>, v: u64) -> (res: Option<Box<Node>>)
-        requires
-            match tree { Some(n) => n.is_llrbt(), None => true },
-        ensures
-            match res { 
-                Some(n) => n.view() =~= (match tree { Some(t) => t.view().remove(v), None => Set::empty() }), 
-                None => (match tree { Some(t) => t.view().remove(v) =~= Set::empty(), None => true })
-            },
-            // Simplified ensures
-            match res { Some(n) => n.is_llrbt(), None => true },
-    // </spec>
-    // <code>
-    {
-        // Implement and verify the deletion operation
     }
     // </code>
 
