@@ -16,6 +16,7 @@ import os
 
 from .base_eval import BaseEval
 from src.verifiers.verus_verifier import VerusVerifier
+from src.verifiers.dafny_verifier import DafnyVerifier
 
 
 
@@ -34,13 +35,21 @@ class Runner:
     def _read_problem_files(self, problem_dir: Path) -> Dict[str, str]:
         """Read problem files according to `self.language`.
 
-        Currently supports 'verus' (expects `verus_nl.txt` and `verus_spec.rs`).
+        Currently supports 'verus' (expects `verus_nl.txt` and `verus_spec.rs`), 'dafny' (expects 'dafny_nl.txt' and `dafny_spec.dfy`).
         Future languages should be added here.
         """
         lang = self.language
         if lang.startswith("verus") or lang.startswith("rust"):
             nl_path = problem_dir / "verus_nl.txt"
             spec_path = problem_dir / "verus_spec.rs"
+            if not nl_path.exists():
+                raise FileNotFoundError(f"Missing natural-language file: {nl_path}")
+            if not spec_path.exists():
+                raise FileNotFoundError(f"Missing verus spec file: {spec_path}")
+            return {"natural": nl_path.read_text(), "spec": spec_path.read_text()}
+        elif lang.startswith("dafny"):
+            nl_path = problem_dir / "dafny_nl.txt"
+            spec_path = problem_dir / "dafny_spec.dfy"
             if not nl_path.exists():
                 raise FileNotFoundError(f"Missing natural-language file: {nl_path}")
             if not spec_path.exists():
@@ -59,7 +68,7 @@ class Runner:
         function assumes Verus (Rust) by default if the caller does not pass
         a language (for backward compatibility).
 
-        `problem_dir` may be a path to a directory containing `verus_nl.txt` and `verus_spec.rs`.
+        `problem_dir` may be a path to a directory containing `verus_nl.txt` and `verus_spec.rs` (for Verus/Rust) or `dafny_nl.txt` and `dafny_spec.dfy` (for Dafny).
         Returns the evaluation result dict and writes a JSON file to results.
         """
         # If stdin is piped (not a TTY) and contains a path, prefer it.
@@ -159,8 +168,17 @@ class Runner:
                 return VerusEval(llm_client=self.llm, verifier=verifier, max_rounds=max_rounds)
             except Exception as e:
                 raise RuntimeError(f"Failed to construct VerusEval: {e}")
+        elif lang.startswith("dafny"):
+            try:
+                from .dafny_eval import DafnyEval
 
-        if lang.startswith("lean") or lang.startswith("dafny"):
+                # create with llm client and verifier handled by VerusEval
+                verifier = DafnyVerifier(config_path=self.cfg_path)
+                return DafnyEval(llm_client=self.llm, verifier=verifier, max_rounds=max_rounds)
+            except Exception as e:
+                raise RuntimeError(f"Failed to construct VerusEval: {e}")
+
+        if lang.startswith("lean"):
             raise NotImplementedError(f"Evaluator for language '{language}' is not implemented yet")
 
         raise NotImplementedError(f"Unknown/unsupported language: {language}")

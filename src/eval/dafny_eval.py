@@ -40,7 +40,7 @@ class DafnyEval(BaseEval):
         Behavior:
         - If `formal_code` is provided, extract expected `<preamble>` and
           `<spec>` contents from it.
-        - Extract the Rust fenced code block (or any fenced block) from the
+        - Extract the dafny fenced code block (or any fenced block) from the
           LLM response as `code`.
         - If `code` contains `<preamble>` and/or `<spec>` tags, replace the
           inner contents with the expected values extracted from

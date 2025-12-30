@@ -2,7 +2,8 @@ from pathlib import Path
 
 from src.verifiers.dafny_verifier import DafnyVerifier
 
-code = """// <preamble>
+code = """// Following is the block for necessary definitions
+// <preamble>
 datatype Tree = Empty | Node(val: int, left: Tree, right: Tree)
 
 function view(tree: Tree): set<int>
@@ -26,32 +27,37 @@ predicate is_bst(tree: Tree)
 }
 // </preamble>
 
+// Following is the block for potential helper specifications
 // <helpers>
 
 // </helpers>
 
+// Following is the block for proofs of lemmas
 // <proofs>
 
 // </proofs>
 
+// Following is the block for the main specification
 // <spec>
-method zig_zag(g: Tree) returns (res: Tree)
-    // g corresponds to Box<Node>, so it is non-Empty
-    requires g.Node?
-    // g.left is Some (P exists)
-    requires g.left.Node?
-    // g.left.right is Some (X exists - the 'Zig-Zag' shape)
-    requires g.left.right.Node?
-    requires is_bst(g)
-    ensures is_bst(res)
-    ensures view(res) == view(g)
-    // X (the original grandchild) is now the root
-    ensures res.val == g.left.right.val
+method search(tree: Tree, v: int) returns (res: bool)
+    requires v >= 0 
+    requires is_bst(tree)
+    ensures res == (v in view(tree))
 // </spec>
 // <code>
 {
-    // Use {:axiom} to suppress warnings about missing proofs
-    assume {:axiom} false;
+    match tree {
+        case Empty => 
+            return false;
+        case Node(val, left, right) =>
+            if v == val {
+                return true;
+            } else if v < val {
+                res := search(left, v);
+            } else {
+                res := search(right, v);
+            }
+    }
 }
 // </code>"""
 
@@ -64,7 +70,7 @@ def test_dafny_verifier_writes_file_and_returns_result():
     verifier = DafnyVerifier(config_path=str(cfg_path))
 
     sample_source = code
-    result = verifier.verify(source=sample_source, spec="", filename="unit_test")
+    result = verifier.verify(source=sample_source, spec="test", filename="unit_test")
 
     print(result)
 
