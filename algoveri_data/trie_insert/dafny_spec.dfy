@@ -1,8 +1,5 @@
-from pathlib import Path
-
-from src.verifiers.dafny_verifier import DafnyVerifier
-
-code = """// <preamble>
+// Following is the block for necessary definitions
+// <preamble>
 datatype Option<T> = Some(value: T) | None
 
 datatype Node = Node(
@@ -11,7 +8,6 @@ datatype Node = Node(
     children: seq<Option<Node>>
 ) {
     // A node is "empty" (useless) if it marks no key and leads to no keys.
-    // Requirement: children sequence must be size 256 for the quantifier index to be valid.
     predicate is_empty() 
         requires |this.children| == 256
     {
@@ -31,7 +27,6 @@ datatype Node = Node(
                     // The child must be structurally valid
                     && child.well_formed()
                     // CRITICAL: The child must not be useless.
-                    // child.well_formed() ensures |child.children| == 256, satisfying is_empty's precondition.
                     && !child.is_empty()
                 case None => true
             }
@@ -80,60 +75,32 @@ predicate opt_well_formed(node: Option<Node>) {
 }
 // </preamble>
 
+// Following is the block for potential helper specifications
 // <helpers>
 
 // </helpers>
 
+// Following is the block for proofs of lemmas
 // <proofs>
 
 // </proofs>
 
+// Following is the block for the main specification
 // <spec>
-method delete(tree: Option<Node>, key: seq<int>) returns (res: Option<Node>)
+method insert(tree: Option<Node>, key: seq<int>) returns (res: Node)
     requires opt_well_formed(tree)
     // Constraint: Input key elements must represent bytes (u8)
     requires forall k :: k in key ==> 0 <= k < 256
     ensures 
-        // Crucial: The implementation must prune dead branches to satisfy this
-        && opt_well_formed(res)
-        // Set difference: existing view minus the key
-        && opt_view(res) == opt_view(tree) - iset{key}
+        // The result must satisfy the pruning invariant
+        && res.well_formed()
+        && !res.is_empty() // Insert always results in a non-empty tree
+        && res.view() == opt_view(tree) + iset{key}
 // </spec>
 // <code>
 {
-    // Implement and verify the delete function for Trie data structure
-    assume {:axiom} false;
+    // Implement and verify the `insert` function for Trie data structure
 }
 // </code>
 
-method main() {}"""
-
-def test_dafny_verifier_writes_file_and_returns_result():
-    """Verify that LeanVerifier writes the source file and returns a result dict.
-
-    This test uses `test/config_test.yaml` (created as part of the test suite).
-    """
-    cfg_path = Path(__file__).resolve().parent / "config_test.yaml"
-    verifier = DafnyVerifier(config_path=str(cfg_path))
-
-    sample_source = code
-    result = verifier.verify(source=sample_source, spec="test", filename="unit_test")
-
-    print(result)
-
-    assert isinstance(result, dict)
-    assert "ok" in result and isinstance(result["ok"], bool)
-    assert "file" in result
-
-    # The file should have been created on disk
-    written = Path(result["file"])
-    assert written.exists()
-    return
-    # cleanup artifact
-    try:
-        written.unlink()
-    except Exception:
-        pass
-
-if __name__ == '__main__':
-    test_dafny_verifier_writes_file_and_returns_result()
+method main() {}
