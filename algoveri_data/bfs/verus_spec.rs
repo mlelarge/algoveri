@@ -79,6 +79,7 @@ verus! {
     fn bfs_shortest_path(graph: &Graph, start: usize, target: usize) -> (res: Option<u64>)
         requires
             graph.well_formed(),
+            graph.size() <= 10000,
             start < graph.size(),
             target < graph.size(),
         ensures

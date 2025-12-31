@@ -1,8 +1,5 @@
-from pathlib import Path
-
-from src.verifiers.dafny_verifier import DafnyVerifier
-
-code = """// <preamble>
+// Following is the block for necessary definitions
+// <preamble>
 datatype CapacityGraph = CapacityGraph(
     // Adjacency list: adj[u] contains list of (neighbor, capacity)
     // u ranges from 0 to size - 1.
@@ -72,7 +69,6 @@ ghost function sum_flow_in_recursive(g: seq<seq<(int, int)>>, f: FlowMap, u: int
     if v_idx <= 0 then
         0
     else
-        // Inlined 'v' (v_idx - 1) to fix syntax error
         sum_flow_in_recursive(g, f, u, v_idx - 1) + get_flow(f, v_idx - 1, u)
 }
 
@@ -121,14 +117,17 @@ ghost predicate capacities_bounded(g: seq<seq<(int, int)>>) {
 }
 // </preamble>
 
+// Following is the block for potential helper specifications
 // <helpers>
 
 // </helpers>
 
+// Following is the block for proofs of lemmas
 // <proofs>
 
 // </proofs>
 
+// Following is the block for the main specification
 // <spec>
 // PROBLEM: Max Flow
 method max_flow_value(graph: CapacityGraph, s: int, t: int) returns (max_val: int)
@@ -144,36 +143,5 @@ method max_flow_value(graph: CapacityGraph, s: int, t: int) returns (max_val: in
 // <code>
 {
     // Implement and verify the Edmonds-Karp algorithm here.
-    assume {:axiom} false; 
 }
-// </code>"""
-
-def test_dafny_verifier_writes_file_and_returns_result():
-    """Verify that LeanVerifier writes the source file and returns a result dict.
-
-    This test uses `test/config_test.yaml` (created as part of the test suite).
-    """
-    cfg_path = Path(__file__).resolve().parent / "config_test.yaml"
-    verifier = DafnyVerifier(config_path=str(cfg_path))
-
-    sample_source = code
-    result = verifier.verify(source=sample_source, spec="test", filename="unit_test")
-
-    print(result)
-
-    assert isinstance(result, dict)
-    assert "ok" in result and isinstance(result["ok"], bool)
-    assert "file" in result
-
-    # The file should have been created on disk
-    written = Path(result["file"])
-    assert written.exists()
-    return
-    # cleanup artifact
-    try:
-        written.unlink()
-    except Exception:
-        pass
-
-if __name__ == '__main__':
-    test_dafny_verifier_writes_file_and_returns_result()
+// </code>

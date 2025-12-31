@@ -70,6 +70,7 @@ ghost predicate is_shortest_distance(g: Graph, start: int, end: int, d: int) {
 // Breadth First Search (Shortest Path)
 method bfs_shortest_path(graph: Graph, start: int, target: int) returns (res: Option<int>)
   requires well_formed(graph)
+  requires size(graph) <= 10000
   requires 0 <= start < size(graph)
   requires 0 <= target < size(graph)
   ensures match res {
