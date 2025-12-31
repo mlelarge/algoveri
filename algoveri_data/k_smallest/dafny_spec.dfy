@@ -1,8 +1,5 @@
-from pathlib import Path
-
-from src.verifiers.dafny_verifier import DafnyVerifier
-
-code = """// <preamble>
+// Following is the block for necessary definitions
+// <preamble>
 ghost predicate is_sorted(s: seq<int>) {
     forall i, j {:trigger s[i], s[j]} :: 0 <= i < j < |s| ==> s[i] <= s[j]
 }
@@ -31,12 +28,17 @@ ghost predicate is_kth_smallest(s: seq<int>, k: int, val: int) {
 }
 // </preamble>
 
+// Following is the block for potential helper specifications
 // <helpers>
+
 // </helpers>
 
+// Following is the block for proofs of lemmas
 // <proofs>
+
 // </proofs>
 
+// Following is the block for the main specification
 // <spec>
 method quick_select(v: seq<int>, k: int) returns (v_new: seq<int>, res: int)
     requires 0 <= k < |v|
@@ -49,38 +51,8 @@ method quick_select(v: seq<int>, k: int) returns (v_new: seq<int>, res: int)
 // </spec>
 // <code>
 {
-    assume {:axiom} false;
+    // Implement and verify the quick_select function
 }
 // </code>
 
-method main() {}"""
-
-def test_dafny_verifier_writes_file_and_returns_result():
-    """Verify that LeanVerifier writes the source file and returns a result dict.
-
-    This test uses `test/config_test.yaml` (created as part of the test suite).
-    """
-    cfg_path = Path(__file__).resolve().parent / "config_test.yaml"
-    verifier = DafnyVerifier(config_path=str(cfg_path))
-
-    sample_source = code
-    result = verifier.verify(source=sample_source, spec="test", filename="unit_test")
-
-    print(result)
-
-    assert isinstance(result, dict)
-    assert "ok" in result and isinstance(result["ok"], bool)
-    assert "file" in result
-
-    # The file should have been created on disk
-    written = Path(result["file"])
-    assert written.exists()
-    return
-    # cleanup artifact
-    try:
-        written.unlink()
-    except Exception:
-        pass
-
-if __name__ == '__main__':
-    test_dafny_verifier_writes_file_and_returns_result()
+method main() {}

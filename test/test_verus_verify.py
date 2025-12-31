@@ -10,10 +10,8 @@ verus! {
     
     // Mathematical definition of divisibility:
     // d divides n if there exists some integer k such that d * k = n.
-    // We add #[trigger] to (d * k) so the solver knows to use this 
-    // quantifier whenever it encounters that multiplication pattern.
     pub open spec fn divides(d: nat, n: nat) -> bool {
-        exists|k: nat| #[trigger] (d * k) == n
+        exists|k: nat| d * k == n
     }
 
     // Predicate defining the properties of the Greatest Common Divisor (g):
@@ -26,29 +24,42 @@ verus! {
     }
 
     // The declarative specification for GCD.
+    // Instead of an algorithm, this describes WHAT the result is.
+    // We handle the (0, 0) edge case explicitly (where "greatest" is undefined mathematically),
+    // matching the behavior of standard implementations (returning 0).
     pub open spec fn spec_gcd(a: nat, b: nat) -> nat {
         if a == 0 && b == 0 {
             0
         } else {
+            // "Choose the g such that g is the GCD of a and b"
             choose|g: nat| is_gcd(g, a, b)
         }
     }
     // </preamble>
 
+    // Following is the block for potential helper specifications
     // <helpers>
+
     // </helpers>
 
+    // Following is the block for proofs of lemmas
     // <proofs>
+
     // </proofs>
 
+    // Following is the block for the main specification
     // <spec>
     fn compute_gcd(a: u64, b: u64) -> (res: u64)
         ensures
+            // The postcondition ensures the result matches the mathematical "max" definition
             res == spec_gcd(a as nat, b as nat)
     // </spec>
     // <code>
     {
-        assume(false); 
+        // Implement and verify the Euclidean algorithm to compute the GCD
+        // (Note: You will now need proofs showing the Euclidean algorithm 
+        // satisfies the mathematical properties defined in is_gcd)
+        assume(false); // Placeholder
         0
     }
     // </code>
