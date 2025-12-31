@@ -1,8 +1,5 @@
-from pathlib import Path
-
-from src.verifiers.dafny_verifier import DafnyVerifier
-
-code = """// <preamble>
+// Following is the block for necessary definitions
+// <preamble>
 datatype Option<T> = Some(value: T) | None
 
 datatype Node = Node(
@@ -25,11 +22,14 @@ datatype Node = Node(
             case None => map[]
         };
         
-        // Leaf logic: if no children, we represent the point 'low'.
+        // We construct the union. Since domains are disjoint in a valid segment tree,
+        // map union (+) is sufficient.
+        // For a leaf (left=None, right=None), we implicitly represent the point 'low'.
+        // However, the recursive logic below relies on 'is_segment_tree' to enforce leaf structure.
+        // A strictly structural view definition:
         if left.None? && right.None? then
-            map[low := val]
+            map[low := val] // Leaf logic implicit in Verus spec via "leaf -> true" and view consistency check
         else
-            // Union of disjoint domains
             left_view + right_view
     }
 
@@ -62,7 +62,7 @@ datatype Node = Node(
                 // Leaf Node
                 // Must represent a single point
                 && this.high == this.low + 1
-                // Implicitly, val is the value of this leaf
+                // Implicitly, val is the value of this leaf, which is consistent
                 && true
 
             case _ => false // Segment trees are full binary trees (0 or 2 children)
@@ -76,61 +76,32 @@ datatype Node = Node(
 }
 // </preamble>
 
+// Following is the block for potential helper specifications
 // <helpers>
 
 // </helpers>
 
+// Following is the block for proofs of lemmas
 // <proofs>
 
 // </proofs>
 
+// Following is the block for the main specification
 // <spec>
-method query(node: Node, ql: int, qr: int) returns (res: int)
-    requires node.is_segment_tree()
-    requires ql < qr
-    requires node.low <= ql
-    requires qr <= node.high
-    ensures res >= 0
-    // Correctness: result is >= everything in the query range
-    ensures forall k :: ql <= k < qr ==> node.view()[k] <= res
-    // Tightness: result actually exists in the query range
-    ensures exists k :: ql <= k < qr && node.view()[k] == res
+method build(l: int, r: int) returns (res: Node)
+    // Constraint: unsigned integers
+    requires 0 <= l < r
+    ensures 
+        && res.is_segment_tree()
+        && res.low == l
+        && res.high == r
+        // All values in the map are initialized to 0
+        && (forall k :: l <= k < r ==> k in res.view() && res.view()[k] == 0)
 // </spec>
 // <code>
 {
-    // Implement and verify the query function for segment tree
-    assume {:axiom} false;
+    // Implement and verify the build function for segment tree construction
 }
 // </code>
 
-method main() {}"""
-
-def test_dafny_verifier_writes_file_and_returns_result():
-    """Verify that LeanVerifier writes the source file and returns a result dict.
-
-    This test uses `test/config_test.yaml` (created as part of the test suite).
-    """
-    cfg_path = Path(__file__).resolve().parent / "config_test.yaml"
-    verifier = DafnyVerifier(config_path=str(cfg_path))
-
-    sample_source = code
-    result = verifier.verify(source=sample_source, spec="test", filename="unit_test")
-
-    print(result)
-
-    assert isinstance(result, dict)
-    assert "ok" in result and isinstance(result["ok"], bool)
-    assert "file" in result
-
-    # The file should have been created on disk
-    written = Path(result["file"])
-    assert written.exists()
-    return
-    # cleanup artifact
-    try:
-        written.unlink()
-    except Exception:
-        pass
-
-if __name__ == '__main__':
-    test_dafny_verifier_writes_file_and_returns_result()
+method main() {}
