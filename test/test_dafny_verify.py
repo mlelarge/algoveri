@@ -3,84 +3,33 @@ from pathlib import Path
 from src.verifiers.dafny_verifier import DafnyVerifier
 
 code = """// <preamble>
-// Calculates the total weight of the selected items: sum(count[i] * weight[i])
-function total_weight(counts: seq<int>, weights: seq<int>): int
-    requires |counts| <= |weights|
-    decreases |counts|
-{
-    if |counts| == 0 then
-        0
-    else
-        (counts[0] * weights[0]) + 
-        total_weight(counts[1..], weights[1..])
-}
-
-// Calculates the total value of the selected items: sum(count[i] * value[i])
-function total_value(counts: seq<int>, values: seq<int>): int
-    requires |counts| <= |values|
-    decreases |counts|
-{
-    if |counts| == 0 then
-        0
-    else
-        (counts[0] * values[0]) + 
-        total_value(counts[1..], values[1..])
-}
-
-// Definition of a valid strategy: 
-// 1. Counts length matches items length
-// 2. All counts are non-negative
-// 3. Total weight does not exceed capacity
-predicate is_valid_strategy(counts: seq<int>, weights: seq<int>, capacity: int)
-{
-    |counts| == |weights| &&
-    (forall i :: 0 <= i < |counts| ==> counts[i] >= 0) &&
-    total_weight(counts, weights) <= capacity
+predicate is_sorted(s: seq<int>) {
+    forall i: int, j: int {:trigger s[i], s[j]} :: 0 <= i <= j < |s| ==> s[i] <= s[j]
 }
 // </preamble>
 
 // <helpers>
-// In Dafny, we use 'seq<int>' directly.
-// No explicit conversion from u64 to int is needed.
 // </helpers>
 
 // <proofs>
-
 // </proofs>
 
 // <spec>
-method solve_knapsack_unbounded(weights: seq<int>, values: seq<int>, capacity: int) returns (max_val: int)
-    requires |weights| == |values|
-    requires |weights| > 0
-    requires 0 <= capacity <= 1000 // Explicitly constrain non-negative capacity
-    requires forall i :: 0 <= i < |weights| ==> weights[i] > 0 // Weights must be positive (> 0) to avoid infinite loops
-    requires forall i :: 0 <= i < |weights| ==> weights[i] <= 1000
-    requires forall i :: 0 <= i < |values| ==> 0 <= values[i] <= 1000 // Explicitly constrain non-negative values
-    ensures max_val >= 0
-    ensures
-        // 1. Upper Bound
-        forall counts: seq<int> :: 
-            is_valid_strategy(counts, weights, capacity)
-            ==> total_value(counts, values) <= max_val
-    ensures
-        // 2. Existence
-        exists counts: seq<int> :: 
-            is_valid_strategy(counts, weights, capacity)
-            && total_value(counts, values) == max_val
+method linear_search_lower_bound(s: seq<int>, target: int) returns (result: int)
+    requires |s| <= 0x7FFFFFFF
+    requires is_sorted(s)
+    ensures result >= 0
+    ensures result <= |s|
+    ensures forall i {:trigger s[i]} :: 0 <= i < result ==> s[i] < target
+    ensures forall i {:trigger s[i]} :: result <= i < |s| ==> s[i] >= target
 // </spec>
 // <code>
 {
-    // TODO: Implement the Unbounded Knapsack DP algorithm here.
-    
-    max_val := 0; 
-    
-    // VERIFICATION SILENCER:
-    // This allows the skeleton to compile and verify before implementation.
     assume {:axiom} false;
 }
 // </code>
 
-method Main() {}"""
+method main() {}"""
 
 def test_dafny_verifier_writes_file_and_returns_result():
     """Verify that LeanVerifier writes the source file and returns a result dict.
