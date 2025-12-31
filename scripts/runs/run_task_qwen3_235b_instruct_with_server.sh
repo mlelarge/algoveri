@@ -2,8 +2,8 @@
 #SBATCH --job-name=algoveri
 #SBATCH --nodes=1
 #SBATCH --ntasks-per-node=1
-#SBATCH --cpus-per-task=80
-#SBATCH --mem=800G
+#SBATCH --cpus-per-task=40
+#SBATCH --mem=400G
 #SBATCH --gres=gpu:8
 #SBATCH --time=23:59:00
 #SBATCH --partition=pli-c
@@ -18,6 +18,7 @@ conda activate algoveri
 # --- CONFIGURATION ---
 CONTAINER="/scratch/gpfs/ARORA/haoyu/apptainer_imgs/vllm.sif"
 MODEL_PATH="/scratch/gpfs/ARORA/haoyu/Qwen3-235B-A22B-Instruct-2507"
+LANGUAGE="dafny"
 
 # Setup Network Variables
 HEAD_NODE_IP=$(hostname -I | awk '{print $1}')
@@ -88,6 +89,7 @@ run_task_robust() {
         echo "$INPUT_PATH" | python -m src.run_task \
             --num_passes 10 \
             --model "${MODEL_PATH}" \
+            --language "${LANGUAGE}" \
             --url "${SERVER_URL}"
         
         # Capture exit code of python script
@@ -133,32 +135,62 @@ run_task_robust() {
 start_vllm
 
 # 2. Run Benchmarks using the robust function
-# run_task_robust "/scratch/gpfs/ARORA/haoyu/algoveri/algoveri_data/maxheap_popmax"
-# run_task_robust "/scratch/gpfs/ARORA/haoyu/algoveri/algoveri_data/bst_search"
-# run_task_robust "/scratch/gpfs/ARORA/haoyu/algoveri/algoveri_data/bst_delete"
-# run_task_robust "/scratch/gpfs/ARORA/haoyu/algoveri/algoveri_data/bst_insert"
-# run_task_robust "/scratch/gpfs/ARORA/haoyu/algoveri/algoveri_data/stack_push"
-# run_task_robust "/scratch/gpfs/ARORA/haoyu/algoveri/algoveri_data/stack_pop"
-# run_task_robust "/scratch/gpfs/ARORA/haoyu/algoveri/algoveri_data/queue_enqueue"
-# run_task_robust "/scratch/gpfs/ARORA/haoyu/algoveri/algoveri_data/queue_dequeue"
-# run_task_robust "/scratch/gpfs/ARORA/haoyu/algoveri/algoveri_data/ringbuffer_enqueue"
-# run_task_robust "/scratch/gpfs/ARORA/haoyu/algoveri/algoveri_data/ringbuffer_dequeue"
-# run_task_robust "/scratch/gpfs/ARORA/haoyu/algoveri/algoveri_data/unionfind_find"
-# run_task_robust "/scratch/gpfs/ARORA/haoyu/algoveri/algoveri_data/unionfind_linkroots"
-# run_task_robust "/scratch/gpfs/ARORA/haoyu/algoveri/algoveri_data/splaytree_splay"
-# run_task_robust "/scratch/gpfs/ARORA/haoyu/algoveri/algoveri_data/trie_search"
-# run_task_robust "/scratch/gpfs/ARORA/haoyu/algoveri/algoveri_data/trie_insert"
-# run_task_robust "/scratch/gpfs/ARORA/haoyu/algoveri/algoveri_data/trie_delete"
-# run_task_robust "/scratch/gpfs/ARORA/haoyu/algoveri/algoveri_data/ternarysearchtree_search"
-# run_task_robust "/scratch/gpfs/ARORA/haoyu/algoveri/algoveri_data/ternarysearchtree_insert"
-# run_task_robust "/scratch/gpfs/ARORA/haoyu/algoveri/algoveri_data/ternarysearchtree_delete"
-# run_task_robust "/scratch/gpfs/ARORA/haoyu/algoveri/algoveri_data/segmenttree_query"
-# run_task_robust "/scratch/gpfs/ARORA/haoyu/algoveri/algoveri_data/segmenttree_modify"
-# run_task_robust "/scratch/gpfs/ARORA/haoyu/algoveri/algoveri_data/segmenttree_build"
 
+
+
+#############################################
+# Data structure
+#############################################
+
+run_task_robust "/scratch/gpfs/ARORA/haoyu/algoveri/algoveri_data/maxheap_push"
+run_task_robust "/scratch/gpfs/ARORA/haoyu/algoveri/algoveri_data/maxheap_popmax"
+run_task_robust "/scratch/gpfs/ARORA/haoyu/algoveri/algoveri_data/bst_search"
+run_task_robust "/scratch/gpfs/ARORA/haoyu/algoveri/algoveri_data/bst_delete"
+run_task_robust "/scratch/gpfs/ARORA/haoyu/algoveri/algoveri_data/bst_insert"
+run_task_robust "/scratch/gpfs/ARORA/haoyu/algoveri/algoveri_data/bst_zig"
+run_task_robust "/scratch/gpfs/ARORA/haoyu/algoveri/algoveri_data/bst_zigzig"
+run_task_robust "/scratch/gpfs/ARORA/haoyu/algoveri/algoveri_data/bst_zigzag"
+run_task_robust "/scratch/gpfs/ARORA/haoyu/algoveri/algoveri_data/stack_push"
+run_task_robust "/scratch/gpfs/ARORA/haoyu/algoveri/algoveri_data/stack_pop"
+run_task_robust "/scratch/gpfs/ARORA/haoyu/algoveri/algoveri_data/queue_enqueue"
+run_task_robust "/scratch/gpfs/ARORA/haoyu/algoveri/algoveri_data/queue_dequeue"
+run_task_robust "/scratch/gpfs/ARORA/haoyu/algoveri/algoveri_data/ringbuffer_enqueue"
+run_task_robust "/scratch/gpfs/ARORA/haoyu/algoveri/algoveri_data/ringbuffer_dequeue"
+run_task_robust "/scratch/gpfs/ARORA/haoyu/algoveri/algoveri_data/unionfind_find"
+run_task_robust "/scratch/gpfs/ARORA/haoyu/algoveri/algoveri_data/unionfind_linkroots"
+run_task_robust "/scratch/gpfs/ARORA/haoyu/algoveri/algoveri_data/splaytree_splay"
+run_task_robust "/scratch/gpfs/ARORA/haoyu/algoveri/algoveri_data/trie_search"
+run_task_robust "/scratch/gpfs/ARORA/haoyu/algoveri/algoveri_data/trie_insert"
+run_task_robust "/scratch/gpfs/ARORA/haoyu/algoveri/algoveri_data/trie_delete"
+run_task_robust "/scratch/gpfs/ARORA/haoyu/algoveri/algoveri_data/ternarysearchtree_search"
+run_task_robust "/scratch/gpfs/ARORA/haoyu/algoveri/algoveri_data/ternarysearchtree_insert"
+run_task_robust "/scratch/gpfs/ARORA/haoyu/algoveri/algoveri_data/ternarysearchtree_delete"
+run_task_robust "/scratch/gpfs/ARORA/haoyu/algoveri/algoveri_data/segmenttree_query"
+run_task_robust "/scratch/gpfs/ARORA/haoyu/algoveri/algoveri_data/segmenttree_modify"
+run_task_robust "/scratch/gpfs/ARORA/haoyu/algoveri/algoveri_data/segmenttree_build"
+run_task_robust "/scratch/gpfs/ARORA/haoyu/algoveri/algoveri_data/llrbt_delete"
+run_task_robust "/scratch/gpfs/ARORA/haoyu/algoveri/algoveri_data/llrbt_insert"
+run_task_robust "/scratch/gpfs/ARORA/haoyu/algoveri/algoveri_data/llrbt_rotateleft"
+run_task_robust "/scratch/gpfs/ARORA/haoyu/algoveri/algoveri_data/llrbt_rotateright"
+run_task_robust "/scratch/gpfs/ARORA/haoyu/algoveri/algoveri_data/llrbt_flipcolor"
+
+
+#############################################
+# Sorting, searching, and ordered statistics
+#############################################
+
+# run_task_robust "/scratch/gpfs/ARORA/haoyu/algoveri/algoveri_data/binary_search"
+# run_task_robust "/scratch/gpfs/ARORA/haoyu/algoveri/algoveri_data/linear_search"
+# run_task_robust "/scratch/gpfs/ARORA/haoyu/algoveri/algoveri_data/bubble_sort"
+# run_task_robust "/scratch/gpfs/ARORA/haoyu/algoveri/algoveri_data/insertion_sort"
 # run_task_robust "/scratch/gpfs/ARORA/haoyu/algoveri/algoveri_data/merge_sort"
 # run_task_robust "/scratch/gpfs/ARORA/haoyu/algoveri/algoveri_data/quick_sort"
 # run_task_robust "/scratch/gpfs/ARORA/haoyu/algoveri/algoveri_data/k_smallest"
+
+#############################################
+# basic algorithms, DP, xxx
+#############################################
+
 # run_task_robust "/scratch/gpfs/ARORA/haoyu/algoveri/algoveri_data/longest_common_subsequence"
 # run_task_robust "/scratch/gpfs/ARORA/haoyu/algoveri/algoveri_data/coin_change"
 # run_task_robust "/scratch/gpfs/ARORA/haoyu/algoveri/algoveri_data/jump_game"
@@ -167,17 +199,17 @@ start_vllm
 # run_task_robust "/scratch/gpfs/ARORA/haoyu/algoveri/algoveri_data/longest_increasing_subsequence"
 # run_task_robust "/scratch/gpfs/ARORA/haoyu/algoveri/algoveri_data/maximum_subarray_sum"
 # run_task_robust "/scratch/gpfs/ARORA/haoyu/algoveri/algoveri_data/rod_cutting"
+# run_task_robust "/scratch/gpfs/ARORA/haoyu/algoveri/algoveri_data/lca"
+# run_task_robust "/scratch/gpfs/ARORA/haoyu/algoveri/algoveri_data/house_robber"
 
-# run_task_robust "/scratch/gpfs/ARORA/haoyu/algoveri/algoveri_data/llrbt_delete"
-# run_task_robust "/scratch/gpfs/ARORA/haoyu/algoveri/algoveri_data/llrbt_insert"
-# run_task_robust "/scratch/gpfs/ARORA/haoyu/algoveri/algoveri_data/llrbt_rotateleft"
-# run_task_robust "/scratch/gpfs/ARORA/haoyu/algoveri/algoveri_data/llrbt_rotateright"
-# run_task_robust "/scratch/gpfs/ARORA/haoyu/algoveri/algoveri_data/llrbt_flipcolor"
+#############################################
+# Graph algorithms
+#############################################
 
 # run_task_robust "/scratch/gpfs/ARORA/haoyu/algoveri/algoveri_data/dfs"
 # run_task_robust "/scratch/gpfs/ARORA/haoyu/algoveri/algoveri_data/bfs"
 # run_task_robust "/scratch/gpfs/ARORA/haoyu/algoveri/algoveri_data/cycle_detection"
-run_task_robust "/scratch/gpfs/ARORA/haoyu/algoveri/algoveri_data/bipartite_check"
+# run_task_robust "/scratch/gpfs/ARORA/haoyu/algoveri/algoveri_data/bipartite_check"
 # run_task_robust "/scratch/gpfs/ARORA/haoyu/algoveri/algoveri_data/topological_sort"
 # run_task_robust "/scratch/gpfs/ARORA/haoyu/algoveri/algoveri_data/dijkstra"
 # run_task_robust "/scratch/gpfs/ARORA/haoyu/algoveri/algoveri_data/bellman_ford"
@@ -187,6 +219,10 @@ run_task_robust "/scratch/gpfs/ARORA/haoyu/algoveri/algoveri_data/bipartite_chec
 # run_task_robust "/scratch/gpfs/ARORA/haoyu/algoveri/algoveri_data/edmond_karp"
 # run_task_robust "/scratch/gpfs/ARORA/haoyu/algoveri/algoveri_data/push_relabel"
 # run_task_robust "/scratch/gpfs/ARORA/haoyu/algoveri/algoveri_data/scc_tarjan"
+
+#############################################
+# Math
+#############################################
 
 # run_task_robust "/scratch/gpfs/ARORA/haoyu/algoveri/algoveri_data/integer_exponential"
 # run_task_robust "/scratch/gpfs/ARORA/haoyu/algoveri/algoveri_data/fast_exponential"
@@ -200,14 +236,17 @@ run_task_robust "/scratch/gpfs/ARORA/haoyu/algoveri/algoveri_data/bipartite_chec
 # run_task_robust "/scratch/gpfs/ARORA/haoyu/algoveri/algoveri_data/gcd"
 # run_task_robust "/scratch/gpfs/ARORA/haoyu/algoveri/algoveri_data/matrix_multiplication"
 
+#############################################
+# String
+#############################################
+
 # run_task_robust "/scratch/gpfs/ARORA/haoyu/algoveri/algoveri_data/bracket_matching"
 # run_task_robust "/scratch/gpfs/ARORA/haoyu/algoveri/algoveri_data/longest_palindrome_substring"
 # run_task_robust "/scratch/gpfs/ARORA/haoyu/algoveri/algoveri_data/string_search_naive"
 # run_task_robust "/scratch/gpfs/ARORA/haoyu/algoveri/algoveri_data/kmp"
 # run_task_robust "/scratch/gpfs/ARORA/haoyu/algoveri/algoveri_data/ac_automata"
 
-# run_task_robust "/scratch/gpfs/ARORA/haoyu/algoveri/algoveri_data/lca"
-# run_task_robust "/scratch/gpfs/ARORA/haoyu/algoveri/algoveri_data/house_robber"
+
 
 # 3. Final Cleanup
 echo ">>>All tasks finished. Shutting down server..."

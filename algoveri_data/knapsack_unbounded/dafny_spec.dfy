@@ -1,8 +1,5 @@
-from pathlib import Path
-
-from src.verifiers.dafny_verifier import DafnyVerifier
-
-code = """// <preamble>
+// Following is the block for necessary definitions
+// <preamble>
 // Calculates the total weight of the selected items: sum(count[i] * weight[i])
 function total_weight(counts: seq<int>, weights: seq<int>): int
     requires |counts| <= |weights|
@@ -39,15 +36,17 @@ predicate is_valid_strategy(counts: seq<int>, weights: seq<int>, capacity: int)
 }
 // </preamble>
 
+// Following is the block for potential helper specifications
 // <helpers>
-// In Dafny, we use 'seq<int>' directly.
-// No explicit conversion from u64 to int is needed.
+
 // </helpers>
 
+// Following is the block for proofs of lemmas
 // <proofs>
 
 // </proofs>
 
+// Following is the block for the main specification
 // <spec>
 method solve_knapsack_unbounded(weights: seq<int>, values: seq<int>, capacity: int) returns (max_val: int)
     requires |weights| == |values|
@@ -71,43 +70,7 @@ method solve_knapsack_unbounded(weights: seq<int>, values: seq<int>, capacity: i
 // <code>
 {
     // TODO: Implement the Unbounded Knapsack DP algorithm here.
-    
-    max_val := 0; 
-    
-    // VERIFICATION SILENCER:
-    // This allows the skeleton to compile and verify before implementation.
-    assume {:axiom} false;
 }
 // </code>
 
-method Main() {}"""
-
-def test_dafny_verifier_writes_file_and_returns_result():
-    """Verify that LeanVerifier writes the source file and returns a result dict.
-
-    This test uses `test/config_test.yaml` (created as part of the test suite).
-    """
-    cfg_path = Path(__file__).resolve().parent / "config_test.yaml"
-    verifier = DafnyVerifier(config_path=str(cfg_path))
-
-    sample_source = code
-    result = verifier.verify(source=sample_source, spec="test", filename="unit_test")
-
-    print(result)
-
-    assert isinstance(result, dict)
-    assert "ok" in result and isinstance(result["ok"], bool)
-    assert "file" in result
-
-    # The file should have been created on disk
-    written = Path(result["file"])
-    assert written.exists()
-    return
-    # cleanup artifact
-    try:
-        written.unlink()
-    except Exception:
-        pass
-
-if __name__ == '__main__':
-    test_dafny_verifier_writes_file_and_returns_result()
+method Main() {}
