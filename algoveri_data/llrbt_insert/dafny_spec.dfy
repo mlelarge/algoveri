@@ -1,8 +1,5 @@
-from pathlib import Path
-
-from src.verifiers.dafny_verifier import DafnyVerifier
-
-code = """// <preamble>
+// Following is the block for necessary definitions
+// <preamble>
 datatype Option<T> = Some(value: T) | None
 
 datatype Node = Node(
@@ -68,77 +65,52 @@ datatype Node = Node(
     }
 
     // Main Invariant
+    // Note: This allows the root to be Red or Black, 
+    // which enables us to use it in the recursive insert spec.
     ghost predicate is_llrbt() {
         this.is_bst() && 
         this.black_height() != -1 && 
         this.satisfies_red_props()
     }
 }
+
+// Helper to handle Option<Node> in specs
+ghost predicate is_llrbt_opt(tree: Option<Node>) {
+    match tree { case Some(n) => n.is_llrbt() case None => true }
+}
+
+ghost function view_opt(tree: Option<Node>): set<int> {
+    match tree { case Some(n) => n.view() case None => {} }
+}
 // </preamble>
 
+// Following is the block for potential helper specifications
 // <helpers>
 
 // </helpers>
 
+// Following is the block for proofs of lemmas
 // <proofs>
 
 // </proofs>
 
+// Following is the block for the main specification
 // <spec>
-// Operation: Rotate Right (Fixup)
-method fixup_rotate_right(node: Node) returns (res: Node)
-    requires node.val >= 0
-    requires node.is_bst()
-    requires node.left.Some? && node.left.value.is_red
-    // Explicitly ensure the result structure allows property access
-    ensures res.right.Some?
+// Operation: Insert
+// Returns a valid LLRBT subtree (root color might be Red)
+method insert(tree: Option<Node>, v: int) returns (res: Node)
+    requires is_llrbt_opt(tree)
     ensures 
-        res.is_bst()
+        // Functional Correctness
+        res.view() == view_opt(tree) + {v}
     ensures
-        res.view() == node.view()
-    ensures
-        // Colors & Balance
-        res.black_height() == node.black_height() // The Critical Proof
-    ensures
-        res.is_red == node.is_red
-    ensures
-        res.right.value.is_red
+        // Invariant Maintenance
+        res.is_llrbt()
 // </spec>
 // <code>
 {
-    // Implement and verify the right rotation operation
-    assume {:axiom} false;
+    // Implement and verify the insertion operation
 }
 // </code>
 
-method main() {}"""
-
-def test_dafny_verifier_writes_file_and_returns_result():
-    """Verify that LeanVerifier writes the source file and returns a result dict.
-
-    This test uses `test/config_test.yaml` (created as part of the test suite).
-    """
-    cfg_path = Path(__file__).resolve().parent / "config_test.yaml"
-    verifier = DafnyVerifier(config_path=str(cfg_path))
-
-    sample_source = code
-    result = verifier.verify(source=sample_source, spec="test", filename="unit_test")
-
-    print(result)
-
-    assert isinstance(result, dict)
-    assert "ok" in result and isinstance(result["ok"], bool)
-    assert "file" in result
-
-    # The file should have been created on disk
-    written = Path(result["file"])
-    assert written.exists()
-    return
-    # cleanup artifact
-    try:
-        written.unlink()
-    except Exception:
-        pass
-
-if __name__ == '__main__':
-    test_dafny_verifier_writes_file_and_returns_result()
+method main() {}
