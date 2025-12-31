@@ -1,8 +1,5 @@
-from pathlib import Path
-
-from src.verifiers.dafny_verifier import DafnyVerifier
-
-code = """// <preamble>
+// Following is the block for necessary definitions
+// <preamble>
 datatype Option<T> = Some(value: T) | None
 
 datatype Node = Node(
@@ -120,60 +117,34 @@ ghost predicate opt_well_formed(node: Option<Node>) {
 }
 // </preamble>
 
+// Following is the block for potential helper specifications
 // <helpers>
 
 // </helpers>
 
+// Following is the block for proofs of lemmas
 // <proofs>
 
 // </proofs>
 
+// Following is the block for the main specification
 // <spec>
-method delete(tree: Option<Node>, key: seq<int>) returns (res: Option<Node>)
+method insert(tree: Option<Node>, key: seq<int>) returns (res: Node)
     requires opt_well_formed(tree)
     // Constraint: Input key elements must represent bytes (u8)
-    requires forall k :: k in key ==> 0 <= k < 256 
+    requires forall k :: k in key ==> 0 <= k < 256
+    requires |key| > 0
     ensures 
-        // Structural Correctness (Pruning)
-        && opt_well_formed(res)
+        // Invariant Preservation
+        && res.well_formed()
+        && !res.is_empty()
         // Set Update
-        && opt_view(res) == opt_view(tree) - iset{key}
+        && res.view() == opt_view(tree) + iset{key}
 // </spec>
 // <code>
 {
-    // Implement and verify the delete function for Ternary Search Tree (TST).
-    assume {:axiom} false;
+    // Implement and verify the insert function for Ternary Search Tree (TST).
 }
 // </code>
 
-method main() {}"""
-
-def test_dafny_verifier_writes_file_and_returns_result():
-    """Verify that LeanVerifier writes the source file and returns a result dict.
-
-    This test uses `test/config_test.yaml` (created as part of the test suite).
-    """
-    cfg_path = Path(__file__).resolve().parent / "config_test.yaml"
-    verifier = DafnyVerifier(config_path=str(cfg_path))
-
-    sample_source = code
-    result = verifier.verify(source=sample_source, spec="test", filename="unit_test")
-
-    print(result)
-
-    assert isinstance(result, dict)
-    assert "ok" in result and isinstance(result["ok"], bool)
-    assert "file" in result
-
-    # The file should have been created on disk
-    written = Path(result["file"])
-    assert written.exists()
-    return
-    # cleanup artifact
-    try:
-        written.unlink()
-    except Exception:
-        pass
-
-if __name__ == '__main__':
-    test_dafny_verifier_writes_file_and_returns_result()
+method main() {}
