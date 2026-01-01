@@ -3,12 +3,17 @@ from pathlib import Path
 from src.verifiers.dafny_verifier import DafnyVerifier
 
 code = """// <preamble>
+// Define Option datatype since it is not built-in
 datatype Option<T> = Some(value: T) | None
 
 datatype WeightedGraph = WeightedGraph(
+    // Adjacency list: adj[u] contains list of (neighbor, weight)
+    // u ranges from 0 to size - 1.
+    // Weight is int (was i64 in Verus)
     adj: seq<seq<(int, int)>>
 )
 
+// Helper predicates/functions for the Graph datatype
 ghost function size(g: WeightedGraph): int {
     |g.adj|
 }
@@ -26,6 +31,7 @@ ghost predicate well_formed(g: WeightedGraph) {
     &&
     // 2. SIMPLE GRAPH CONSTRAINT: No multigraphs allowed.
     // For any node u, all outgoing edges must have distinct targets.
+    // This ensures get_edge_weight is deterministic.
     (forall u: int, i: int, j: int :: 
         0 <= u < |g.adj| 
         && 0 <= i < |g.adj[u]| 
@@ -52,13 +58,11 @@ ghost predicate connected(g: seq<seq<(int, int)>>, u: int, v: int) {
 ghost predicate is_path(g: seq<seq<(int, int)>>, p: seq<int>) {
     |p| > 0
     && (forall i: int :: 
-          // Indentation fixed to suppress warning
           0 <= i < |p| - 1 ==> connected(g, p[i], p[i+1]))
 }
 
-// Helper to safely extract weight.
-// Because well_formed now enforces unique targets, this is guaranteed 
-// to be unique for valid graphs.
+// Helper to safely extract weight using the epsilon operator
+// Because well_formed enforces unique targets, this is uniquely defined for valid edges.
 ghost function get_edge_weight(g: seq<seq<(int, int)>>, u: int, v: int): int {
     if exists w :: has_edge(g, u, v, w) then
         var w :| has_edge(g, u, v, w); w
@@ -89,11 +93,17 @@ ghost predicate is_shortest_dist(g: seq<seq<(int, int)>>, start: int, end: int, 
        )
 }
 
-ghost predicate weights_non_negative(g: seq<seq<(int, int)>>) {
-    forall u: int, v: int, w: int :: 
-        has_edge(g, u, v, w) ==> w >= 0
+ghost predicate has_negative_cycle(g: seq<seq<(int, int)>>) {
+    exists p: seq<int> {:trigger is_path(g, p)} :: 
+        is_path(g, p) 
+        && |p| > 1 
+        && p[0] == p[|p| - 1] 
+        && path_weight(g, p) < 0
 }
 
+// We enforce hard limits:
+// 1. Graph size <= 100,000
+// 2. Edge weights <= 100,000 (absolute value)
 ghost predicate weights_and_size_bounded(g: seq<seq<(int, int)>>) {
     && |g| <= 100_000
     && (forall u: int, v: int, w: int :: 
@@ -110,25 +120,28 @@ ghost predicate weights_and_size_bounded(g: seq<seq<(int, int)>>) {
 // </proofs>
 
 // <spec>
-// Dijkstra's Algorithm
-method dijkstra_shortest_paths(graph: WeightedGraph, start: int) returns (res: seq<Option<int>>)
+// Bellman-Ford Algorithm
+method bellman_ford(graph: WeightedGraph, start: int) returns (res: Option<seq<Option<int>>>)
     requires well_formed(graph)
     requires 0 <= start < size(graph)
-    requires weights_non_negative(view(graph))
     requires weights_and_size_bounded(view(graph))
-    ensures |res| == size(graph)
-    ensures forall v: int :: 0 <= v < size(graph) ==> 
-        match res[v] {
-            case Some(d) => 
-                is_shortest_dist(view(graph), start, v, d)
-            case None => 
-                forall p: seq<int> {:trigger is_path(view(graph), p)} :: 
-                    is_path(view(graph), p) && p[0] == start && p[|p| - 1] == v ==> false
-        }
+    ensures match res {
+        case Some(dists) => 
+            |dists| == size(graph) &&
+            forall v: int :: 0 <= v < size(graph) ==> (
+                match dists[v] {
+                    case Some(d) => is_shortest_dist(view(graph), start, v, d)
+                    case None => forall p: seq<int> {:trigger is_path(view(graph), p)} :: 
+                                    is_path(view(graph), p) && p[0] == start && p[|p| - 1] == v ==> false
+                }
+            )
+        case None => 
+            has_negative_cycle(view(graph))
+    }
 // </spec>
 // <code>
 {
-    // Implement and verify Dijkstra's algorithm here
+    // Implement and verify the Bellman-Ford algorithm here
     assume {:axiom} false; 
 }
 // </code>"""

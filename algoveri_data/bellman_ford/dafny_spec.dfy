@@ -1,4 +1,3 @@
-// Following is the block for necessary definitions
 // <preamble>
 // Define Option datatype since it is not built-in
 datatype Option<T> = Some(value: T) | None
@@ -90,9 +89,12 @@ ghost predicate is_shortest_dist(g: seq<seq<(int, int)>>, start: int, end: int, 
        )
 }
 
-ghost predicate weights_non_negative(g: seq<seq<(int, int)>>) {
-    forall u: int, v: int, w: int :: 
-        has_edge(g, u, v, w) ==> w >= 0
+ghost predicate has_negative_cycle(g: seq<seq<(int, int)>>) {
+    exists p: seq<int> {:trigger is_path(g, p)} :: 
+        is_path(g, p) 
+        && |p| > 1 
+        && p[0] == p[|p| - 1] 
+        && path_weight(g, p) < 0
 }
 
 // We enforce hard limits:
@@ -117,24 +119,27 @@ ghost predicate weights_and_size_bounded(g: seq<seq<(int, int)>>) {
 
 // Following is the block for the main specification
 // <spec>
-// Dijkstra's Algorithm
-method dijkstra_shortest_paths(graph: WeightedGraph, start: int) returns (res: seq<Option<int>>)
+// Bellman-Ford Algorithm
+method bellman_ford(graph: WeightedGraph, start: int) returns (res: Option<seq<Option<int>>>)
     requires well_formed(graph)
     requires 0 <= start < size(graph)
-    requires weights_non_negative(view(graph))
     requires weights_and_size_bounded(view(graph))
-    ensures |res| == size(graph)
-    ensures forall v: int :: 0 <= v < size(graph) ==> 
-        match res[v] {
-            case Some(d) => 
-                is_shortest_dist(view(graph), start, v, d)
-            case None => 
-                forall p: seq<int> {:trigger is_path(view(graph), p)} :: 
-                    is_path(view(graph), p) && p[0] == start && p[|p| - 1] == v ==> false
-        }
+    ensures match res {
+        case Some(dists) => 
+            |dists| == size(graph) &&
+            forall v: int :: 0 <= v < size(graph) ==> (
+                match dists[v] {
+                    case Some(d) => is_shortest_dist(view(graph), start, v, d)
+                    case None => forall p: seq<int> {:trigger is_path(view(graph), p)} :: 
+                                    is_path(view(graph), p) && p[0] == start && p[|p| - 1] == v ==> false
+                }
+            )
+        case None => 
+            has_negative_cycle(view(graph))
+    }
 // </spec>
 // <code>
 {
-    // Implement and verify Dijkstra's algorithm here
+    // Implement and verify the Bellman-Ford algorithm here
 }
 // </code>
