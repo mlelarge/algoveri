@@ -123,6 +123,5 @@ method find_sccs(graph: Graph) returns (sccs: seq<seq<int>>)
 // <code>
 {
     // Implement and verify Tarjan's SCC algorithm here.
-    assume {:axiom} false; 
 }
 // </code>
