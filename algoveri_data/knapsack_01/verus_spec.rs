@@ -76,19 +76,5 @@ verus! {
     }
     // </code>
 
-    #[verifier::external]
-    fn main() {
-        let mut weights = Vec::new();
-        let mut values = Vec::new();
-        
-        // Example: 3 items
-        weights.push(10); values.push(60);
-        weights.push(20); values.push(100);
-        weights.push(30); values.push(120);
-        
-        let capacity = 50;
-        let ans = solve_knapsack_01(&weights, &values, capacity);
-        
-        println!("Max value: {}", ans);
-    }
+    fn main() {}
 }

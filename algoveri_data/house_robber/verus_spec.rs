@@ -66,16 +66,5 @@ verus! {
     }
     // </code>
 
-    #[verifier::external]
-    fn main() {
-        let mut nums = Vec::new(); // [1,2,3,1] -> 4
-        nums.push(1);
-        nums.push(2);
-        nums.push(3);
-        nums.push(1);
-        
-        // Max loot = 1 + 3 = 4 (House 0 and 2)
-        let ans = rob(&nums);
-        println!("Max loot: {}", ans);
-    }
+    fn main() {}
 }

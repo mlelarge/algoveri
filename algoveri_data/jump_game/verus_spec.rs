@@ -55,17 +55,5 @@ verus! {
     }
     // </code>
 
-    #[verifier::external]
-    fn main() {
-        let mut nums = Vec::new(); // [2,3,1,1,4] -> true
-        nums.push(2); nums.push(3); nums.push(1); nums.push(1); nums.push(4);
-        
-        let ans = can_jump(&nums);
-        println!("Can jump [2,3,1,1,4]: {}", ans);
-        
-        let mut nums2 = Vec::new(); // [3,2,1,0,4] -> false
-        nums2.push(3); nums2.push(2); nums2.push(1); nums2.push(0); nums2.push(4);
-        let ans2 = can_jump(&nums2);
-        println!("Can jump [3,2,1,0,4]: {}", ans2);
-    }
+    fn main() {}
 }

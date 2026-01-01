@@ -46,22 +46,5 @@ verus! {
     }
     // </code>
 
-    // 4. MAIN FUNCTION (External)
-    #[verifier::external]
-    fn main() {
-        let mut v = Vec::new();
-        v.push(-2);
-        v.push(1);
-        v.push(-3);
-        v.push(4);
-        v.push(-1);
-        v.push(2);
-        v.push(1);
-        v.push(-5);
-        v.push(4);
-        
-        // Expected output: 6 (from subarray [4, -1, 2, 1])
-        let ans = max_subarray_sum(&v);
-        println!("Maximum Subarray Sum is: {}", ans);
-    }
+    fn main() {}
 }

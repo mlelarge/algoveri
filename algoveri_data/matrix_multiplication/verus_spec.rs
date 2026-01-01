@@ -76,20 +76,5 @@ verus! {
     }
     // </code>
 
-    #[verifier::external]
-    fn main() {
-        let mut A = Vec::new();
-        let mut row1 = Vec::new(); row1.push(1); row1.push(2);
-        let mut row2 = Vec::new(); row2.push(3); row2.push(4);
-        A.push(row1); A.push(row2); // 2x2
-        
-        let mut B = Vec::new();
-        let mut brow1 = Vec::new(); brow1.push(2); brow1.push(0);
-        let mut brow2 = Vec::new(); brow2.push(1); brow2.push(2);
-        B.push(brow1); B.push(brow2); // 2x2
-        
-        // C = [[4, 4], [10, 8]]
-        let C = matrix_multiply(&A, &B);
-        println!("C[0][0] = {}", C[0][0]);
-    }
+    fn main() {}
 }

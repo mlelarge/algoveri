@@ -82,15 +82,5 @@ verus! {
     }
     // </code>
 
-    #[verifier::external]
-    fn main() {
-        let mut coins = Vec::new();
-        coins.push(1);
-        coins.push(2);
-        coins.push(5);
-        
-        // 11 = 5 + 5 + 1 (3 coins)
-        let ans = coin_change(&coins, 11);
-        println!("Min coins for 11: {}", ans);
-    }
+    fn main() {}
 }

@@ -34,11 +34,5 @@ verus! {
     }
     // </code>
 
-    #[verifier::external]
-    fn main() {
-        let mut v = Vec::new();
-        v.push(1); v.push(3); v.push(5); v.push(7);
-        let idx = linear_search_lower_bound(&v, 4);
-        println!("Index: {}", idx);
-    }
+    fn main() {}
 }

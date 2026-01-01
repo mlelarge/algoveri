@@ -63,11 +63,6 @@ verus! {
         // </code>
     }
 
-    #[verifier::external]
-    fn main() {
-        let mut my_stack = VerifiableStack::new();
-        my_stack.push(10);
-        my_stack.push(20);
-    }
+    fn main() {}
 
 }
