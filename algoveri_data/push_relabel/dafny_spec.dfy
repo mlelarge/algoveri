@@ -17,10 +17,22 @@ ghost function view(g: CapacityGraph): seq<seq<(int, int)>> {
 }
 
 ghost predicate well_formed(g: CapacityGraph) {
-    forall u: int, i: int :: 
+    // 1. Basic Bounds checks
+    (forall u: int, i: int :: 
         0 <= u < |g.adj| && 0 <= i < |g.adj[u]| 
         ==> 
-        0 <= g.adj[u][i].0 < |g.adj|
+        0 <= g.adj[u][i].0 < |g.adj|)
+    &&
+    // 2. SIMPLE GRAPH CONSTRAINT: No multigraphs allowed.
+    // For any node u, all outgoing edges must have distinct targets.
+    // This is critical because FlowMap uses (u, v) as a key, which cannot distinguish parallel edges.
+    (forall u: int, i: int, j: int :: 
+        0 <= u < |g.adj| 
+        && 0 <= i < |g.adj[u]| 
+        && 0 <= j < |g.adj[u]| 
+        && i != j
+        ==> 
+        g.adj[u][i].0 != g.adj[u][j].0)
 }
 
 // --- MAX FLOW THEORY ---
@@ -142,6 +154,6 @@ method max_flow_value(graph: CapacityGraph, s: int, t: int) returns (max_val: in
 // </spec>
 // <code>
 {
-    // Implement and verify the Push-Relabel algorithm here.
+    // Implement and verify the Push-Relabel algorithm here. 
 }
 // </code>
