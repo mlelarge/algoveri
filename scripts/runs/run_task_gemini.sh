@@ -130,13 +130,13 @@ run_task_robust() {
 # Math
 #############################################
 
-run_task_robust "/scratch/gpfs/ARORA/haoyu/algoveri/algoveri_data/integer_exponential"
-run_task_robust "/scratch/gpfs/ARORA/haoyu/algoveri/algoveri_data/fast_exponential"
-run_task_robust "/scratch/gpfs/ARORA/haoyu/algoveri/algoveri_data/trial_division_naive"
-run_task_robust "/scratch/gpfs/ARORA/haoyu/algoveri/algoveri_data/trial_division_optimized"
-# run_task_robust "/scratch/gpfs/ARORA/haoyu/algoveri/algoveri_data/sieve_method"
-# run_task_robust "/scratch/gpfs/ARORA/haoyu/algoveri/algoveri_data/polymul_naive"
-# run_task_robust "/scratch/gpfs/ARORA/haoyu/algoveri/algoveri_data/polymul_karatsuba"
+# run_task_robust "/scratch/gpfs/ARORA/haoyu/algoveri/algoveri_data/integer_exponential"
+# run_task_robust "/scratch/gpfs/ARORA/haoyu/algoveri/algoveri_data/fast_exponential"
+# run_task_robust "/scratch/gpfs/ARORA/haoyu/algoveri/algoveri_data/trial_division_naive"
+# run_task_robust "/scratch/gpfs/ARORA/haoyu/algoveri/algoveri_data/trial_division_optimized"
+run_task_robust "/scratch/gpfs/ARORA/haoyu/algoveri/algoveri_data/sieve_method"
+run_task_robust "/scratch/gpfs/ARORA/haoyu/algoveri/algoveri_data/polymul_naive"
+run_task_robust "/scratch/gpfs/ARORA/haoyu/algoveri/algoveri_data/polymul_karatsuba"
 # run_task_robust "/scratch/gpfs/ARORA/haoyu/algoveri/algoveri_data/discrete_logarithm"
 # run_task_robust "/scratch/gpfs/ARORA/haoyu/algoveri/algoveri_data/linearsys_gf2"
 # run_task_robust "/scratch/gpfs/ARORA/haoyu/algoveri/algoveri_data/gcd"
