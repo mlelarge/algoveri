@@ -95,6 +95,11 @@ class DafnyEval(BaseEval):
             else:
                 comment = f"do not find tags {', '.join(missing_tags)} in the generated code; please include them (e.g. <preamble>...</preamble> and <spec>...</spec>) with the corresponding contents from the formal template."
             return {"code": "", "comment": comment}
+        
+        # Now check if the model tries to cheat by including 'assume', 'verify false', 'axiom', 'extern', or 'expect'
+        if ("assume" in modified or "verify false" in modified or "axiom" in modified or "extern" in modified or "expect" in modified):
+            comment = "The generated code contains 'assume', 'verify false', 'axiom', 'extern', or 'expect', which is not allowed. Please provide a complete implementation and proof without using these keywords."
+            return {"code": "", "comment": comment}
 
         return {"code": modified, "comment": comment}
 
