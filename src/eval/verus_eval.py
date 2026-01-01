@@ -95,6 +95,11 @@ class VerusEval(BaseEval):
             else:
                 comment = f"do not find tags {', '.join(missing_tags)} in the generated code; please include them (e.g. <preamble>...</preamble> and <spec>...</spec>) with the corresponding contents from the formal template."
             return {"code": "", "comment": comment}
+        
+        # Now check if the model tries to cheat by including 'assume', 'admit', or '#[verifier'
+        if "assume" in modified or "admit" in modified or "#[verifier" in modified:
+            comment = "The generated code contains 'assume', 'admit', or '#[verifier', which is not allowed. Please provide a complete implementation and proof without using these keywords."
+            return {"code": "", "comment": comment}
 
         return {"code": modified, "comment": comment}
 

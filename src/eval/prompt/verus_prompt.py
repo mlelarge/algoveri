@@ -16,7 +16,7 @@ The incomplete code will in general include the basic definition of the properti
 Given the above, your task is to:
 1. First, analyze and reason in high-level about how to solve the problem and why the solution is correct.
 2. Then, plan out the necessary steps to implement the algorithm and prove its correctness, including any helper functions/specs and lemmas that might be needed.
-3. Finally, you should provide the complete Rust code, which can be compiled as a standalone file by Verus, without changing anything inside the preamble part (wrapped by <preamble> and </preamble> tags) and the function signature and specification (wrapped by <spec> and </spec> tags). You should include all the tags, especially the <preamble> </preamble> and <spec> </spec>, even if that part is empty in your code, and wrapp the whole code in the following format in a single Rust code block:
+3. Finally, you should provide the complete Rust code, which can be compiled as a standalone file by Verus, without changing anything inside the preamble part (wrapped by <preamble> and </preamble> tags) and the function signature and specification (wrapped by <spec> and </spec> tags). You should not cheat: even if you cannot implement or verify the code, you should not try to bypass the compiler (e.g, writing `assume', `admit', or `#[verifier::]'). You should include all the tags, especially the <preamble> </preamble> and <spec> </spec>, even if that part is empty in your code, and wrapp the whole code in the following format in a single Rust code block:
 
 ```rust
 (you code)
