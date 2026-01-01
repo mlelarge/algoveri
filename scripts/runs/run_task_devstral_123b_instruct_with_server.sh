@@ -4,13 +4,13 @@
 #SBATCH --ntasks-per-node=1
 #SBATCH --cpus-per-task=40
 #SBATCH --mem=400G
-#SBATCH --gres=gpu:8
+#SBATCH --gres=gpu:4
 #SBATCH --time=23:59:00
 #SBATCH --partition=pli-c
 #SBATCH --output=slurm_output/%x-%j.out
 #SBATCH --mail-type=ALL
 #SBATCH --mail-user=haoyu@princeton.edu
-###### $ #SBATCH --qos=pli-cp
+##### $ #SBATCH --qos=pli-cp
 
 source /scratch/gpfs/ARORA/haoyu/miniconda3/etc/profile.d/conda.sh
 conda activate algoveri
@@ -38,7 +38,7 @@ start_vllm() {
         $CONTAINER \
         vllm serve "${MODEL_PATH}" \
         --port ${WORKER_PORT} \
-        --tensor-parallel-size 8 \
+        --tensor-parallel-size 4 \
         --max-model-len 262144 \
         --trust-remote-code \
         --host 0.0.0.0 &> "slurm_output/vllm_server_${SLURM_JOB_ID}.log" &

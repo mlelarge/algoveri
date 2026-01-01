@@ -20,9 +20,18 @@ verus! {
         }
 
         pub open spec fn well_formed(&self) -> bool {
-            forall |u: int, i: int| 
+            // 1. Basic Bounds: All neighbors must be within the graph range [0, size)
+            &&& forall |u: int, i: int| 
                 0 <= u < self.view().len() && 0 <= i < self.view()[u].len() 
                 ==> 0 <= #[trigger] self.view()[u][i].0 < self.view().len()
+            // 2. Simple Graph Constraint: No duplicate edges to the same target node.
+            // This ensures that 'choose |w|' in path_weight is deterministic/unique.
+            &&& forall |u: int, i: int, j: int|
+                0 <= u < self.view().len() 
+                && 0 <= i < self.view()[u].len() 
+                && 0 <= j < self.view()[u].len()
+                && i != j
+                ==> #[trigger] self.view()[u][i].0 != #[trigger] self.view()[u][j].0
         }
     }
 
@@ -55,6 +64,8 @@ verus! {
             let u = p[p.len() - 2];
             let v = p.last();
             let prefix = p.drop_last();
+            // Because of the 'well_formed' simple graph constraint, 
+            // there is exactly one 'w' satisfying this if the edge exists.
             let w = choose |w: int| has_edge(g, u, v, w);
             path_weight(g, prefix) + w
         }
@@ -128,7 +139,7 @@ verus! {
     // </spec>
     // <code>
     {
-        // Implement and verify the Bellman-Ford algorithm here
+        // Implement and verify the Bellman-Ford algorithm here.
     }
     // </code>
 

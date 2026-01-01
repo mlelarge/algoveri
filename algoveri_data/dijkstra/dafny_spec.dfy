@@ -1,14 +1,16 @@
-from pathlib import Path
-
-from src.verifiers.dafny_verifier import DafnyVerifier
-
-code = """// <preamble>
+// Following is the block for necessary definitions
+// <preamble>
+// Define Option datatype since it is not built-in
 datatype Option<T> = Some(value: T) | None
 
 datatype WeightedGraph = WeightedGraph(
+    // Adjacency list: adj[u] contains list of (neighbor, weight)
+    // u ranges from 0 to size - 1.
+    // Weight is int (was i64 in Verus)
     adj: seq<seq<(int, int)>>
 )
 
+// Helper predicates/functions for the Graph datatype
 ghost function size(g: WeightedGraph): int {
     |g.adj|
 }
@@ -18,21 +20,10 @@ ghost function view(g: WeightedGraph): seq<seq<(int, int)>> {
 }
 
 ghost predicate well_formed(g: WeightedGraph) {
-    // 1. Basic Bounds checks
-    (forall u: int, i: int :: 
+    forall u: int, i: int :: 
         0 <= u < |g.adj| && 0 <= i < |g.adj[u]| 
         ==> 
-        0 <= g.adj[u][i].0 < |g.adj|)
-    &&
-    // 2. SIMPLE GRAPH CONSTRAINT: No multigraphs allowed.
-    // For any node u, all outgoing edges must have distinct targets.
-    (forall u: int, i: int, j: int :: 
-        0 <= u < |g.adj| 
-        && 0 <= i < |g.adj[u]| 
-        && 0 <= j < |g.adj[u]| 
-        && i != j
-        ==> 
-        g.adj[u][i].0 != g.adj[u][j].0)
+        0 <= g.adj[u][i].0 < |g.adj|
 }
 
 // --- Weighted Graph Definitions ---
@@ -52,13 +43,10 @@ ghost predicate connected(g: seq<seq<(int, int)>>, u: int, v: int) {
 ghost predicate is_path(g: seq<seq<(int, int)>>, p: seq<int>) {
     |p| > 0
     && (forall i: int :: 
-          // Indentation fixed to suppress warning
           0 <= i < |p| - 1 ==> connected(g, p[i], p[i+1]))
 }
 
-// Helper to safely extract weight.
-// Because well_formed now enforces unique targets, this is guaranteed 
-// to be unique for valid graphs.
+// Helper to safely extract weight using the epsilon operator
 ghost function get_edge_weight(g: seq<seq<(int, int)>>, u: int, v: int): int {
     if exists w :: has_edge(g, u, v, w) then
         var w :| has_edge(g, u, v, w); w
@@ -94,6 +82,9 @@ ghost predicate weights_non_negative(g: seq<seq<(int, int)>>) {
         has_edge(g, u, v, w) ==> w >= 0
 }
 
+// We enforce hard limits:
+// 1. Graph size <= 100,000
+// 2. Edge weights <= 100,000 (absolute value)
 ghost predicate weights_and_size_bounded(g: seq<seq<(int, int)>>) {
     && |g| <= 100_000
     && (forall u: int, v: int, w: int :: 
@@ -101,14 +92,17 @@ ghost predicate weights_and_size_bounded(g: seq<seq<(int, int)>>) {
 }
 // </preamble>
 
+// Following is the block for potential helper specifications
 // <helpers>
 
 // </helpers>
 
+// Following is the block for proofs of lemmas
 // <proofs>
 
 // </proofs>
 
+// Following is the block for the main specification
 // <spec>
 // Dijkstra's Algorithm
 method dijkstra_shortest_paths(graph: WeightedGraph, start: int) returns (res: seq<Option<int>>)
@@ -129,36 +123,5 @@ method dijkstra_shortest_paths(graph: WeightedGraph, start: int) returns (res: s
 // <code>
 {
     // Implement and verify Dijkstra's algorithm here
-    assume {:axiom} false; 
 }
-// </code>"""
-
-def test_dafny_verifier_writes_file_and_returns_result():
-    """Verify that LeanVerifier writes the source file and returns a result dict.
-
-    This test uses `test/config_test.yaml` (created as part of the test suite).
-    """
-    cfg_path = Path(__file__).resolve().parent / "config_test.yaml"
-    verifier = DafnyVerifier(config_path=str(cfg_path))
-
-    sample_source = code
-    result = verifier.verify(source=sample_source, spec="test", filename="unit_test")
-
-    print(result)
-
-    assert isinstance(result, dict)
-    assert "ok" in result and isinstance(result["ok"], bool)
-    assert "file" in result
-
-    # The file should have been created on disk
-    written = Path(result["file"])
-    assert written.exists()
-    return
-    # cleanup artifact
-    try:
-        written.unlink()
-    except Exception:
-        pass
-
-if __name__ == '__main__':
-    test_dafny_verifier_writes_file_and_returns_result()
+// </code>

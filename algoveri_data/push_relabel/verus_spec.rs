@@ -17,9 +17,18 @@ verus! {
         pub open spec fn size(&self) -> int { self.adj.len() as int }
         
         pub open spec fn well_formed(&self) -> bool {
-            forall |u: int, i: int| 
+            // 1. Basic Bounds: All neighbors must be within the graph range [0, size)
+            &&& forall |u: int, i: int| 
                 0 <= u < self.view().len() && 0 <= i < self.view()[u].len() 
                 ==> 0 <= #[trigger] self.view()[u][i].0 < self.view().len()
+            // 2. Simple Graph Constraint: No duplicate edges to the same target node.
+            // Critical because FlowMap is keyed by (u, v), so we cannot handle multigraphs.
+            &&& forall |u: int, i: int, j: int|
+                0 <= u < self.view().len() 
+                && 0 <= i < self.view()[u].len() 
+                && 0 <= j < self.view()[u].len()
+                && i != j
+                ==> #[trigger] self.view()[u][i].0 != #[trigger] self.view()[u][j].0
         }
     }
 
@@ -143,7 +152,7 @@ verus! {
     // </spec>
     // <code>
     {
-        // Implement and verify the Push-Relabel algorithm here.
+        // Implement and verify the push-relabel algorithm here using the above specifications.
     }
     // </code>
 
