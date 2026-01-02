@@ -1,8 +1,6 @@
 use vstd::prelude::*;
 
 verus! {
-
-// #[verifier(external_body)] // Removed
     // Following is the block for necessary definitions
     // <preamble>
     pub struct Input {

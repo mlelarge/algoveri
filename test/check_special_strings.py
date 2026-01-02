@@ -13,6 +13,9 @@ for dirs in os.listdir(data_path):
                 with open(file_path, 'r') as f:
                     content = f.read()
                 if "assume" not in content and "admit" not in content and "#[verifier" not in content:
+                #if 'assume' not in content and "verify false" not in content and "axiom" not in content and "extern" not in content or "expect" not in content:
                     counter += 1
+                else:
+                    print(f"Stub file: {file_path}")
 
 print(f"Total number of non-stub Verus files: {counter}")
