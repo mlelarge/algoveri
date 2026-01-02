@@ -2,114 +2,78 @@ from pathlib import Path
 
 from src.verifiers.dafny_verifier import DafnyVerifier
 
-code = """// <preamble>
-<<<<<<< HEAD
-// Recursive definition of Modular Exponentiation: (b^e) % m
-function spec_pow_mod(b: int, e: int, m: int): int
-  decreases e
-  requires m > 1
+code = """// Following is the block for necessary definitions
+// <preamble>
+// Calculates the total length of the pieces
+function sum_lengths(cuts: seq<int>): int
+    decreases |cuts|
 {
-  if e <= 0 then
-    1
-  else
-    (b * spec_pow_mod(b, e - 1, m)) % m
+    if |cuts| == 0 then
+        0
+    else
+        cuts[0] + sum_lengths(cuts[1..])
 }
 
-// The predicate that defines a valid Discrete Logarithm x
-predicate is_discrete_log(g: int, h: int, p: int, x: int)
-  requires p > 1
-{
-  spec_pow_mod(g, x, p) == h
-=======
-// Definition of a Palindrome:
-// A sequence is a palindrome if for every index i, the character at i
-// is identical to the character at the symmetric position from the end.
-predicate is_palindrome(s: seq<int>) {
-    // We trigger on s[i] so the solver knows to use this rule 
-    // whenever it sees an access to s at index i.
-    forall i :: 0 <= i < |s| ==> s[i] == s[|s| - 1 - i]
+// Helper: Safe price lookup that returns 0 for out-of-bounds
+function get_price(prices: seq<int>, idx: int): int {
+    if 0 <= idx < |prices| then
+        prices[idx]
+    else
+        0
 }
 
-// Helper to check validity of a subrange within a larger sequence.
-predicate is_valid_subrange(s: seq<int>, start: int, len: int) {
-    && 0 <= start
-    && 0 <= len
-    && start + len <= |s|
->>>>>>> ea54b6fa240f351bf8892894d9bb533d15b6eac9
+// Calculates revenue recursively.
+function calculate_revenue(cuts: seq<int>, prices: seq<int>): int
+    decreases |cuts|
+{
+    if |cuts| == 0 then
+        0
+    else
+        // Revenue is price of first piece + revenue of remaining pieces
+        get_price(prices, cuts[0] - 1) + 
+        calculate_revenue(cuts[1..], prices)
+}
+
+// Definition of a valid strategy: positive cuts, valid prices, sums to n
+predicate is_valid_strategy(cuts: seq<int>, n: int, prices: seq<int>) {
+    (forall i: int :: 0 <= i < |cuts| ==> cuts[i] > 0) &&
+    (forall i: int :: 0 <= i < |cuts| ==> cuts[i] - 1 < |prices|) &&
+    sum_lengths(cuts) == n
 }
 // </preamble>
 
+// Following is the block for potential helper specifications
 // <helpers>
 
 // </helpers>
 
+// Following is the block for proofs of lemmas
 // <proofs>
 
 // </proofs>
 
+// Following is the block for the main specification
 // <spec>
-<<<<<<< HEAD
-// Dafny uses a datatype for Option
-datatype Option<T> = Some(value: T) | None
-
-method discrete_log_naive(g: int, h: int, p: int) returns (res: Option<int>)
-  // Simulate u64: inputs are non-negative
-  requires g >= 0 && h >= 0 && p >= 0
-  requires p > 1
-  
-  ensures match res
-    case Some(x) => 
-      // 1. It is a valid solution
-      is_discrete_log(g, h, p, x) &&
-      // 2. It is within bounds
-      0 <= x < p &&
-      // 3. It is the *smallest* solution
-      (forall k :: 0 <= k < x ==> !is_discrete_log(g, h, p, k))
-    case None =>
-      // We assert that NO solution exists in the range [0, p)
-      forall k :: 0 <= k < p ==> !is_discrete_log(g, h, p, k)
+method rod_cutting(n: int, prices: seq<int>) returns (result: int)
+    requires |prices| >= n
+    requires n <= 1000
+    // Constraints matching Verus u64/usize unsigned and explicit bounds
+    requires forall i: int :: 0 <= i < |prices| ==> 0 <= prices[i] <= 10000
+    ensures result >= 0
+    // 1. Upper Bound
+    ensures forall cuts: seq<int> :: (is_valid_strategy(cuts, n, prices) 
+            ==> calculate_revenue(cuts, prices) <= result)
+    // 2. Existence
+    ensures exists cuts: seq<int> :: (is_valid_strategy(cuts, n, prices) 
+            && calculate_revenue(cuts, prices) == result)
 // </spec>
 // <code>
 {
-  // Implement and verify the naive algorithm to compute the discrete logarithm
-  assume {:axiom} false;
+    // Implement and verify the Rod Cutting DP algorithm here.
+    assume{:axiom} false;
 }
 // </code>
-
-method Main() {
-}"""
-=======
-// The main verification target.
-// Returns a tuple (start_index, length) representing the longest palindrome.
-method longest_palindromic_substring(s: seq<int>) returns (res: (int, int))
-    requires
-        // CONSTRAINT: Hard limit of 1,000,000. 
-        // Even with Manacher's expansion (2*N + 1), the required size 
-        // is ~2,000,001, which fits easily in u32/usize.
-        |s| <= 1000000
-    ensures
-        // Type Constraint: Results must be non-negative (simulating usize)
-        res.0 >= 0 && res.1 >= 0
-    ensures
-        // 1. The result defines a valid substring of the input.
-        is_valid_subrange(s, res.0, res.1)
-    ensures
-        // 2. The substring found is indeed a palindrome.
-        is_palindrome(s[res.0 .. res.0 + res.1])
-    ensures
-        // 3. Maximality: There exists no other valid palindromic substring 
-        // with a length strictly greater than the result found.
-        forall i, len :: 
-            is_valid_subrange(s, i, len) && is_palindrome(s[i .. i + len])
-            ==> len <= res.1
-// </spec>
-// <code>
-{
-    assume {:axiom} false;
-    // Implementation of Manacher's algorithm (or other solution) goes here.
-}
-// </code>"""
->>>>>>> ea54b6fa240f351bf8892894d9bb533d15b6eac9
+"""
 
 def test_dafny_verifier_writes_file_and_returns_result():
     """Verify that LeanVerifier writes the source file and returns a result dict.

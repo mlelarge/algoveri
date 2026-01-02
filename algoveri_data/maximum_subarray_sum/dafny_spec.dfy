@@ -1,3 +1,4 @@
+// Following is the block for necessary definitions
 // <preamble>
 // Recursive definition of sum for a sequence slice [start, end)
 function spec_sum(s: seq<int>, start: int, end: int): int
@@ -11,14 +12,17 @@ function spec_sum(s: seq<int>, start: int, end: int): int
 }
 // </preamble>
 
+// Following is the block for potential helper specifications
 // <helpers>
 
 // </helpers>
 
+// Following is the block for proofs of lemmas
 // <proofs>
 
 // </proofs>
 
+// Following is the block for the main specification
 // <spec>
 method max_subarray_sum(s: seq<int>) returns (result: int)
     requires |s| > 0

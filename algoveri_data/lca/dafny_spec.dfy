@@ -1,3 +1,4 @@
+// Following is the block for necessary definitions
 // <preamble>
 datatype Tree = Nil | Node(val: int, left: Tree, right: Tree)
 
@@ -88,14 +89,17 @@ ghost predicate is_common_ancestor(t: Tree, anc_val: int, p: int, q: int) {
 }
 // </preamble>
 
+// Following is the block for potential helper specifications
 // <helpers>
 
 // </helpers>
 
+// Following is the block for proofs of lemmas
 // <proofs>
 
 // </proofs>
 
+// Following is the block for the main specification
 // <spec>
 method lowest_common_ancestor(root: Tree, p: int, q: int) returns (res: Option<int>)
     requires p >= 0 // u64 constraint

@@ -1,3 +1,4 @@
+// Following is the block for necessary definitions
 // <preamble>
 // Definition of a valid jump path (sequence of indices)
 // path[0] == 0
@@ -20,14 +21,17 @@ predicate is_valid_jump_path(path: seq<int>, nums: seq<int>) {
 }
 // </preamble>
 
+// Following is the block for potential helper specifications
 // <helpers>
 
 // </helpers>
 
+// Following is the block for proofs of lemmas
 // <proofs>
 
 // </proofs>
 
+// Following is the block for the main specification
 // <spec>
 method can_jump(nums: seq<int>) returns (reachable: bool)
     requires |nums| > 0

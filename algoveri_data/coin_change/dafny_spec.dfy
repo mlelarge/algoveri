@@ -1,3 +1,4 @@
+// Following is the block for necessary definitions
 // <preamble>
 // Calculates total monetary value: sum(counts[i] * coins[i])
 function total_amount(counts: seq<int>, coins: seq<int>): int
@@ -32,14 +33,17 @@ predicate is_valid_change(counts: seq<int>, coins: seq<int>, amount: int) {
 }
 // </preamble>
 
+// Following is the block for potential helper specifications
 // <helpers>
 
 // </helpers>
 
+// Following is the block for proofs of lemmas
 // <proofs>
 
 // </proofs>
 
+// Following is the block for the main specification
 // <spec>
 // Returns -1 if impossible, otherwise the minimum number of coins.
 method coin_change(coins: seq<int>, amount: int) returns (min_coins: int)

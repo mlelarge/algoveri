@@ -1,3 +1,4 @@
+// Following is the block for necessary definitions
 // <preamble>
 // Calculates the total length of the pieces
 function sum_lengths(cuts: seq<int>): int
@@ -37,14 +38,17 @@ predicate is_valid_strategy(cuts: seq<int>, n: int, prices: seq<int>) {
 }
 // </preamble>
 
+// Following is the block for potential helper specifications
 // <helpers>
 
 // </helpers>
 
+// Following is the block for proofs of lemmas
 // <proofs>
 
 // </proofs>
 
+// Following is the block for the main specification
 // <spec>
 method rod_cutting(n: int, prices: seq<int>) returns (result: int)
     requires |prices| >= n

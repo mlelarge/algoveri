@@ -1,3 +1,4 @@
+// Following is the block for necessary definitions
 // <preamble>
 // Calculates total loot: sum of nums[i] for all i in 'houses'
 function total_loot(houses: seq<int>, nums: seq<int>): int
@@ -27,14 +28,17 @@ predicate is_valid_robbery(houses: seq<int>, nums_len: int) {
 }
 // </preamble>
 
+// Following is the block for potential helper specifications
 // <helpers>
 
 // </helpers>
 
+// Following is the block for proofs of lemmas
 // <proofs>
 
 // </proofs>
 
+// Following is the block for the main specification
 // <spec>
 method rob(nums: seq<int>) returns (max_amount: int)
     requires |nums| <= 100

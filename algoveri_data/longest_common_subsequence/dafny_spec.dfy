@@ -1,3 +1,4 @@
+// Following is the block for necessary definitions
 // <preamble>
 // Helper for max
 function max(a: int, b: int): int {
@@ -23,12 +24,17 @@ function lcs_spec(s1: seq<char>, s2: seq<char>): int
 }
 // </preamble>
 
+// Following is the block for potential helper specifications
 // <helpers>
+
 // </helpers>
 
+// Following is the block for proofs of lemmas
 // <proofs>
+
 // </proofs>
 
+// Following is the block for the main specification
 // <spec>
 method solve_longest_common_subsequence(s: seq<char>, t: seq<char>) returns (len: int)
     requires |s| <= 3000

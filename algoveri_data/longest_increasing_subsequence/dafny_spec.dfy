@@ -1,3 +1,4 @@
+// Following is the block for necessary definitions
 // <preamble>
 ghost predicate is_valid_is(s: seq<int>, indices: seq<int>) {
     (forall k: int, m: int :: 
@@ -11,14 +12,17 @@ ghost predicate is_valid_is(s: seq<int>, indices: seq<int>) {
 }
 // </preamble>
 
+// Following is the block for potential helper specifications
 // <helpers>
 
 // </helpers>
 
+// Following is the block for proofs of lemmas
 // <proofs>
 
 // </proofs>
 
+// Following is the block for the main specification
 // <spec>
 method longest_increasing_subsequence(s: seq<int>) returns (result: int)
     requires |s| <= 0x7FFFFFFFFFFFFFFF
