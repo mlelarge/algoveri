@@ -4,76 +4,43 @@ from src.verifiers.dafny_verifier import DafnyVerifier
 
 code = """// Following is the block for necessary definitions
 // <preamble>
-// Calculates the total length of the pieces
-function sum_lengths(cuts: seq<int>): int
-    decreases |cuts|
-{
-    if |cuts| == 0 then
-        0
-    else
-        cuts[0] + sum_lengths(cuts[1..])
+ghost predicate is_sorted(s: seq<int>) {
+    forall i, j :: 0 <= i < j < |s| ==> s[i] <= s[j]
 }
 
-// Helper: Safe price lookup that returns 0 for out-of-bounds
-function get_price(prices: seq<int>, idx: int): int {
-    if 0 <= idx < |prices| then
-        prices[idx]
-    else
-        0
+ghost predicate is_valid_index_permutation(p: seq<int>, n: int) {
+    && |p| == n
+    && (forall i {:trigger p[i]} :: 0 <= i < n ==> 0 <= p[i] < n)
+    && (forall i, j {:trigger p[i], p[j]} :: 0 <= i < j < n ==> p[i] != p[j])
 }
 
-// Calculates revenue recursively.
-function calculate_revenue(cuts: seq<int>, prices: seq<int>): int
-    decreases |cuts|
-{
-    if |cuts| == 0 then
-        0
-    else
-        // Revenue is price of first piece + revenue of remaining pieces
-        get_price(prices, cuts[0] - 1) + 
-        calculate_revenue(cuts[1..], prices)
-}
-
-// Definition of a valid strategy: positive cuts, valid prices, sums to n
-predicate is_valid_strategy(cuts: seq<int>, n: int, prices: seq<int>) {
-    (forall i: int :: 0 <= i < |cuts| ==> cuts[i] > 0) &&
-    (forall i: int :: 0 <= i < |cuts| ==> cuts[i] - 1 < |prices|) &&
-    sum_lengths(cuts) == n
+ghost predicate is_permutation(v1: seq<int>, v2: seq<int>) {
+    exists p: seq<int> :: 
+        is_valid_index_permutation(p, |v1|) 
+        && |v1| == |v2|
+        && (forall i {:trigger p[i]} :: 0 <= i < |v1| ==> v2[i] == v1[p[i]])
 }
 // </preamble>
 
 // Following is the block for potential helper specifications
 // <helpers>
-
 // </helpers>
 
 // Following is the block for proofs of lemmas
 // <proofs>
-
 // </proofs>
 
-// Following is the block for the main specification
+// Following is the block for the main specification and implementation
 // <spec>
-method rod_cutting(n: int, prices: seq<int>) returns (result: int)
-    requires |prices| >= n
-    requires n <= 1000
-    // Constraints matching Verus u64/usize unsigned and explicit bounds
-    requires forall i: int :: 0 <= i < |prices| ==> 0 <= prices[i] <= 10000
-    ensures result >= 0
-    // 1. Upper Bound
-    ensures forall cuts: seq<int> :: (is_valid_strategy(cuts, n, prices) 
-            ==> calculate_revenue(cuts, prices) <= result)
-    // 2. Existence
-    ensures exists cuts: seq<int> :: (is_valid_strategy(cuts, n, prices) 
-            && calculate_revenue(cuts, prices) == result)
+method bubble_sort(v: seq<int>) returns (v_new: seq<int>)
+    ensures is_sorted(v_new)
+    ensures is_permutation(v, v_new)
 // </spec>
+
 // <code>
-{
-    // Implement and verify the Rod Cutting DP algorithm here.
-    assume{:axiom} false;
-}
 // </code>
-"""
+
+method main() {}"""
 
 def test_dafny_verifier_writes_file_and_returns_result():
     """Verify that LeanVerifier writes the source file and returns a result dict.

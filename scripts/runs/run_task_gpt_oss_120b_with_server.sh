@@ -18,7 +18,7 @@ conda activate algoveri
 # --- CONFIGURATION ---
 CONTAINER="/scratch/gpfs/ARORA/haoyu/apptainer_imgs/vllm-nightly.sif"
 MODEL_PATH="/scratch/gpfs/ARORA/haoyu/gpt-oss-120b"
-LANGUAGE="verus"
+LANGUAGE="dafny"
 
 # Setup Network Variables
 HEAD_NODE_IP=$(hostname -I | awk '{print $1}')
@@ -156,7 +156,7 @@ start_vllm
 # run_task_robust "/scratch/gpfs/ARORA/haoyu/algoveri/algoveri_data/stack_pop"
 # run_task_robust "/scratch/gpfs/ARORA/haoyu/algoveri/algoveri_data/queue_enqueue"
 # run_task_robust "/scratch/gpfs/ARORA/haoyu/algoveri/algoveri_data/queue_dequeue"
-# run_task_robust "/scratch/gpfs/ARORA/haoyu/algoveri/algoveri_data/ringbuffer_enqueue"
+run_task_robust "/scratch/gpfs/ARORA/haoyu/algoveri/algoveri_data/ringbuffer_enqueue"
 # run_task_robust "/scratch/gpfs/ARORA/haoyu/algoveri/algoveri_data/ringbuffer_dequeue"
 # run_task_robust "/scratch/gpfs/ARORA/haoyu/algoveri/algoveri_data/unionfind_find"
 # run_task_robust "/scratch/gpfs/ARORA/haoyu/algoveri/algoveri_data/unionfind_linkroots"

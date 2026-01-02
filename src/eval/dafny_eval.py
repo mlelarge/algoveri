@@ -52,9 +52,11 @@ class DafnyEval(BaseEval):
         # extract expected pieces from the template if available
         preamble_pattern = re.compile(r'<preamble>.*?</preamble>', re.DOTALL)
         spec_pattern = re.compile(r'<spec>.*?</spec>', re.DOTALL)
+        code_pattern = re.compile(r'<code>.*?</code>', re.DOTALL)
 
         extracted_preamble = preamble_pattern.search(formal_code) if formal_code else None
         extracted_spec = spec_pattern.search(formal_code) if formal_code else None
+        extracted_code = code_pattern.search(formal_code) if formal_code else None
 
         # extract code block
         code = ""
@@ -85,8 +87,15 @@ class DafnyEval(BaseEval):
             missing_tags.append("spec")
         elif spec_in_code and extracted_spec:
             modified = spec_pattern.sub(extracted_spec.group(0), modified)
+        
+        missing_code_impl = False
+        code_in_code = code_pattern.search(modified)
+        if not ('{' in code_in_code.strip() and '}' in code_in_code.strip() and extracted_code):
+            missing_code_impl = True
 
 
+        if missing_code_impl:
+            return {"code": "", "comment": "do not find code implementation block; please include <code>...</code> containing the implementation and proofs."}
         if missing_tags:
             # instructive comment for the model
             if len(missing_tags) == 1:
