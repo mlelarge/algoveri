@@ -3,6 +3,7 @@ from pathlib import Path
 from src.verifiers.dafny_verifier import DafnyVerifier
 
 code = """// <preamble>
+<<<<<<< HEAD
 // Recursive definition of Modular Exponentiation: (b^e) % m
 function spec_pow_mod(b: int, e: int, m: int): int
   decreases e
@@ -19,6 +20,22 @@ predicate is_discrete_log(g: int, h: int, p: int, x: int)
   requires p > 1
 {
   spec_pow_mod(g, x, p) == h
+=======
+// Definition of a Palindrome:
+// A sequence is a palindrome if for every index i, the character at i
+// is identical to the character at the symmetric position from the end.
+predicate is_palindrome(s: seq<int>) {
+    // We trigger on s[i] so the solver knows to use this rule 
+    // whenever it sees an access to s at index i.
+    forall i :: 0 <= i < |s| ==> s[i] == s[|s| - 1 - i]
+}
+
+// Helper to check validity of a subrange within a larger sequence.
+predicate is_valid_subrange(s: seq<int>, start: int, len: int) {
+    && 0 <= start
+    && 0 <= len
+    && start + len <= |s|
+>>>>>>> ea54b6fa240f351bf8892894d9bb533d15b6eac9
 }
 // </preamble>
 
@@ -31,6 +48,7 @@ predicate is_discrete_log(g: int, h: int, p: int, x: int)
 // </proofs>
 
 // <spec>
+<<<<<<< HEAD
 // Dafny uses a datatype for Option
 datatype Option<T> = Some(value: T) | None
 
@@ -60,6 +78,38 @@ method discrete_log_naive(g: int, h: int, p: int) returns (res: Option<int>)
 
 method Main() {
 }"""
+=======
+// The main verification target.
+// Returns a tuple (start_index, length) representing the longest palindrome.
+method longest_palindromic_substring(s: seq<int>) returns (res: (int, int))
+    requires
+        // CONSTRAINT: Hard limit of 1,000,000. 
+        // Even with Manacher's expansion (2*N + 1), the required size 
+        // is ~2,000,001, which fits easily in u32/usize.
+        |s| <= 1000000
+    ensures
+        // Type Constraint: Results must be non-negative (simulating usize)
+        res.0 >= 0 && res.1 >= 0
+    ensures
+        // 1. The result defines a valid substring of the input.
+        is_valid_subrange(s, res.0, res.1)
+    ensures
+        // 2. The substring found is indeed a palindrome.
+        is_palindrome(s[res.0 .. res.0 + res.1])
+    ensures
+        // 3. Maximality: There exists no other valid palindromic substring 
+        // with a length strictly greater than the result found.
+        forall i, len :: 
+            is_valid_subrange(s, i, len) && is_palindrome(s[i .. i + len])
+            ==> len <= res.1
+// </spec>
+// <code>
+{
+    assume {:axiom} false;
+    // Implementation of Manacher's algorithm (or other solution) goes here.
+}
+// </code>"""
+>>>>>>> ea54b6fa240f351bf8892894d9bb533d15b6eac9
 
 def test_dafny_verifier_writes_file_and_returns_result():
     """Verify that LeanVerifier writes the source file and returns a result dict.
