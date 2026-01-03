@@ -90,7 +90,7 @@ class DafnyEval(BaseEval):
         
         missing_code_impl = False
         code_in_code = code_pattern.search(modified)
-        if not ('{' in code_in_code.strip() and '}' in code_in_code.strip() and extracted_code):
+        if not (code_in_code and ('{' in code_in_code.group(0).strip()) and ('}' in code_in_code.group(0).strip())):
             missing_code_impl = True
 
 

@@ -56,7 +56,6 @@ class VerusEval(BaseEval):
 
         extracted_preamble = preamble_pattern.search(formal_code) if formal_code else None
         extracted_spec = spec_pattern.search(formal_code) if formal_code else None
-        extracted_code = code_pattern.search(formal_code) if formal_code else None
 
         # extract code block
         code = ""
@@ -90,7 +89,7 @@ class VerusEval(BaseEval):
         
         missing_code_impl = False
         code_in_code = code_pattern.search(modified)
-        if not ('{' in code_in_code.strip() and '}' in code_in_code.strip() and extracted_code):
+        if not (code_in_code and ('{' in code_in_code.group(0).strip()) and ('}' in code_in_code.group(0).strip())):
             missing_code_impl = True
 
 
