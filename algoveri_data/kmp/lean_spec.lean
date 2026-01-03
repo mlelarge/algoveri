@@ -5,8 +5,7 @@ import Mathlib
 def kmpSearch_precond (haystack : Array UInt8) (needle : Array UInt8) : Prop :=
   -- !benchmark @start precond
   haystack.size < 1000000 ∧ 
-  needle.size < 1000000 ∧ 
-  needle.size > 0  -- Critical fix: avoid empty needle edge cases
+  needle.size < 1000000
   -- !benchmark @end precond
 
 -- !benchmark @start auxcode

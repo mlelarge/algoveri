@@ -29,7 +29,9 @@ def Matching.size (m : Matching) : Nat :=
   m.edges.length
 
 def is_matching (g : MaxMatchingGraph) (m : Matching) : Prop :=
-  m.is_valid g ∧ m.is_disjoint
+  m.is_valid g ∧ 
+  m.is_disjoint ∧
+  m.edges.Nodup
 
 def is_max_matching_size (g : MaxMatchingGraph) (k : Nat) : Prop :=
   (∃ m, is_matching g m ∧ m.size = k) ∧

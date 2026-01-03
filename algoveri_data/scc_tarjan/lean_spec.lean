@@ -29,6 +29,8 @@ def SCCGraph.is_strongly_connected (g : SCCGraph) (comp : List Nat) : Prop :=
     (g.has_path u v ∧ g.has_path v u)
 
 def SCCGraph.is_partition (g : SCCGraph) (sccs : List (List Nat)) : Prop :=
+  -- Enforce no duplicate components to match index-based disjointness
+  sccs.Nodup ∧ 
   -- All nodes covered
   (∀ u, u < g.size → ∃ comp, comp ∈ sccs ∧ u ∈ comp) ∧
   -- Disjoint

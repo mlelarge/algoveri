@@ -9,7 +9,7 @@ def ac_automata_search_precond (haystack : Array UInt8) (patterns : Array (Array
   patterns.size < 1000000 ∧
   (∀ i : Nat, i < patterns.size → 
     let p := patterns.getD i #[]
-    p.size > 0 ∧ p.size < 1000000) -- Added p.size > 0 constraint
+    p.size < 1000000)
   -- !benchmark @end precond
 
 -- !benchmark @start auxcode

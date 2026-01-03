@@ -17,8 +17,7 @@ import os
 from .base_eval import BaseEval
 from src.verifiers.verus_verifier import VerusVerifier
 from src.verifiers.dafny_verifier import DafnyVerifier
-
-
+from src.verifiers.lean_verifier import LeanVerifier
 
 
 
@@ -50,6 +49,14 @@ class Runner:
         elif lang.startswith("dafny"):
             nl_path = problem_dir / "dafny_nl.txt"
             spec_path = problem_dir / "dafny_spec.dfy"
+            if not nl_path.exists():
+                raise FileNotFoundError(f"Missing natural-language file: {nl_path}")
+            if not spec_path.exists():
+                raise FileNotFoundError(f"Missing verus spec file: {spec_path}")
+            return {"natural": nl_path.read_text(), "spec": spec_path.read_text()}
+        elif lang.startswith("lean"):
+            nl_path = problem_dir / "lean_nl.txt"
+            spec_path = problem_dir / "lean_spec.lean"
             if not nl_path.exists():
                 raise FileNotFoundError(f"Missing natural-language file: {nl_path}")
             if not spec_path.exists():
@@ -177,8 +184,16 @@ class Runner:
                 return DafnyEval(llm_client=self.llm, verifier=verifier, max_rounds=max_rounds)
             except Exception as e:
                 raise RuntimeError(f"Failed to construct VerusEval: {e}")
+        elif lang.startswith("lean"):
+            try:
+                from .lean_eval import LeanEval
 
-        if lang.startswith("lean"):
+                # create with llm client and verifier handled by VerusEval
+                verifier = LeanVerifier(config_path=self.cfg_path)
+                return LeanEval(llm_client=self.llm, verifier=verifier, max_rounds=max_rounds)
+            except Exception as e:
+                raise RuntimeError(f"Failed to construct LeanEval: {e}")
+        else:
             raise NotImplementedError(f"Evaluator for language '{language}' is not implemented yet")
 
         raise NotImplementedError(f"Unknown/unsupported language: {language}")

@@ -5,8 +5,7 @@ import Mathlib
 def naive_search_precond (haystack : Array UInt8) (needle : Array UInt8) : Prop :=
   -- !benchmark @start precond
   haystack.size < 1000000 ∧ 
-  needle.size < 1000000 ∧
-  needle.size > 0 -- Added to prevent vacuous matches
+  needle.size < 1000000
   -- !benchmark @end precond
 
 -- !benchmark @start auxcode
