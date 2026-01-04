@@ -2,7 +2,7 @@
 #SBATCH --job-name=algoveri
 #SBATCH --nodes=1
 #SBATCH --ntasks-per-node=1
-#SBATCH --cpus-per-task=64
+#SBATCH --cpus-per-task=40
 #SBATCH --mem=400G
 #SBATCH --gres=gpu:4
 #SBATCH --time=23:59:00
@@ -249,6 +249,9 @@ start_vllm
 # run_task_robust "/scratch/gpfs/ARORA/haoyu/algoveri/algoveri_data/ac_automata"
 
 # Put all your task paths into an array
+################
+# data structure
+################
 tasks=(
     "/scratch/gpfs/ARORA/haoyu/algoveri/algoveri_data/maxheap_push"
     "/scratch/gpfs/ARORA/haoyu/algoveri/algoveri_data/maxheap_popmax"
@@ -282,6 +285,60 @@ tasks=(
     "/scratch/gpfs/ARORA/haoyu/algoveri/algoveri_data/llrbt_rotateright"
     "/scratch/gpfs/ARORA/haoyu/algoveri/algoveri_data/llrbt_flipcolor"
 )
+
+# tasks=(
+#     # sorting
+#     "/scratch/gpfs/ARORA/haoyu/algoveri/algoveri_data/binary_search"
+#     "/scratch/gpfs/ARORA/haoyu/algoveri/algoveri_data/linear_search"
+#     "/scratch/gpfs/ARORA/haoyu/algoveri/algoveri_data/bubble_sort"
+#     "/scratch/gpfs/ARORA/haoyu/algoveri/algoveri_data/insertion_sort"
+#     "/scratch/gpfs/ARORA/haoyu/algoveri/algoveri_data/merge_sort"
+#     "/scratch/gpfs/ARORA/haoyu/algoveri/algoveri_data/quick_sort"
+#     "/scratch/gpfs/ARORA/haoyu/algoveri/algoveri_data/k_smallest"
+#     # basic algo, DP
+#     "/scratch/gpfs/ARORA/haoyu/algoveri/algoveri_data/longest_common_subsequence"
+#     "/scratch/gpfs/ARORA/haoyu/algoveri/algoveri_data/coin_change"
+#     "/scratch/gpfs/ARORA/haoyu/algoveri/algoveri_data/jump_game"
+#     "/scratch/gpfs/ARORA/haoyu/algoveri/algoveri_data/knapsack_01"
+#     "/scratch/gpfs/ARORA/haoyu/algoveri/algoveri_data/knapsack_unbounded"
+#     "/scratch/gpfs/ARORA/haoyu/algoveri/algoveri_data/longest_increasing_subsequence"
+#     "/scratch/gpfs/ARORA/haoyu/algoveri/algoveri_data/maximum_subarray_sum"
+#     "/scratch/gpfs/ARORA/haoyu/algoveri/algoveri_data/rod_cutting"
+#     "/scratch/gpfs/ARORA/haoyu/algoveri/algoveri_data/lca"
+#     "/scratch/gpfs/ARORA/haoyu/algoveri/algoveri_data/house_robber"
+#     # graph
+#     "/scratch/gpfs/ARORA/haoyu/algoveri/algoveri_data/dfs"
+#     "/scratch/gpfs/ARORA/haoyu/algoveri/algoveri_data/bfs"
+#     "/scratch/gpfs/ARORA/haoyu/algoveri/algoveri_data/cycle_detection"
+#     "/scratch/gpfs/ARORA/haoyu/algoveri/algoveri_data/bipartite_check"
+#     "/scratch/gpfs/ARORA/haoyu/algoveri/algoveri_data/topological_sort"
+#     "/scratch/gpfs/ARORA/haoyu/algoveri/algoveri_data/dijkstra"
+#     "/scratch/gpfs/ARORA/haoyu/algoveri/algoveri_data/bellman_ford"
+#     "/scratch/gpfs/ARORA/haoyu/algoveri/algoveri_data/prim"
+#     "/scratch/gpfs/ARORA/haoyu/algoveri/algoveri_data/kruskal"
+#     "/scratch/gpfs/ARORA/haoyu/algoveri/algoveri_data/max_matching"
+#     "/scratch/gpfs/ARORA/haoyu/algoveri/algoveri_data/edmond_karp"
+#     "/scratch/gpfs/ARORA/haoyu/algoveri/algoveri_data/push_relabel"
+#     "/scratch/gpfs/ARORA/haoyu/algoveri/algoveri_data/scc_tarjan"
+#     # math
+#     "/scratch/gpfs/ARORA/haoyu/algoveri/algoveri_data/integer_exponential"
+#     "/scratch/gpfs/ARORA/haoyu/algoveri/algoveri_data/fast_exponential"
+#     "/scratch/gpfs/ARORA/haoyu/algoveri/algoveri_data/trial_division_naive"
+#     "/scratch/gpfs/ARORA/haoyu/algoveri/algoveri_data/trial_division_optimized"
+#     "/scratch/gpfs/ARORA/haoyu/algoveri/algoveri_data/sieve_method"
+#     "/scratch/gpfs/ARORA/haoyu/algoveri/algoveri_data/polymul_naive"
+#     "/scratch/gpfs/ARORA/haoyu/algoveri/algoveri_data/polymul_karatsuba"
+#     "/scratch/gpfs/ARORA/haoyu/algoveri/algoveri_data/discrete_logarithm"
+#     "/scratch/gpfs/ARORA/haoyu/algoveri/algoveri_data/linearsys_gf2"
+#     "/scratch/gpfs/ARORA/haoyu/algoveri/algoveri_data/gcd"
+#     "/scratch/gpfs/ARORA/haoyu/algoveri/algoveri_data/matrix_multiplication"
+#     # string
+#     "/scratch/gpfs/ARORA/haoyu/algoveri/algoveri_data/bracket_matching"
+#     "/scratch/gpfs/ARORA/haoyu/algoveri/algoveri_data/longest_palindrome_substring"
+#     "/scratch/gpfs/ARORA/haoyu/algoveri/algoveri_data/string_search_naive"
+#     "/scratch/gpfs/ARORA/haoyu/algoveri/algoveri_data/kmp"
+#     "/scratch/gpfs/ARORA/haoyu/algoveri/algoveri_data/ac_automata"
+# )
 
 # Define the total number of parallel groups
 NUM_GROUPS=4

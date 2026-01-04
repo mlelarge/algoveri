@@ -137,40 +137,40 @@ start_vllm
 # 2. Run Benchmarks using the robust function
 
 
-#############################################
-# Data structure
-#############################################
-run_task_robust "/scratch/gpfs/ARORA/haoyu/algoveri/algoveri_data/maxheap_push"
-run_task_robust "/scratch/gpfs/ARORA/haoyu/algoveri/algoveri_data/maxheap_popmax"
-run_task_robust "/scratch/gpfs/ARORA/haoyu/algoveri/algoveri_data/bst_search"
-run_task_robust "/scratch/gpfs/ARORA/haoyu/algoveri/algoveri_data/bst_delete"
-run_task_robust "/scratch/gpfs/ARORA/haoyu/algoveri/algoveri_data/bst_insert"
-run_task_robust "/scratch/gpfs/ARORA/haoyu/algoveri/algoveri_data/bst_zig"
-run_task_robust "/scratch/gpfs/ARORA/haoyu/algoveri/algoveri_data/bst_zigzig"
-run_task_robust "/scratch/gpfs/ARORA/haoyu/algoveri/algoveri_data/bst_zigzag"
-run_task_robust "/scratch/gpfs/ARORA/haoyu/algoveri/algoveri_data/stack_push"
-run_task_robust "/scratch/gpfs/ARORA/haoyu/algoveri/algoveri_data/stack_pop"
-run_task_robust "/scratch/gpfs/ARORA/haoyu/algoveri/algoveri_data/queue_enqueue"
-run_task_robust "/scratch/gpfs/ARORA/haoyu/algoveri/algoveri_data/queue_dequeue"
-run_task_robust "/scratch/gpfs/ARORA/haoyu/algoveri/algoveri_data/ringbuffer_enqueue"
-run_task_robust "/scratch/gpfs/ARORA/haoyu/algoveri/algoveri_data/ringbuffer_dequeue"
-run_task_robust "/scratch/gpfs/ARORA/haoyu/algoveri/algoveri_data/unionfind_find"
-run_task_robust "/scratch/gpfs/ARORA/haoyu/algoveri/algoveri_data/unionfind_linkroots"
-run_task_robust "/scratch/gpfs/ARORA/haoyu/algoveri/algoveri_data/splaytree_splay"
-run_task_robust "/scratch/gpfs/ARORA/haoyu/algoveri/algoveri_data/trie_search"
-run_task_robust "/scratch/gpfs/ARORA/haoyu/algoveri/algoveri_data/trie_insert"
-run_task_robust "/scratch/gpfs/ARORA/haoyu/algoveri/algoveri_data/trie_delete"
-run_task_robust "/scratch/gpfs/ARORA/haoyu/algoveri/algoveri_data/ternarysearchtree_search"
-run_task_robust "/scratch/gpfs/ARORA/haoyu/algoveri/algoveri_data/ternarysearchtree_insert"
-run_task_robust "/scratch/gpfs/ARORA/haoyu/algoveri/algoveri_data/ternarysearchtree_delete"
-run_task_robust "/scratch/gpfs/ARORA/haoyu/algoveri/algoveri_data/segmenttree_query"
-run_task_robust "/scratch/gpfs/ARORA/haoyu/algoveri/algoveri_data/segmenttree_modify"
-run_task_robust "/scratch/gpfs/ARORA/haoyu/algoveri/algoveri_data/segmenttree_build"
-run_task_robust "/scratch/gpfs/ARORA/haoyu/algoveri/algoveri_data/llrbt_delete"
-run_task_robust "/scratch/gpfs/ARORA/haoyu/algoveri/algoveri_data/llrbt_insert"
-run_task_robust "/scratch/gpfs/ARORA/haoyu/algoveri/algoveri_data/llrbt_rotateleft"
-run_task_robust "/scratch/gpfs/ARORA/haoyu/algoveri/algoveri_data/llrbt_rotateright"
-run_task_robust "/scratch/gpfs/ARORA/haoyu/algoveri/algoveri_data/llrbt_flipcolor"
+# #############################################
+# # Data structure
+# #############################################
+# run_task_robust "/scratch/gpfs/ARORA/haoyu/algoveri/algoveri_data/maxheap_push"
+# run_task_robust "/scratch/gpfs/ARORA/haoyu/algoveri/algoveri_data/maxheap_popmax"
+# run_task_robust "/scratch/gpfs/ARORA/haoyu/algoveri/algoveri_data/bst_search"
+# run_task_robust "/scratch/gpfs/ARORA/haoyu/algoveri/algoveri_data/bst_delete"
+# run_task_robust "/scratch/gpfs/ARORA/haoyu/algoveri/algoveri_data/bst_insert"
+# run_task_robust "/scratch/gpfs/ARORA/haoyu/algoveri/algoveri_data/bst_zig"
+# run_task_robust "/scratch/gpfs/ARORA/haoyu/algoveri/algoveri_data/bst_zigzig"
+# run_task_robust "/scratch/gpfs/ARORA/haoyu/algoveri/algoveri_data/bst_zigzag"
+# run_task_robust "/scratch/gpfs/ARORA/haoyu/algoveri/algoveri_data/stack_push"
+# run_task_robust "/scratch/gpfs/ARORA/haoyu/algoveri/algoveri_data/stack_pop"
+# run_task_robust "/scratch/gpfs/ARORA/haoyu/algoveri/algoveri_data/queue_enqueue"
+# run_task_robust "/scratch/gpfs/ARORA/haoyu/algoveri/algoveri_data/queue_dequeue"
+# run_task_robust "/scratch/gpfs/ARORA/haoyu/algoveri/algoveri_data/ringbuffer_enqueue"
+# run_task_robust "/scratch/gpfs/ARORA/haoyu/algoveri/algoveri_data/ringbuffer_dequeue"
+# run_task_robust "/scratch/gpfs/ARORA/haoyu/algoveri/algoveri_data/unionfind_find"
+# run_task_robust "/scratch/gpfs/ARORA/haoyu/algoveri/algoveri_data/unionfind_linkroots"
+# run_task_robust "/scratch/gpfs/ARORA/haoyu/algoveri/algoveri_data/splaytree_splay"
+# run_task_robust "/scratch/gpfs/ARORA/haoyu/algoveri/algoveri_data/trie_search"
+# run_task_robust "/scratch/gpfs/ARORA/haoyu/algoveri/algoveri_data/trie_insert"
+# run_task_robust "/scratch/gpfs/ARORA/haoyu/algoveri/algoveri_data/trie_delete"
+# run_task_robust "/scratch/gpfs/ARORA/haoyu/algoveri/algoveri_data/ternarysearchtree_search"
+# run_task_robust "/scratch/gpfs/ARORA/haoyu/algoveri/algoveri_data/ternarysearchtree_insert"
+# run_task_robust "/scratch/gpfs/ARORA/haoyu/algoveri/algoveri_data/ternarysearchtree_delete"
+# run_task_robust "/scratch/gpfs/ARORA/haoyu/algoveri/algoveri_data/segmenttree_query"
+# run_task_robust "/scratch/gpfs/ARORA/haoyu/algoveri/algoveri_data/segmenttree_modify"
+# run_task_robust "/scratch/gpfs/ARORA/haoyu/algoveri/algoveri_data/segmenttree_build"
+# run_task_robust "/scratch/gpfs/ARORA/haoyu/algoveri/algoveri_data/llrbt_delete"
+# run_task_robust "/scratch/gpfs/ARORA/haoyu/algoveri/algoveri_data/llrbt_insert"
+# run_task_robust "/scratch/gpfs/ARORA/haoyu/algoveri/algoveri_data/llrbt_rotateleft"
+# run_task_robust "/scratch/gpfs/ARORA/haoyu/algoveri/algoveri_data/llrbt_rotateright"
+# run_task_robust "/scratch/gpfs/ARORA/haoyu/algoveri/algoveri_data/llrbt_flipcolor"
 
 
 # #############################################
@@ -244,6 +244,130 @@ run_task_robust "/scratch/gpfs/ARORA/haoyu/algoveri/algoveri_data/llrbt_flipcolo
 # run_task_robust "/scratch/gpfs/ARORA/haoyu/algoveri/algoveri_data/kmp"
 # run_task_robust "/scratch/gpfs/ARORA/haoyu/algoveri/algoveri_data/ac_automata"
 
+
+
+
+
+# Put all your task paths into an array
+################
+# data structure
+################
+tasks=(
+    "/scratch/gpfs/ARORA/haoyu/algoveri/algoveri_data/maxheap_push"
+    "/scratch/gpfs/ARORA/haoyu/algoveri/algoveri_data/maxheap_popmax"
+    "/scratch/gpfs/ARORA/haoyu/algoveri/algoveri_data/bst_search"
+    "/scratch/gpfs/ARORA/haoyu/algoveri/algoveri_data/bst_delete"
+    "/scratch/gpfs/ARORA/haoyu/algoveri/algoveri_data/bst_insert"
+    "/scratch/gpfs/ARORA/haoyu/algoveri/algoveri_data/bst_zig"
+    "/scratch/gpfs/ARORA/haoyu/algoveri/algoveri_data/bst_zigzig"
+    "/scratch/gpfs/ARORA/haoyu/algoveri/algoveri_data/bst_zigzag"
+    "/scratch/gpfs/ARORA/haoyu/algoveri/algoveri_data/stack_push"
+    "/scratch/gpfs/ARORA/haoyu/algoveri/algoveri_data/stack_pop"
+    "/scratch/gpfs/ARORA/haoyu/algoveri/algoveri_data/queue_enqueue"
+    "/scratch/gpfs/ARORA/haoyu/algoveri/algoveri_data/queue_dequeue"
+    "/scratch/gpfs/ARORA/haoyu/algoveri/algoveri_data/ringbuffer_enqueue"
+    "/scratch/gpfs/ARORA/haoyu/algoveri/algoveri_data/ringbuffer_dequeue"
+    "/scratch/gpfs/ARORA/haoyu/algoveri/algoveri_data/unionfind_find"
+    "/scratch/gpfs/ARORA/haoyu/algoveri/algoveri_data/unionfind_linkroots"
+    "/scratch/gpfs/ARORA/haoyu/algoveri/algoveri_data/splaytree_splay"
+    "/scratch/gpfs/ARORA/haoyu/algoveri/algoveri_data/trie_search"
+    "/scratch/gpfs/ARORA/haoyu/algoveri/algoveri_data/trie_insert"
+    "/scratch/gpfs/ARORA/haoyu/algoveri/algoveri_data/trie_delete"
+    "/scratch/gpfs/ARORA/haoyu/algoveri/algoveri_data/ternarysearchtree_search"
+    "/scratch/gpfs/ARORA/haoyu/algoveri/algoveri_data/ternarysearchtree_insert"
+    "/scratch/gpfs/ARORA/haoyu/algoveri/algoveri_data/ternarysearchtree_delete"
+    "/scratch/gpfs/ARORA/haoyu/algoveri/algoveri_data/segmenttree_query"
+    "/scratch/gpfs/ARORA/haoyu/algoveri/algoveri_data/segmenttree_modify"
+    "/scratch/gpfs/ARORA/haoyu/algoveri/algoveri_data/segmenttree_build"
+    "/scratch/gpfs/ARORA/haoyu/algoveri/algoveri_data/llrbt_delete"
+    "/scratch/gpfs/ARORA/haoyu/algoveri/algoveri_data/llrbt_insert"
+    "/scratch/gpfs/ARORA/haoyu/algoveri/algoveri_data/llrbt_rotateleft"
+    "/scratch/gpfs/ARORA/haoyu/algoveri/algoveri_data/llrbt_rotateright"
+    "/scratch/gpfs/ARORA/haoyu/algoveri/algoveri_data/llrbt_flipcolor"
+)
+
+# tasks=(
+#     # sorting
+#     "/scratch/gpfs/ARORA/haoyu/algoveri/algoveri_data/binary_search"
+#     "/scratch/gpfs/ARORA/haoyu/algoveri/algoveri_data/linear_search"
+#     "/scratch/gpfs/ARORA/haoyu/algoveri/algoveri_data/bubble_sort"
+#     "/scratch/gpfs/ARORA/haoyu/algoveri/algoveri_data/insertion_sort"
+#     "/scratch/gpfs/ARORA/haoyu/algoveri/algoveri_data/merge_sort"
+#     "/scratch/gpfs/ARORA/haoyu/algoveri/algoveri_data/quick_sort"
+#     "/scratch/gpfs/ARORA/haoyu/algoveri/algoveri_data/k_smallest"
+#     # basic algo, DP
+#     "/scratch/gpfs/ARORA/haoyu/algoveri/algoveri_data/longest_common_subsequence"
+#     "/scratch/gpfs/ARORA/haoyu/algoveri/algoveri_data/coin_change"
+#     "/scratch/gpfs/ARORA/haoyu/algoveri/algoveri_data/jump_game"
+#     "/scratch/gpfs/ARORA/haoyu/algoveri/algoveri_data/knapsack_01"
+#     "/scratch/gpfs/ARORA/haoyu/algoveri/algoveri_data/knapsack_unbounded"
+#     "/scratch/gpfs/ARORA/haoyu/algoveri/algoveri_data/longest_increasing_subsequence"
+#     "/scratch/gpfs/ARORA/haoyu/algoveri/algoveri_data/maximum_subarray_sum"
+#     "/scratch/gpfs/ARORA/haoyu/algoveri/algoveri_data/rod_cutting"
+#     "/scratch/gpfs/ARORA/haoyu/algoveri/algoveri_data/lca"
+#     "/scratch/gpfs/ARORA/haoyu/algoveri/algoveri_data/house_robber"
+#     # graph
+#     "/scratch/gpfs/ARORA/haoyu/algoveri/algoveri_data/dfs"
+#     "/scratch/gpfs/ARORA/haoyu/algoveri/algoveri_data/bfs"
+#     "/scratch/gpfs/ARORA/haoyu/algoveri/algoveri_data/cycle_detection"
+#     "/scratch/gpfs/ARORA/haoyu/algoveri/algoveri_data/bipartite_check"
+#     "/scratch/gpfs/ARORA/haoyu/algoveri/algoveri_data/topological_sort"
+#     "/scratch/gpfs/ARORA/haoyu/algoveri/algoveri_data/dijkstra"
+#     "/scratch/gpfs/ARORA/haoyu/algoveri/algoveri_data/bellman_ford"
+#     "/scratch/gpfs/ARORA/haoyu/algoveri/algoveri_data/prim"
+#     "/scratch/gpfs/ARORA/haoyu/algoveri/algoveri_data/kruskal"
+#     "/scratch/gpfs/ARORA/haoyu/algoveri/algoveri_data/max_matching"
+#     "/scratch/gpfs/ARORA/haoyu/algoveri/algoveri_data/edmond_karp"
+#     "/scratch/gpfs/ARORA/haoyu/algoveri/algoveri_data/push_relabel"
+#     "/scratch/gpfs/ARORA/haoyu/algoveri/algoveri_data/scc_tarjan"
+#     # math
+#     "/scratch/gpfs/ARORA/haoyu/algoveri/algoveri_data/integer_exponential"
+#     "/scratch/gpfs/ARORA/haoyu/algoveri/algoveri_data/fast_exponential"
+#     "/scratch/gpfs/ARORA/haoyu/algoveri/algoveri_data/trial_division_naive"
+#     "/scratch/gpfs/ARORA/haoyu/algoveri/algoveri_data/trial_division_optimized"
+#     "/scratch/gpfs/ARORA/haoyu/algoveri/algoveri_data/sieve_method"
+#     "/scratch/gpfs/ARORA/haoyu/algoveri/algoveri_data/polymul_naive"
+#     "/scratch/gpfs/ARORA/haoyu/algoveri/algoveri_data/polymul_karatsuba"
+#     "/scratch/gpfs/ARORA/haoyu/algoveri/algoveri_data/discrete_logarithm"
+#     "/scratch/gpfs/ARORA/haoyu/algoveri/algoveri_data/linearsys_gf2"
+#     "/scratch/gpfs/ARORA/haoyu/algoveri/algoveri_data/gcd"
+#     "/scratch/gpfs/ARORA/haoyu/algoveri/algoveri_data/matrix_multiplication"
+#     # string
+#     "/scratch/gpfs/ARORA/haoyu/algoveri/algoveri_data/bracket_matching"
+#     "/scratch/gpfs/ARORA/haoyu/algoveri/algoveri_data/longest_palindrome_substring"
+#     "/scratch/gpfs/ARORA/haoyu/algoveri/algoveri_data/string_search_naive"
+#     "/scratch/gpfs/ARORA/haoyu/algoveri/algoveri_data/kmp"
+#     "/scratch/gpfs/ARORA/haoyu/algoveri/algoveri_data/ac_automata"
+# )
+
+# Define the total number of parallel groups
+NUM_GROUPS=2
+group_pids=() # Create an empty array to store PIDs
+
+# Loop to create the parallel groups
+for ((g=0; g<NUM_GROUPS; g++)); do
+    (
+        # This inner loop picks tasks using modulo arithmetic (Round Robin)
+        # Group 0 does tasks 0, 4, 8...
+        # Group 1 does tasks 1, 5, 9...
+        for ((i=g; i<${#tasks[@]}; i+=NUM_GROUPS)); do
+            task_path="${tasks[i]}"
+            echo "Group $g running: $task_path"
+            
+            # Run your actual function here
+            run_task_robust "$task_path"
+        done
+    ) & # Put this entire group in the background
+
+    # SAVE THE PID of the specific background group we just started
+    group_pids+=($!) 
+done
+
+# --- The Critical Change ---
+
+# Do NOT use 'wait'. Use 'wait' with specific PIDs.
+# This waits for all the logic groups to finish, but ignores the vLLM server.
+wait "${group_pids[@]}"
 
 # 3. Final Cleanup
 echo ">>>All tasks finished. Shutting down server..."

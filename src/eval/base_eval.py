@@ -82,12 +82,13 @@ class BaseEval(ABC):
                         "raw": None, 
                         "file": ""
                     }
-                ver_res = {
-                    "ok": False, 
-                    "reason": f"Cannot parse code from LLM response.", 
-                    "raw": None, 
-                    "file": ""
-                }
+                else:
+                    ver_res = {
+                        "ok": False, 
+                        "reason": f"Cannot parse code from LLM response.", 
+                        "raw": None, 
+                        "file": ""
+                    }
 
             parsed_ver_res = self.parse_verifier_response(ver_res)
             verified = parsed_ver_res.get("verified", False)

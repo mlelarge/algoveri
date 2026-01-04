@@ -39,7 +39,7 @@ def spec_find (uf : UnionFind) (i : Nat) : Nat :=
   else
     i
 termination_by measure uf i
-decreasing_by sorry -- Assume termination handled by SMT logic
+decreasing_by sorry
 
 -- Precondition definitions
 @[reducible, simp]
