@@ -16,9 +16,7 @@ def list_nat_to_int (l : List Nat) : List Int :=
   l.map (fun x => Int.ofNat x)
 
 def total_weight (counts weights : List Int) : Int :=
-  -- !benchmark @start auxcode
   (counts.zip weights).foldl (fun acc p => acc + p.1 * p.2) 0
-  -- !benchmark @end auxcode
 
 def total_value (counts values : List Int) : Int :=
   (counts.zip values).foldl (fun acc p => acc + p.1 * p.2) 0

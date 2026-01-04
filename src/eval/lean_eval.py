@@ -75,15 +75,15 @@ class LeanEval(BaseEval):
         lemma_string = lemma_in_response.group(0) if lemma_in_response else ""
         proof_string = proof_in_response.group(0) if proof_in_response else ""
 
-        if (not code_string) and (not proof_string):
+        if (not code_string) or (not proof_string):
             return {"code": "", "comment": "The response is missing the required code and proof sections. Please include both sections in your response and wrapped them between (-- !benchmark @start code, -- !benchmark @end code) and (-- !benchmark @start proof, -- !benchmark @end proof)."}
 
         def keywords_in_code(s: str, keywords: list[str]) -> bool:
             return any(kw in s for kw in keywords)
         prohibited_keywords = ['sorry', 'admit', 'axiom', 'constant', 'partial', 'unsafe', '@[extern', '@[implemented_by']
         if keywords_in_code(auxcode_string, prohibited_keywords) or keywords_in_code(code_string, prohibited_keywords) or keywords_in_code(lemma_string, prohibited_keywords) or keywords_in_code(proof_string, prohibited_keywords):
-            "The generated sections for auxcode, code, lemma, or proof contains 'sorry', 'admit', 'axiom', 'constant', 'partial', 'unsafe', '@[extern', or '@[implemented_by', which is not allowed. Please provide a complete implementation and proof without using these keywords."
-            {"code": "", "comment": comment}
+            comment = "The generated sections for auxcode, code, lemma, or proof contains 'sorry', 'admit', 'axiom', 'constant', 'partial', 'unsafe', '@[extern', or '@[implemented_by', which is not allowed. Please provide a complete implementation and proof without using these keywords."
+            return {"code": "", "comment": comment}
         
         # Now substitute back into original formal code
         if formal_code:
