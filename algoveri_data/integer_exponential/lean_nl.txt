@@ -1,0 +1,1 @@
+Your task is to implement Integer Exponentiation and verify its correctness in Lean. Given a base b and a non-negative exponent e, compute b to the power of e. Postconditions: Result equals b^e as strictly defined by Lean's Nat.pow. Preconditions: Exponent is non-negative (natural number). Implementation should be efficient or standard recursive method.
