@@ -16,21 +16,20 @@ verus! {
         pub open spec fn view(&self) -> Map<int, u64>
             decreases self
         {
-            let left_view = match &self.left {
-                Some(l) => l.view(),
-                None => Map::empty(),
-            };
-            let right_view = match &self.right {
-                Some(r) => r.view(),
-                None => Map::empty(),
-            };
-            
-            // We construct the union manually. Since the domains are disjoint (guaranteed by is_segment_tree),
-            // we can simply check which map contains the key.
-            Map::new(
-                |k: int| left_view.contains_key(k) || right_view.contains_key(k),
-                |k: int| if left_view.contains_key(k) { left_view[k] } else { right_view[k] }
-            )
+            // Check if Leaf (Base Case)
+            if self.left.is_none() && self.right.is_none() {
+                // A leaf represents the value at index 'self.low'
+                Map::empty().insert(self.low as int, self.val)
+            } else {
+                // Recursive Step (Internal Node)
+                let left_view = match &self.left { Some(l) => l.view(), None => Map::empty() };
+                let right_view = match &self.right { Some(r) => r.view(), None => Map::empty() };
+                
+                Map::new(
+                    |k: int| left_view.contains_key(k) || right_view.contains_key(k),
+                    |k: int| if left_view.contains_key(k) { left_view[k] } else { right_view[k] }
+                )
+            }
         }
 
         // Checks structural integrity and the Max property

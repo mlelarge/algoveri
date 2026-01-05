@@ -1,4 +1,5 @@
 from pathlib import Path
+import sys
 
 from src.verifiers.verus_verifier import VerusVerifier
 
@@ -83,10 +84,17 @@ def test_verus_verifier_writes_file_and_returns_result():
     It does not require a working `verus` binary; it only asserts that the
     verifier produces a dict with expected keys and that the output file exists.
     """
-    cfg_path = Path(__file__).resolve().parent / "config_jiawei_test.yaml"
+    cfg_path = Path(__file__).resolve().parent / "config_test.yaml"
     verifier = VerusVerifier(config_path=str(cfg_path))
 
-    sample_source = code
+    stdin_data = None
+    try:
+        if not sys.stdin.isatty():
+            stdin_data = sys.stdin.read()
+    except Exception:
+        stdin_data = None
+
+    sample_source = stdin_data if (stdin_data is not None and stdin_data.strip() != "") else code
     result = verifier.verify(source=sample_source, spec="dummy-spec", filename="unit_test")
 
     print(result)

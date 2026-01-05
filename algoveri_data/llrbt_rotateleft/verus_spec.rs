@@ -101,9 +101,16 @@ verus! {
             // Structural
             res.is_bst(),
             res.view() =~= node.view(),
+            
+            // 1. Structural Guarantee
+            // In a left rotation, the old 'node' becomes the new left child.
+            res.left.is_some(), 
+
             // Colors & Balance
-            res.black_height() == node.black_height(), // The Critical Proof
+            res.black_height() == node.black_height(),
             res.is_red == node.is_red,
+            
+            // 2. Safe Access
             res.left.get_Some_0().is_red,
     // </spec>
     // <code>

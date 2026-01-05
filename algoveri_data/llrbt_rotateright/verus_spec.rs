@@ -99,8 +99,14 @@ verus! {
         ensures
             res.is_bst(),
             res.view() =~= node.view(),
-            res.black_height() == node.black_height(), // The Critical Proof
+            res.black_height() == node.black_height(),
             res.is_red == node.is_red,
+            
+            // 1. Structural Guarantee (The Fix)
+            // In a right rotation, the old 'node' becomes the new right child.
+            res.right.is_some(),
+
+            // 2. Safe Access
             res.right.get_Some_0().is_red,
     // </spec>
     // <code>

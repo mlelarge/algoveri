@@ -102,9 +102,12 @@ verus! {
             res.is_bst(),
             // Preservation of Balance
             res.black_height() == node.black_height(), // Swapping colors here preserves BH
+            res.left.is_some(),
+            res.right.is_some(),
             // Toggles
             res.is_red != node.is_red,
             res.left.get_Some_0().is_red != node.left.get_Some_0().is_red,
+            res.right.get_Some_0().is_red != node.right.get_Some_0().is_red,
     // </spec>
     // <code>
     {
