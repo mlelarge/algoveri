@@ -16,7 +16,7 @@ verus! {
 
     // The predicate that defines a valid Discrete Logarithm x
     pub open spec fn is_discrete_log(g: int, h: int, p: int, x: int) -> bool {
-        spec_pow_mod(g, x, p) == h
+        spec_pow_mod(g, x, p) == h % p
     }
     // </preamble>
 

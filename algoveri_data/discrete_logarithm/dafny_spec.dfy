@@ -15,7 +15,7 @@ function spec_pow_mod(b: int, e: int, m: int): int
 predicate is_discrete_log(g: int, h: int, p: int, x: int)
   requires p > 1
 {
-  spec_pow_mod(g, x, p) == h
+  spec_pow_mod(g, x, p) == h % p
 }
 // </preamble>
 

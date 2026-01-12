@@ -43,6 +43,9 @@ function spec_poly_mul_coeff(a: seq<int>, b: seq<int>, k: int): int {
 method poly_multiply(a: seq<int>, b: seq<int>) returns (res: seq<int>)
     requires |a| > 0
     requires |b| > 0
+    // Constraints from Description
+    requires |a| == |b|
+    requires exists k :: 0 <= k <= 10 && |a| == (1 << k) // Enforce Power of 2 (up to 1024)
     requires |a| + |b| <= 1000
     // Safety Precondition: Coefficients are bounded
     requires coeffs_bounded(a)

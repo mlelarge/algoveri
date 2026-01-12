@@ -1,9 +1,4 @@
-from pathlib import Path
-import sys
-
-from src.verifiers.lean_verifier import LeanVerifier
-
-code = """import Mathlib
+import Mathlib
 
 -- Precondition definitions
 @[reducible, simp]
@@ -59,45 +54,3 @@ theorem compute_gcd_postcond_satisfied (a b : UInt64) (h_precond : compute_gcd_p
   -- !benchmark @start proof
   sorry
   -- !benchmark @end proof
-
-"""
-
-def test_lean_verifier_writes_file_and_returns_result():
-    """Verify that LeanVerifier writes the source file and returns a result dict.
-
-    This test uses `test/config_test.yaml` (created as part of the test suite).
-    """
-    cfg_path = Path(__file__).resolve().parent / "config_test.yaml"
-    verifier = LeanVerifier(config_path=str(cfg_path))
-
-    # If the test is invoked with piped stdin, prefer that content as the
-    # sample source. We only read stdin when it's not a TTY to avoid blocking
-    # interactive runs.
-    stdin_data = None
-    try:
-        if not sys.stdin.isatty():
-            stdin_data = sys.stdin.read()
-    except Exception:
-        stdin_data = None
-
-    sample_source = stdin_data if (stdin_data is not None and stdin_data.strip() != "") else code
-    result = verifier.verify(source=sample_source, spec="dummy-spec", filename="unit_test")
-
-    print(result)
-
-    assert isinstance(result, dict)
-    assert "ok" in result and isinstance(result["ok"], bool)
-    assert "file" in result
-
-    # The file should have been created on disk
-    written = Path(result["file"])
-    assert written.exists()
-    return
-    # cleanup artifact
-    try:
-        written.unlink()
-    except Exception:
-        pass
-
-if __name__ == '__main__':
-    test_lean_verifier_writes_file_and_returns_result()

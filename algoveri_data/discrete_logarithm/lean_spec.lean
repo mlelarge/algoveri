@@ -8,7 +8,7 @@ def discrete_log_naive_precond (g h p : UInt64) : Prop :=
   -- !benchmark @end precond
 
 def is_discrete_log (g h p : Nat) (x : Nat) : Prop :=
-  (Nat.pow g x) % p = h
+  (Nat.pow g x) % p = h % p
 
 -- !benchmark @start auxcode
 -- !benchmark @end auxcode
