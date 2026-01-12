@@ -32,7 +32,7 @@ method check_prime(n: int) returns (res: bool)
 // </spec>
 // <code>
 {
-  // Implement and verify the algorithm to check for primality by naively testing divisibility for all integers from 2 to n-1
+  // Implement and verify the optimized algorithm that checks divisibility up to sqrt(n)
 }
 // </code>
 

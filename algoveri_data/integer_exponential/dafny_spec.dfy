@@ -1,7 +1,11 @@
-// Following is the block for necessary definitions
+/ Following is the block for necessary definitions
 // <preamble>
-// Pure mathematical definition of power
-function spec_pow(b: nat, e: nat): nat
+// Define u64 to enforce the safety constraint (overflow checks)
+newtype u64 = x | 0 <= x < 0x1_0000_0000_0000_0000
+
+// Pure mathematical definition of power on unbounded integers
+function spec_pow(b: int, e: int): int
+  requires e >= 0
   decreases e
 {
   if e == 0 then
@@ -23,16 +27,11 @@ function spec_pow(b: nat, e: nat): nat
 
 // Following is the block for the main specification
 // <spec>
-method exponentiation(b: int, e: int) returns (res: int)
-  // Simulate u64 types (non-negative)
-  requires b >= 0 
-  requires e >= 0
+method exponentiation(b: u64, e: u64) returns (res: u64)
   // Precondition: Result fits in u64 (0xffff_ffff_ffff_ffff)
-  requires spec_pow(b, e) <= 0xffff_ffff_ffff_ffff
+  requires spec_pow(b as int, e as int) <= 0xffff_ffff_ffff_ffff
   
-  ensures res == spec_pow(b, e)
-  // Ensure return value preserves non-negativity
-  ensures res >= 0
+  ensures res as int == spec_pow(b as int, e as int)
 // </spec>
 // <code>
 {
