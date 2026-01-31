@@ -217,6 +217,10 @@ pricing.json
 
 # some random stuff
 test_results/
+test_results_filter/
+test_results_scale/
+test_results_scale_filter/
+results_save_new/
 results_save_old/
 test/top100.jsonl
 test/output_compiled.json
@@ -226,3 +230,6 @@ raw_codes/
 tiktoken_cache/
 prompt*.txt
 Benchark_20260101.json
+
+*.png
+results_analysis_paper/

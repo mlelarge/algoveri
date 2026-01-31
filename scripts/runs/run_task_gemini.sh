@@ -3,7 +3,7 @@ run_task_robust() {
     local TASK_NAME=$(basename "$INPUT_PATH")
     local MAX_RETRIES=2
     local attempt=1
-    local LANGUAGE="verus"
+    local LANGUAGE="lean"
 
     echo "------------------------------------------------"
     echo "Starting Task: $TASK_NAME"
@@ -87,44 +87,44 @@ run_task_robust() {
 
 # run_task_robust "/scratch/gpfs/ARORA/haoyu/algoveri/algoveri_data/binary_search"
 # run_task_robust "/scratch/gpfs/ARORA/haoyu/algoveri/algoveri_data/linear_search"
-# run_task_robust "/scratch/gpfs/ARORA/haoyu/algoveri/algoveri_data/bubble_sort"
-# run_task_robust "/scratch/gpfs/ARORA/haoyu/algoveri/algoveri_data/insertion_sort"
-# run_task_robust "/scratch/gpfs/ARORA/haoyu/algoveri/algoveri_data/merge_sort"
-# run_task_robust "/scratch/gpfs/ARORA/haoyu/algoveri/algoveri_data/quick_sort"
-# run_task_robust "/scratch/gpfs/ARORA/haoyu/algoveri/algoveri_data/k_smallest"
+run_task_robust "/scratch/gpfs/ARORA/haoyu/algoveri/algoveri_data/bubble_sort"
+run_task_robust "/scratch/gpfs/ARORA/haoyu/algoveri/algoveri_data/insertion_sort"
+run_task_robust "/scratch/gpfs/ARORA/haoyu/algoveri/algoveri_data/merge_sort"
+run_task_robust "/scratch/gpfs/ARORA/haoyu/algoveri/algoveri_data/quick_sort"
+run_task_robust "/scratch/gpfs/ARORA/haoyu/algoveri/algoveri_data/k_smallest"
 
 #############################################
 # basic algorithms, DP, xxx
 #############################################
 
-# run_task_robust "/scratch/gpfs/ARORA/haoyu/algoveri/algoveri_data/longest_common_subsequence"
-# run_task_robust "/scratch/gpfs/ARORA/haoyu/algoveri/algoveri_data/coin_change"
-# run_task_robust "/scratch/gpfs/ARORA/haoyu/algoveri/algoveri_data/jump_game"
-# run_task_robust "/scratch/gpfs/ARORA/haoyu/algoveri/algoveri_data/knapsack_01"
-# run_task_robust "/scratch/gpfs/ARORA/haoyu/algoveri/algoveri_data/knapsack_unbounded"
-# run_task_robust "/scratch/gpfs/ARORA/haoyu/algoveri/algoveri_data/longest_increasing_subsequence"
-# run_task_robust "/scratch/gpfs/ARORA/haoyu/algoveri/algoveri_data/maximum_subarray_sum"
-# run_task_robust "/scratch/gpfs/ARORA/haoyu/algoveri/algoveri_data/rod_cutting"
-# run_task_robust "/scratch/gpfs/ARORA/haoyu/algoveri/algoveri_data/lca"
-# run_task_robust "/scratch/gpfs/ARORA/haoyu/algoveri/algoveri_data/house_robber"
+run_task_robust "/scratch/gpfs/ARORA/haoyu/algoveri/algoveri_data/longest_common_subsequence"
+run_task_robust "/scratch/gpfs/ARORA/haoyu/algoveri/algoveri_data/coin_change"
+run_task_robust "/scratch/gpfs/ARORA/haoyu/algoveri/algoveri_data/jump_game"
+run_task_robust "/scratch/gpfs/ARORA/haoyu/algoveri/algoveri_data/knapsack_01"
+run_task_robust "/scratch/gpfs/ARORA/haoyu/algoveri/algoveri_data/knapsack_unbounded"
+run_task_robust "/scratch/gpfs/ARORA/haoyu/algoveri/algoveri_data/longest_increasing_subsequence"
+run_task_robust "/scratch/gpfs/ARORA/haoyu/algoveri/algoveri_data/maximum_subarray_sum"
+run_task_robust "/scratch/gpfs/ARORA/haoyu/algoveri/algoveri_data/rod_cutting"
+run_task_robust "/scratch/gpfs/ARORA/haoyu/algoveri/algoveri_data/lca"
+run_task_robust "/scratch/gpfs/ARORA/haoyu/algoveri/algoveri_data/house_robber"
 
 #############################################
 # Graph algorithms
 #############################################
 
-# run_task_robust "/scratch/gpfs/ARORA/haoyu/algoveri/algoveri_data/dfs"
-# run_task_robust "/scratch/gpfs/ARORA/haoyu/algoveri/algoveri_data/bfs"
-# run_task_robust "/scratch/gpfs/ARORA/haoyu/algoveri/algoveri_data/cycle_detection"
-# run_task_robust "/scratch/gpfs/ARORA/haoyu/algoveri/algoveri_data/bipartite_check"
-# run_task_robust "/scratch/gpfs/ARORA/haoyu/algoveri/algoveri_data/topological_sort"
-# run_task_robust "/scratch/gpfs/ARORA/haoyu/algoveri/algoveri_data/dijkstra"
-# run_task_robust "/scratch/gpfs/ARORA/haoyu/algoveri/algoveri_data/bellman_ford"
-# run_task_robust "/scratch/gpfs/ARORA/haoyu/algoveri/algoveri_data/prim"
-# run_task_robust "/scratch/gpfs/ARORA/haoyu/algoveri/algoveri_data/kruskal"
-# run_task_robust "/scratch/gpfs/ARORA/haoyu/algoveri/algoveri_data/max_matching"
-# run_task_robust "/scratch/gpfs/ARORA/haoyu/algoveri/algoveri_data/edmond_karp"
-# run_task_robust "/scratch/gpfs/ARORA/haoyu/algoveri/algoveri_data/push_relabel"
-# run_task_robust "/scratch/gpfs/ARORA/haoyu/algoveri/algoveri_data/scc_tarjan"
+run_task_robust "/scratch/gpfs/ARORA/haoyu/algoveri/algoveri_data/dfs"
+run_task_robust "/scratch/gpfs/ARORA/haoyu/algoveri/algoveri_data/bfs"
+run_task_robust "/scratch/gpfs/ARORA/haoyu/algoveri/algoveri_data/cycle_detection"
+run_task_robust "/scratch/gpfs/ARORA/haoyu/algoveri/algoveri_data/bipartite_check"
+run_task_robust "/scratch/gpfs/ARORA/haoyu/algoveri/algoveri_data/topological_sort"
+run_task_robust "/scratch/gpfs/ARORA/haoyu/algoveri/algoveri_data/dijkstra"
+run_task_robust "/scratch/gpfs/ARORA/haoyu/algoveri/algoveri_data/bellman_ford"
+run_task_robust "/scratch/gpfs/ARORA/haoyu/algoveri/algoveri_data/prim"
+run_task_robust "/scratch/gpfs/ARORA/haoyu/algoveri/algoveri_data/kruskal"
+run_task_robust "/scratch/gpfs/ARORA/haoyu/algoveri/algoveri_data/max_matching"
+run_task_robust "/scratch/gpfs/ARORA/haoyu/algoveri/algoveri_data/edmond_karp"
+run_task_robust "/scratch/gpfs/ARORA/haoyu/algoveri/algoveri_data/push_relabel"
+run_task_robust "/scratch/gpfs/ARORA/haoyu/algoveri/algoveri_data/scc_tarjan"
 
 #############################################
 # Math
@@ -146,8 +146,8 @@ run_task_robust "/scratch/gpfs/ARORA/haoyu/algoveri/algoveri_data/matrix_multipl
 # String
 #############################################
 
-# run_task_robust "/scratch/gpfs/ARORA/haoyu/algoveri/algoveri_data/bracket_matching"
-# run_task_robust "/scratch/gpfs/ARORA/haoyu/algoveri/algoveri_data/longest_palindrome_substring"
-# run_task_robust "/scratch/gpfs/ARORA/haoyu/algoveri/algoveri_data/string_search_naive"
-# run_task_robust "/scratch/gpfs/ARORA/haoyu/algoveri/algoveri_data/kmp"
-# run_task_robust "/scratch/gpfs/ARORA/haoyu/algoveri/algoveri_data/ac_automata"
+run_task_robust "/scratch/gpfs/ARORA/haoyu/algoveri/algoveri_data/bracket_matching"
+run_task_robust "/scratch/gpfs/ARORA/haoyu/algoveri/algoveri_data/longest_palindrome_substring"
+run_task_robust "/scratch/gpfs/ARORA/haoyu/algoveri/algoveri_data/string_search_naive"
+run_task_robust "/scratch/gpfs/ARORA/haoyu/algoveri/algoveri_data/kmp"
+run_task_robust "/scratch/gpfs/ARORA/haoyu/algoveri/algoveri_data/ac_automata"

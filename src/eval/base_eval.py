@@ -53,7 +53,7 @@ class BaseEval(ABC):
 
     def run_single(self, natural_language: str, formal_code: str, model: str, filename: str, spec: str = "", system_prompt: str = "", debug: bool=False) -> Dict[str, str]:
         """Run a single problem through multi-turn loop until verified or exhausted using model."""
-        sys_prompt = self.make_sys_prompt()
+        sys_prompt = system_prompt
         # initial user prompt
         prompt = self.make_initial_prompt(natural_language, formal_code)
 
