@@ -13,9 +13,9 @@
 
 ## 1. Introduction
 
+We introduce AlgoVeri, a benchmark that evaluates vericoding of $77$ classical algorithms in Dafny, Verus, and Lean. By enforcing identical functional contracts, AlgoVeri reveals critical capability gaps in current models. While frontier models achieve tractable success in Dafny ($40.3$\% for Gemini-3 Flash), where high-level abstractions and SMT automation simplify the workflow, performance collapses under the systems-level memory constraints of Verus ($24.7$\%) and the explicit proof construction required by Lean (7.8\%). Beyond aggregate metrics, we uncover a sharp divergence in test-time compute dynamics: Gemini-3 effectively utilizes iterative repair to boost performance (e.g., tripling pass rates in Dafny), whereas GPT-OSS saturates early. Finally, our error analysis shows that language design affects the refinement trajectory: while Dafny allows models to focus on logical correctness, Verus and Lean trap models in persistent syntactic and semantic barriers.
 
-
-# Instruction for Testing the Codebase
+## Environment Setup
 
 ## Setting up verifiers
 
