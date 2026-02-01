@@ -1,5 +1,19 @@
-# algoveri
-codebase for verification benchmark of intro to algo
+<div align="center">
+    <h1> <a href="https://arxiv.org/abs/2505.12680">AlgoVeri: : An Aligned Benchmark for Verified Code Generation on Classical Algorithms</a></h1>
+</div>
+
+<div align="center">
+
+[![Hugging Face](https://img.shields.io/badge/-HuggingFace-3B4252?logo=huggingface)](https://huggingface.co/datasets/zzzzzhy/)
+[![arXiv](https://img.shields.io/badge/arXiv-xxxx.xxxxx-b31b1b.svg?style=flat)](https://arxiv.org/)
+[![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
+[![Email me](https://img.shields.io/badge/Contact-6fcf97?logo=gmail)](mailto:thomaszhao1998@gmail.com)
+
+</div>
+
+## 1. Introduction
+
+
 
 # Instruction for Testing the Codebase
 
