@@ -78,6 +78,7 @@ class DafnyVerifier(BaseVerifier):
                 str(image),
                 "dafny",
                 "verify",
+                "--allow-warnings:true",
                 f"{container_mount_point}/{source_file_name}"  # Use container path
             ]
             return cmd
@@ -110,9 +111,9 @@ class DafnyVerifier(BaseVerifier):
         out_path = Path(self.results_dir).resolve() / out_name
         
         # 2. Write Source Code
-        # If the user passed separate spec/impl, you might want to concat them here.
+
         # For now, we assume 'source' contains the full Dafny program.
-        full_content = source if not spec else f"{spec}\n{source}"
+        full_content = source
         out_path.write_text(full_content)
 
         # 3. Build Command

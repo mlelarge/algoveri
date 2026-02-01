@@ -2,49 +2,52 @@ from pathlib import Path
 
 from src.verifiers.dafny_verifier import DafnyVerifier
 
-code = """// <preamble>
-predicate is_sorted(s: seq<int>) {
-    forall i: int, j: int :: 0 <= i <= j < |s| ==> s[i] <= s[j]
+code = """// Following is the block for necessary definitions
+// <preamble>
+// Pure mathematical definition of power
+function spec_pow(b: nat, e: nat): nat
+  decreases e
+{
+  if e == 0 then
+    1
+  else
+    b * spec_pow(b, e - 1)
 }
 // </preamble>
 
+// Following is the block for potential helper specifications
 // <helpers>
+
 // </helpers>
 
+// Following is the block for proofs of lemmas
 // <proofs>
+
 // </proofs>
 
+// Following is the block for the main specification
 // <spec>
-method binary_search_lower_bound(s: seq<int>, target: int) returns (result: int)
-    requires |s| <= 0x7FFFFFFF
-    requires is_sorted(s)
-    // We must ensure result is non-negative so the index access s[i] 
-    // in the last postcondition is well-formed.
-    ensures 0 <= result <= |s|
-    ensures forall i: int :: 0 <= i < result ==> s[i] < target
-    ensures forall i: int :: result <= i < |s| ==> s[i] >= target
+method exponentiation(b: int, e: int) returns (res: int)
+  // Simulate u64 types (non-negative)
+  requires b >= 0 
+  requires e >= 0
+  // Precondition: Result fits in u64 (0xffff_ffff_ffff_ffff)
+  requires spec_pow(b, e) <= 0xffff_ffff_ffff_ffff
+  
+  ensures res == spec_pow(b, e)
+  // Ensure return value preserves non-negativity
+  ensures res >= 0
 // </spec>
-
 // <code>
 {
-    var low := 0;
-    var high := |s|;
-
-    while low < high
-        invariant 0 <= low <= high <= |s|
-        invariant forall i :: 0 <= i < low ==> s[i] < target
-        invariant forall i :: high <= i < |s| ==> s[i] >= target
-    {
-        var mid := low + (high - low) / 2;
-        if s[mid] < target {
-            low := mid + 1;
-        } else {
-            high := mid;
-        }
-    }
-    return low;
+  // Implement and verify the algorithm to compute the exponential
+  assume{:axiom} false;
 }
-// </code>"""
+// </code>
+
+method Main() {
+  // Empty main
+}"""
 
 def test_dafny_verifier_writes_file_and_returns_result():
     """Verify that LeanVerifier writes the source file and returns a result dict.
@@ -55,7 +58,7 @@ def test_dafny_verifier_writes_file_and_returns_result():
     verifier = DafnyVerifier(config_path=str(cfg_path))
 
     sample_source = code
-    result = verifier.verify(source=sample_source, spec="", filename="unit_test")
+    result = verifier.verify(source=sample_source, spec="test", filename="unit_test")
 
     print(result)
 

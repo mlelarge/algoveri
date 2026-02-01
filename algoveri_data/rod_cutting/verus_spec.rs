@@ -80,18 +80,5 @@ verus! {
     }
     // </code>
 
-    #[verifier::external]
-    fn main() {
-        let mut prices = Vec::new();
-        prices.push(1);
-        prices.push(5);
-        prices.push(8);
-        prices.push(9);
-        prices.push(10);
-        
-        let n = 4;
-        let ans = rod_cutting(n, &prices);
-        
-        println!("Max Revenue for length {}: {}", n, ans); 
-    }
+    fn main() {}
 }

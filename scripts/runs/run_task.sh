@@ -1,1 +1,0 @@
-echo "/scratch/gpfs/ARORA/haoyu/algoveri/algoveri_data/bst_zig" | python -m test.test_runner

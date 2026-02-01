@@ -44,14 +44,5 @@ verus! {
     }
     // </code>
 
-    #[verifier::external]
-    fn main() {
-        let mut v = vec![5, 1, 4, 2, 8];
-        let ghost original_v = v@;
-        
-        quick_sort(&mut v);
-        
-        assert(is_sorted(v@));
-        assert(is_permutation(original_v, v@));
-    }
+    fn main() {}
 }

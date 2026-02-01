@@ -62,6 +62,5 @@ verus! {
     }
     // </code>
 
-    #[verifier::external]
     fn main() {}
 }

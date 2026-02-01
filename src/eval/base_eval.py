@@ -51,16 +51,16 @@ class BaseEval(ABC):
 
         return res
 
-    def run_single(self, natural_language: str, formal_code: str, model: str, filename: str, spec: str = "", debug: bool=False) -> Dict[str, str]:
+    def run_single(self, natural_language: str, formal_code: str, model: str, filename: str, spec: str = "", system_prompt: str = "", debug: bool=False) -> Dict[str, str]:
         """Run a single problem through multi-turn loop until verified or exhausted using model."""
-        sys_prompt = self.make_sys_prompt()
+        sys_prompt = system_prompt
         # initial user prompt
         prompt = self.make_initial_prompt(natural_language, formal_code)
 
         if debug:
             print(f"Creating chat session with model: {model}")
         
-        mt_chat = self.llm_client.new_chat(model=model, system_prompt=None)
+        mt_chat = self.llm_client.new_chat(model=model, system_prompt=system_prompt)
         if debug:
             print(f"General Instruction:\n{sys_prompt}\n")
             print(f"Initial User Prompt:\n{prompt}\n")
@@ -82,12 +82,13 @@ class BaseEval(ABC):
                         "raw": None, 
                         "file": ""
                     }
-                ver_res = {
-                    "ok": False, 
-                    "reason": f"Cannot parse code from LLM response.", 
-                    "raw": None, 
-                    "file": ""
-                }
+                else:
+                    ver_res = {
+                        "ok": False, 
+                        "reason": f"Cannot parse code from LLM response.", 
+                        "raw": None, 
+                        "file": ""
+                    }
 
             parsed_ver_res = self.parse_verifier_response(ver_res)
             verified = parsed_ver_res.get("verified", False)

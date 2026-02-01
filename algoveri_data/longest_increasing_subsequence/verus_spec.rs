@@ -41,17 +41,5 @@ verus! {
     }
     // </code>
 
-    // 4. MAIN FUNCTION (External)
-    #[verifier::external]
-    fn main() {
-        let mut v = Vec::new();
-        v.push(10); 
-        v.push(2); 
-        v.push(5); 
-        v.push(3);
-        
-        let ans = longest_increasing_subsequence(&v);
-        
-        println!("The LIS length is: {}", ans); 
-    }
+    fn main() {}
 }

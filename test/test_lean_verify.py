@@ -1,8 +1,87 @@
 from pathlib import Path
+import sys
 
 from src.verifiers.lean_verifier import LeanVerifier
 
-code = "import Mathlib\nset_option maxHeartbeats 0\n\n@[reducible, simp]\ndef goodWorkers_precond (records : List (Nat \u00d7 Nat \u00d7 Nat)) (threshold : Nat) : Prop :=\n  records.length \u2264 4000 \u2227\n  \u2200 r \u2208 records, (r.2.1 \u2264 1_000_000) \u2227 (r.2.2 \u2264 100_000)\n\ndef totalSales (records : List (Nat \u00d7 Nat \u00d7 Nat)) (id : Nat) : Nat :=\n  records.foldl (fun acc r => if r.1 = id then acc + r.2.1 * r.2.2 else acc) 0\n\ndef distinctIds (records : List (Nat \u00d7 Nat \u00d7 Nat)) : List Nat :=\n  records.foldl (fun acc r => if r.1 \u2208 acc then acc else acc ++ [r.1]) []\n\ndef qualifyingIds (records : List (Nat \u00d7 Nat \u00d7 Nat)) (threshold : Nat) : List Nat :=\n  (distinctIds records).filter (fun i => totalSales records i \u2265 threshold)\n\ndef goodWorkers (records : List (Nat \u00d7 Nat \u00d7 Nat)) (threshold : Nat)\n    (h_precond : goodWorkers_precond records threshold) : List Nat :=\n  qualifyingIds records threshold\n\n@[reducible, simp]\ndef goodWorkers_postcond (records : List (Nat \u00d7 Nat \u00d7 Nat)) (threshold : Nat)\n    (result : List Nat) (h_precond : goodWorkers_precond records threshold) : Prop :=\n  result = qualifyingIds records threshold\n\nlemma goodWorkers_eq (records : List (Nat \u00d7 Nat \u00d7 Nat)) (threshold : Nat)\n    (h_precond : goodWorkers_precond records threshold) :\n    goodWorkers records threshold h_precond = qualifyingIds records threshold := by\n  unfold goodWorkers\n  rfl\n\nlemma goodWorkers_postcond_of_eq (records : List (Nat \u00d7 Nat \u00d7 Nat)) (threshold : Nat)\n    (result : List Nat) (h_precond : goodWorkers_precond records threshold)\n    (h_eq : result = qualifyingIds records threshold) :\n    goodWorkers_postcond records threshold result h_precond := by\n  unfold goodWorkers_postcond\n  simpa [h_eq]\n\ntheorem goodWorkers_postcond_satisfied (records : List (Nat \u00d7 Nat \u00d7 Nat)) (threshold : Nat)\n    (h_precond : goodWorkers_precond records threshold) :\n    goodWorkers_postcond records threshold (goodWorkers records threshold h_precond) h_precond := by\n  have h_eq := goodWorkers_eq records threshold h_precond\n  exact goodWorkers_postcond_of_eq records threshold\n    (goodWorkers records threshold h_precond) h_precond h_eq"
+code = """import Mathlib
+
+structure TopoGraph where
+  adj : Array (Array Nat)
+
+def TopoGraph.well_formed (g : TopoGraph) : Prop :=
+  ∀ u, u < g.adj.size →
+    ∀ v, v ∈ g.adj.getD u #[] → v < g.adj.size
+
+def TopoGraph.size (g : TopoGraph) : Nat :=
+  g.adj.size
+
+def TopoGraph.has_edge (g : TopoGraph) (u v : Nat) : Prop :=
+  u < g.adj.size ∧
+  v ∈ g.adj.getD u #[]
+
+def TopoGraph.is_path (g : TopoGraph) (p : List Nat) : Prop :=
+  p.length > 0 ∧
+  ∀ i, i + 1 < p.length →
+    g.has_edge (p.getD i 0) (p.getD (i + 1) 0)
+
+def TopoGraph.is_cycle (g : TopoGraph) (p : List Nat) : Prop :=
+  g.is_path p ∧ p.length > 1 ∧ p.head? = p.getLast?
+
+def TopoGraph.graph_has_cycle (g : TopoGraph) : Prop :=
+  ∃ p, g.is_cycle p
+
+def TopoGraph.is_topological_ordering (g : TopoGraph) (order : Array Nat) : Prop :=
+  -- Contains all nodes (size check + surjective)
+  order.size = g.size ∧
+  (∀ n, n < g.size → ∃ k, k < order.size ∧ order.getD k 0 = n) ∧
+  -- No duplicates is implied by size check + surjective on finite set, but for completeness:
+  (∀ i j, i < order.size → j < order.size → i ≠ j → order.getD i 0 ≠ order.getD j 0) ∧
+  -- No back edges (if j < i, no edge order[i] -> order[j])
+  (∀ i j, j < i → i < order.size →
+     ¬ g.has_edge (order.getD i 0) (order.getD j 0))
+
+-- Precondition definitions
+@[reducible, simp]
+def topological_sort_precond (graph : TopoGraph) : Prop :=
+  -- !benchmark @start precond
+  graph.well_formed
+  -- !benchmark @end precond
+
+-- !benchmark @start auxcode
+-- !benchmark @end auxcode
+
+-- Main function definition
+def topological_sort (graph : TopoGraph)
+    (h_precond : topological_sort_precond graph) : Option (Array Nat) :=
+  -- !benchmark @start code
+  sorry
+  -- !benchmark @end code
+
+-- Postcondition definitions
+@[reducible, simp]
+def topological_sort_postcond (graph : TopoGraph) (result : Option (Array Nat))
+    (_ : topological_sort_precond graph) : Prop :=
+  -- !benchmark @start postcond
+  match result with
+  | some order =>
+      ¬ graph.graph_has_cycle ∧
+      graph.is_topological_ordering order
+  | none =>
+      graph.graph_has_cycle
+  -- !benchmark @end postcond
+
+-- !benchmark @start lemma
+-- !benchmark @end lemma
+
+-- Proof content
+theorem topological_sort_postcond_satisfied (graph : TopoGraph)
+    (h_precond : topological_sort_precond graph) :
+    topological_sort_postcond graph (topological_sort graph h_precond) h_precond := by
+  -- !benchmark @start proof
+  sorry
+  -- !benchmark @end proof
+
+"""
 
 def test_lean_verifier_writes_file_and_returns_result():
     """Verify that LeanVerifier writes the source file and returns a result dict.
@@ -12,7 +91,17 @@ def test_lean_verifier_writes_file_and_returns_result():
     cfg_path = Path(__file__).resolve().parent / "config_test.yaml"
     verifier = LeanVerifier(config_path=str(cfg_path))
 
-    sample_source = code
+    # If the test is invoked with piped stdin, prefer that content as the
+    # sample source. We only read stdin when it's not a TTY to avoid blocking
+    # interactive runs.
+    stdin_data = None
+    try:
+        if not sys.stdin.isatty():
+            stdin_data = sys.stdin.read()
+    except Exception:
+        stdin_data = None
+
+    sample_source = stdin_data if (stdin_data is not None and stdin_data.strip() != "") else code
     result = verifier.verify(source=sample_source, spec="dummy-spec", filename="unit_test")
 
     print(result)

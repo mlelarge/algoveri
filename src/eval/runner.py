@@ -10,13 +10,14 @@ from __future__ import annotations
 from pathlib import Path
 import sys
 from typing import Optional, Dict, Any
+import asyncio
 import json
 import os
 
 from .base_eval import BaseEval
 from src.verifiers.verus_verifier import VerusVerifier
-
-
+from src.verifiers.dafny_verifier import DafnyVerifier
+from src.verifiers.lean_verifier import LeanVerifier
 
 
 
@@ -33,7 +34,7 @@ class Runner:
     def _read_problem_files(self, problem_dir: Path) -> Dict[str, str]:
         """Read problem files according to `self.language`.
 
-        Currently supports 'verus' (expects `verus_nl.txt` and `verus_spec.rs`).
+        Currently supports 'verus' (expects `verus_nl.txt` and `verus_spec.rs`), 'dafny' (expects 'dafny_nl.txt' and `dafny_spec.dfy`).
         Future languages should be added here.
         """
         lang = self.language
@@ -45,11 +46,27 @@ class Runner:
             if not spec_path.exists():
                 raise FileNotFoundError(f"Missing verus spec file: {spec_path}")
             return {"natural": nl_path.read_text(), "spec": spec_path.read_text()}
+        elif lang.startswith("dafny"):
+            nl_path = problem_dir / "dafny_nl.txt"
+            spec_path = problem_dir / "dafny_spec.dfy"
+            if not nl_path.exists():
+                raise FileNotFoundError(f"Missing natural-language file: {nl_path}")
+            if not spec_path.exists():
+                raise FileNotFoundError(f"Missing verus spec file: {spec_path}")
+            return {"natural": nl_path.read_text(), "spec": spec_path.read_text()}
+        elif lang.startswith("lean"):
+            nl_path = problem_dir / "lean_nl.txt"
+            spec_path = problem_dir / "lean_spec.lean"
+            if not nl_path.exists():
+                raise FileNotFoundError(f"Missing natural-language file: {nl_path}")
+            if not spec_path.exists():
+                raise FileNotFoundError(f"Missing verus spec file: {spec_path}")
+            return {"natural": nl_path.read_text(), "spec": spec_path.read_text()}
 
         # Unknown language: raise for now
         raise NotImplementedError(f"Problem file reading not implemented for language: {self.language}")
 
-    def run_problem(self, problem_dir: str, max_rounds: int = 5, model: str = "gemini-2.5-flash", debug: bool = False) -> Dict[str, Any]:
+    def run_problem(self, problem_dir: str, max_rounds: int = 5, num_passes: int = 1, model: str = "gemini-2.5-flash", system_prompt: str = "", debug: bool = False) -> Dict[str, Any]:
         """Run a single problem directory using the generic BaseEval factory.
 
         By default this will attempt to construct an evaluator appropriate for
@@ -58,7 +75,7 @@ class Runner:
         function assumes Verus (Rust) by default if the caller does not pass
         a language (for backward compatibility).
 
-        `problem_dir` may be a path to a directory containing `verus_nl.txt` and `verus_spec.rs`.
+        `problem_dir` may be a path to a directory containing `verus_nl.txt` and `verus_spec.rs` (for Verus/Rust) or `dafny_nl.txt` and `dafny_spec.dfy` (for Dafny).
         Returns the evaluation result dict and writes a JSON file to results.
         """
         # If stdin is piped (not a TTY) and contains a path, prefer it.
@@ -84,18 +101,36 @@ class Runner:
         # Determine evaluator using self.language
         evaler = self._make_evaluator(language=self.language, max_rounds=max_rounds)
 
+        #
+        friendly_model_name = model.split("/")[-1]
+
         # Use filename as last part of problem directory
         # e.g., for algoveri_data/binary_search, use "binary_search"
         problem_name = p.name
-        filename = f"{problem_name}_eval"
+        print(f"Running {self.language} problem in {problem_name} using model {friendly_model_name}")
+        filename = f"{friendly_model_name}_{problem_name}_eval"
 
-        result = evaler.run_single(natural_language=natural, formal_code=spec_code, model=model, filename=filename, spec=problem_name, debug=debug)
+        if num_passes == 1:
+            result = evaler.run_single(natural_language=natural, formal_code=spec_code, model=model, filename=filename, spec=problem_name, system_prompt=system_prompt, debug=debug)
+        else:
+            # run multiple passes concurrently using a threadpool so that the
+            # synchronous run_single can execute in parallel
+            async def _run_passes():
+                loop = asyncio.get_running_loop()
 
-        out_path = self.results_root / f"{problem_name}_{self.language}.json"
+                async def _run_one(_idx: int):
+                    return await loop.run_in_executor(None, evaler.run_single, natural, spec_code, model, filename, problem_name, system_prompt, debug)
+
+                tasks = [_run_one(i) for i in range(int(num_passes))]
+                return await asyncio.gather(*tasks)
+
+            result = asyncio.run(_run_passes())
+
+        out_path = self.results_root / f"{friendly_model_name}_{problem_name}_{self.language}.json"
         out_path.write_text(json.dumps(result, indent=4))
         return result
 
-    def run_folder(self, folder: str, max_rounds: int = 5, model: str = "gemini-2.5-flash", debug: bool = False) -> Dict[str, Dict[str, Any]]:
+    def run_folder(self, folder: str, max_rounds: int = 5, model: str = "gemini-2.5-flash", system_prompt: str = "", debug: bool = False) -> Dict[str, Dict[str, Any]]:
         """Run every problem directory inside `folder`.
 
         For each immediate subdirectory that contains the expected files, run `run_problem`.
@@ -116,7 +151,7 @@ class Runner:
             try:
                 # _read_problem_files will raise if required files are missing
                 _ = self._read_problem_files(child)
-                res = self.run_problem(str(child), max_rounds=max_rounds, model=model, debug=debug)
+                res = self.run_problem(str(child), max_rounds=max_rounds, model=model, system_prompt=system_prompt, debug=debug)
                 results[child.name] = res
             except Exception as e:
                 results[child.name] = {"error": str(e)}
@@ -140,8 +175,25 @@ class Runner:
                 return VerusEval(llm_client=self.llm, verifier=verifier, max_rounds=max_rounds)
             except Exception as e:
                 raise RuntimeError(f"Failed to construct VerusEval: {e}")
+        elif lang.startswith("dafny"):
+            try:
+                from .dafny_eval import DafnyEval
 
-        if lang.startswith("lean") or lang.startswith("dafny"):
+                # create with llm client and verifier handled by VerusEval
+                verifier = DafnyVerifier(config_path=self.cfg_path)
+                return DafnyEval(llm_client=self.llm, verifier=verifier, max_rounds=max_rounds)
+            except Exception as e:
+                raise RuntimeError(f"Failed to construct VerusEval: {e}")
+        elif lang.startswith("lean"):
+            try:
+                from .lean_eval import LeanEval
+
+                # create with llm client and verifier handled by VerusEval
+                verifier = LeanVerifier(config_path=self.cfg_path)
+                return LeanEval(llm_client=self.llm, verifier=verifier, max_rounds=max_rounds)
+            except Exception as e:
+                raise RuntimeError(f"Failed to construct LeanEval: {e}")
+        else:
             raise NotImplementedError(f"Evaluator for language '{language}' is not implemented yet")
 
         raise NotImplementedError(f"Unknown/unsupported language: {language}")

@@ -52,6 +52,7 @@ class VerusEval(BaseEval):
         # extract expected pieces from the template if available
         preamble_pattern = re.compile(r'<preamble>.*?</preamble>', re.DOTALL)
         spec_pattern = re.compile(r'<spec>.*?</spec>', re.DOTALL)
+        code_pattern = re.compile(r'<code>.*?</code>', re.DOTALL)
 
         extracted_preamble = preamble_pattern.search(formal_code) if formal_code else None
         extracted_spec = spec_pattern.search(formal_code) if formal_code else None
@@ -85,6 +86,15 @@ class VerusEval(BaseEval):
             missing_tags.append("spec")
         elif spec_in_code and extracted_spec:
             modified = spec_pattern.sub(extracted_spec.group(0), modified)
+        
+        missing_code_impl = False
+        code_in_code = code_pattern.search(modified)
+        if not (code_in_code and ('{' in code_in_code.group(0).strip()) and ('}' in code_in_code.group(0).strip())):
+            missing_code_impl = True
+
+
+        if missing_code_impl:
+            return {"code": "", "comment": "do not find code implementation block; please include <code>...</code> containing the implementation and proofs."}
 
 
         if missing_tags:
@@ -94,6 +104,11 @@ class VerusEval(BaseEval):
                 comment = f"do not find {tag} tag in the generated code; please include <{tag}>...</{tag}> containing the corresponding section from the formal template."
             else:
                 comment = f"do not find tags {', '.join(missing_tags)} in the generated code; please include them (e.g. <preamble>...</preamble> and <spec>...</spec>) with the corresponding contents from the formal template."
+            return {"code": "", "comment": comment}
+        
+        # Now check if the model tries to cheat by including 'assume', 'admit', or '#[verifier'
+        if "assume" in modified or "admit" in modified or "#[verifier" in modified:
+            comment = "The generated code contains 'assume', 'admit', or '#[verifier', which is not allowed. Please provide a complete implementation and proof without using these keywords."
             return {"code": "", "comment": comment}
 
         return {"code": modified, "comment": comment}
