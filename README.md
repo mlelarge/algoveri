@@ -1,5 +1,5 @@
 <div align="center">
-    <h1> <a href="https://arxiv.org/abs/2505.12680">AlgoVeri: : An Aligned Benchmark for Verified Code Generation on Classical Algorithms</a></h1>
+    <h1> <a href="https://arxiv.org/abs/2505.12680">AlgoVeri: An Aligned Benchmark for Verified Code Generation on Classical Algorithms</a></h1>
 </div>
 
 <div align="center">
@@ -15,9 +15,22 @@
 
 We introduce AlgoVeri, a benchmark that evaluates vericoding of $77$ classical algorithms in Dafny, Verus, and Lean. By enforcing identical functional contracts, AlgoVeri reveals critical capability gaps in current models. While frontier models achieve tractable success in Dafny ($40.3$\% for Gemini-3 Flash), where high-level abstractions and SMT automation simplify the workflow, performance collapses under the systems-level memory constraints of Verus ($24.7$\%) and the explicit proof construction required by Lean (7.8\%). Beyond aggregate metrics, we uncover a sharp divergence in test-time compute dynamics: Gemini-3 effectively utilizes iterative repair to boost performance (e.g., tripling pass rates in Dafny), whereas GPT-OSS saturates early. Finally, our error analysis shows that language design affects the refinement trajectory: while Dafny allows models to focus on logical correctness, Verus and Lean trap models in persistent syntactic and semantic barriers.
 
-## Environment Setup
+<div>
+  <img width="90%" src=assets/algoveri-teaser-img.png>
+</div>
 
-## Setting up verifiers
+## 2. Environment Setup
+
+### Version for different verifiers
+
+We use the following specific verifiers:
+* Dafny: 4.11
+* Verus: 0.2025.01.13.da1c777
+* Lean: 4.25.0-rc2
+
+### Install verifiers
+
+In this codebase, we use apptainer (docker without root access) to control the environments, and the following instructions are designed for apptainer. Please switch to the docker commands if you use docker.
 
 Create a common folder that stores all the images, all the used compilers, etc
 
@@ -25,143 +38,26 @@ Create a common folder that stores all the images, all the used compilers, etc
 mkdir -p apptainer_imgs
 ```
 
-### Dafny
-
-Just pull the pre-build image from the web. This image use Dafny 4.11
+Then run the following commands to setup Dafny, Verus, and Lean environments.
 
 ```bash
 cd apptainer_imgs
-apptainer pull dafny.sif docker://xtrm0/dafny
+bash ../scripts/apptainer_setup/dafny.sh
+bash ../scripts/apptainer_setup/verus.sh
+bash ../scripts/apptainer_setup/lean.sh
 ```
 
-### Rust+verus
-
-Similar to Dafny, we first pull the pre-build image from the web.
-
-```bash
-# cd apptainer_imgs if not in apptainer_imgs folder
-apptainer pull verus.sif docker://ghcr.io/principled-systems/verus
-```
-
-Next, create folders to store the necessary toolchain files
-
-```bash
-mkdir -p rust_home/cargo
-mkdir -p rust_home/toolchains
-```
-
-Run the installer to solve the version issue
-
-```bash
-apptainer exec \
-  --bind $PWD/rust_home/cargo:/rust/cargo \
-  --bind $PWD/rust_home/toolchains:/rust/toolchains \
-  --env CARGO_HOME=/rust/cargo \
-  --env RUSTUP_HOME=/rust/toolchains \
-  verus.sif \
-  bash -c "curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y --default-toolchain 1.79.0"
-```
-
-The whole script can be found at `script/verus.sh`
-
-### Lean
-
-For Lean, we focus on version 4.25.0-rc2
-
-We first pull the image and setup folder
-
-```bash
-# Step 1. pull the lean image
-# cd apptainer_imgs if not in apptainer_imgs folder
-apptainer pull lean.sif docker://leanprovercommunity/lean4
-```
-
-Then, we manually download the Lean compiler with version 4.25.0-rc2, which will create a folder `elan_home` folder
-
-```bash
-# Step 2. Create the main folder and download the specific Lean 4 release (Linux version)
-mkdir -p elan_home
-cd elan_home
-
-wget https://github.com/leanprover/lean4/releases/download/v4.25.0-rc2/lean-4.25.0-rc2-linux.tar.zst
-
-tar -xvf lean-4.25.0-rc2-linux.tar.zst
-mv lean-4.25.0-rc2-linux lean_bin
-```
-
-Next, we create the lean project and build Mathlib. The download will first pull the Mathlib using latest Lean
-
-```bash
-# Step 3. Create the project folder
-mkdir lean_project
-cd lean_project
-
-# Step 4. Run 'lake init' with the math template
-# We bind your host toolchain so 'lake' uses IT to generate the config
-apptainer exec \
-  --bind $PWD/../elan_home/lean_bin:/lean \
-  --env PATH="/lean/bin:$PATH" \
-  ../lean.sif \
-  lake init my_project math
-```
-
-We need to edit the lakefile, to match our manually downloaded lean compiler (version 4.25.0-rc2)
-
-```bash
-# Step 5. Edit lakefile to match lean version
-
-cat <<EOF > lakefile.lean
-import Lake
-open Lake DSL
-
-package "my_project" where
-  -- settings...
-
-lean_lib «MyProject» where
-  -- settings...
-
-require mathlib from git
-  "https://github.com/leanprover-community/mathlib4" @ "v4.25.0-rc2"
-EOF
-
-# Step 6. Update. It is normal to see the error message in the end, just proceed to the next step
-
-apptainer exec \
-  --bind $PWD/../elan_home/lean_bin:/lean \
-  --env PATH="/lean/bin:$PATH" \
-  ../lean.sif \
-  lake update
-```
-
-Note that it is common to see an error message. Just proceed with overriding the lean version, fetch the cache, and build
-
-```bash
-# Step 7. Override lean version and get files
-cp .lake/packages/mathlib/lean-toolchain ./lean-toolchain
-
-apptainer exec \
-  --bind $PWD/../elan_home/lean_bin:/lean \
-  --env PATH="/lean/bin:$PATH" \
-  ../lean.sif \
-  lake exe cache get
-
-# Step 8. Build Mathlib
-
-apptainer exec \
-  --bind $PWD/../elan_home/lean_bin:/lean \
-  --env PATH="/lean/bin:$PATH" \
-  ../lean.sif \
-  lake build
-
-rm lakefile.toml
-```
+The scripts will also help you install necessary toolchains (Rust / Lean) in the apptainer_img folder. If errors happen, you can refer to VERIFIER_README.md for step-to-step instructions.
 
 ### Test the verifiers
 
-First set up the config file in test/ folder (e.g. copying config_test.yaml or config_jiawei_test.yaml) and modify the paths. Then run the following (change to your config file in the code)
+First set up the config file in config/ folder (e.g. copying test/config_test.yaml) and modify the paths to your working directory. Then run the following commands and change to your config file in the following codes
 
 ```bash
 python -m test.test_dafny_verify.py
 python -m test.test_lean_verify.py
 python -m test.test_verus_verify.py
 ```
+
+## 3. Quick Start
+
