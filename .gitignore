@@ -236,3 +236,5 @@ results_analysis_paper/
 runs_save/
 vllm_worker_save/
 test_code_save/
+
+!assets/algoveri-teaser-img.png
