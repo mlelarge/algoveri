@@ -15,6 +15,8 @@ def run_task(args):
     if args.model.lower().split('/')[-1].startswith("gpt-oss"):
         assert args.url, "url must be provided"
         llm_provider = VLLMProvider(endpoint=args.url)
+    elif args.model.lower().split('/')[-1].startswith("gpt"):
+        llm_provider = OpenAICompatibleProvider(model=args.model)
     else:
         raise ValueError(f"Unknown model {args.model}")
     
