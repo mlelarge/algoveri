@@ -10,9 +10,10 @@ wget https://github.com/leanprover/lean4/releases/download/v4.25.0-rc2/lean-4.25
 tar -xvf lean-4.25.0-rc2-linux.tar.zst
 mv lean-4.25.0-rc2-linux lean_bin
 
+
 # Step 3. Create the project folder
-mkdir lean_project
-cd lean_project
+mkdir ../lean_project
+cd ../lean_project
 
 # Step 4. Run 'lake init' with the math template
 # We bind your host toolchain so 'lake' uses IT to generate the config

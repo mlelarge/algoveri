@@ -239,3 +239,5 @@ vllm_worker_save/
 test_code_save/
 
 !assets/algoveri-teaser-img.png
+
+apptainer_imgs

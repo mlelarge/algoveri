@@ -68,6 +68,10 @@ python -m test.test_verus_verify.py
 
 These tests exercise the verifier harnesses and confirm that the verifier images are reachable from your environment.
 
+**Note**
+
+If you face difficulty installing the exact Mathlib version, you can indeed use your own version or use without Mathbib (for test, comment out the Mathlib import in test/test_lean_verify.py). AlgoVeri benchmark should be very robust to Mathlib version.
+
 **Quick Start — run the verification tests**
 
 For most users the simplest way to run the dataset verification harnesses is to use the provided Python test modules. After configuring `config/config.yaml`, run the verifier checks directly:
