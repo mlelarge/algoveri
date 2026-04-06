@@ -84,6 +84,31 @@ python -m test.test_verus_verify.py
 
 These runners exercise the verifier harnesses for the corresponding languages and are the recommended entry point for reproducing experiments or testing your environment.
 
+# Run AlgoVeri Benchmark
+
+The AlgoVeri benchmark is stored in `algoveri_data` folder.
+
+We provide initial starting scripts to run our AlgoVeri benchmark in `scripts/runs_example_scripts`. The scripts to run API models, including Gemini-3.0 Flash, GPT-5 mini, GPT-5.3-Codex, are relatively straightforward. After setting up the API keys in comment line, run
+
+```bash
+bash scripts/runs_example_scripts/run_task_gemini.sh
+bash scripts/runs_example_scripts/run_task_gpt-5-mini.sh
+bash scripts/runs_example_scripts/run_task_gpt-5-3-codex.sh
+```
+
+You can change the hyperparameters (including the language being used) in the scripts.
+
+To test open-source models using VLLM, we provide skeleton codes in other bash files (for SLURM environments).
+
+```bash
+bash scripts/runs_example_scripts/run_task_devstral_123b_instruct_with_server.sh
+bash scripts/runs_example_scripts/run_task_gpt_oss_120b_with_server.sh
+bash scripts/runs_example_scripts/run_task_qwen3_235b_instruct_with_server.sh
+bash scripts/runs_example_scripts/run_task_qwen3_next_80b_a3b_thinking_with_server.sh
+```
+
+To successfully run these codes, you should change the paths to fit your own system to successfully serve the model using VLLM. The general logic is to set up the VLLM server and then call the API.
+
 # License
 - This project is licensed under the Apache 2.0 License. See LICENSE for details.
 
