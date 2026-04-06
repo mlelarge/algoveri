@@ -22,8 +22,8 @@ def sieve_of_eratosthenes_postcond (n : Nat) (result : Array Bool) (h_precond : 
   -- !benchmark @start postcond
   result.size = n ∧
   ∀ i : Nat, i < n →
-    (result.getD i false = true) ↔
-      (i > 1 ∧ ∀ d : Nat, (1 < d ∧ d < i) → i % d ≠ 0)
+    ((result.getD i false = true) ↔
+      (i > 1 ∧ ∀ d : Nat, (1 < d ∧ d < i) → i % d ≠ 0))
   -- !benchmark @end postcond
 
 -- !benchmark @start lemma

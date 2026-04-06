@@ -83,6 +83,7 @@ def flip_colors_precond (t : Node) : Prop :=
   -- !benchmark @start precond
   -- t is not empty
   is_not_empty t ∧
+  is_bst t ∧
   match t with
   | Node.Tree c _ l r =>
     is_not_empty l ∧ is_not_empty r ∧
