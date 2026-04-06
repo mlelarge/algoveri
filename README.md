@@ -113,7 +113,7 @@ To successfully run these codes, you should change the paths to fit your own sys
 - This project is licensed under the Apache 2.0 License. See LICENSE for details.
 
 # Contact
-- For questions about the dataset and benchmark: see VERIFIER_README.md or open an issue on GitHub.
+- For questions about the dataset and benchmark, open an issue on GitHub or email.
 
 # Citation
 
