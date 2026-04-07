@@ -66,28 +66,45 @@ class OpenAIMultiTurnChat(MultiTurnChat):
 
         # 2. Call API (Stateless payload, but server uses KV Cache for speed)
         try:
-            response = self._client.chat.completions.create(
-                model=self._model,
-                messages=self._history,
-                temperature=temperature, # Generally 0 for benchmarks
-            )
+            if "codex" in self._model.lower():
+                # For code models, you might want to set specific parameters (e.g., temperature=0.2)
+                response = self._client.responses.create(
+                    model=self._model,
+                    input=self._history,
+                    temperature=temperature,
+                )
+            else:
+                response = self._client.chat.completions.create(
+                    model=self._model,
+                    messages=self._history,
+                    temperature=temperature,
+                )
         except Exception as e:
             # Handle API errors gracefully if needed
             raise e
 
         # 3. Parse response
-        message_obj = response.choices[0].message
-        content = message_obj.content
+        if "codex" in self._model.lower():
+            content = response.output_text
+        else:
+            message_obj = response.choices[0].message
+            content = message_obj.content
         
         # 4. Update state with assistant response
         self._history.append({"role": "assistant", "content": content})
         
         # 5. Track token usage (OpenAI returns usage stats in the response)
         if response.usage:
-            self._total_usage["input"] += response.usage.prompt_tokens
-            # Note: For strict "price" calculation in benchmarks, you might want to 
-            # track incremental input tokens differently, but this sums up API reports.
-            self._total_usage["output"] += response.usage.completion_tokens
+            if "codex" in self._model.lower():
+                # Codex usage might be structured differently; adjust as needed
+                self._total_usage["input"] += getattr(response.usage, "input_tokens", 0)
+                self._total_usage["output"] += getattr(response.usage, "output_tokens", 0) + getattr(response.usage, "reasoning_tokens", 0)
+                #self._total_usage["reasoning"] += getattr(response.usage, "reasoning_tokens", 0)
+            else:
+                self._total_usage["input"] += response.usage.prompt_tokens
+                # Note: For strict "price" calculation in benchmarks, you might want to 
+                # track incremental input tokens differently, but this sums up API reports.
+                self._total_usage["output"] += response.usage.completion_tokens
 
         return {
             "text": content,

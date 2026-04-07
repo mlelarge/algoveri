@@ -5,7 +5,7 @@
 <div align="center">
 
 [![Hugging Face](https://img.shields.io/badge/-HuggingFace-3B4252?logo=huggingface)](https://huggingface.co/datasets/zzzzzhy/)
-[![arXiv](https://img.shields.io/badge/arXiv-xxxx.xxxxx-b31b1b.svg?style=flat)](https://arxiv.org/)
+[![arXiv](https://img.shields.io/badge/arXiv-2602.09464-b31b1b.svg?style=flat)](https://arxiv.org/abs/2602.09464)
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 [![Email me](https://img.shields.io/badge/Contact-6fcf97?logo=gmail)](mailto:thomaszhao1998@gmail.com)
 
@@ -36,22 +36,29 @@ Create a common folder that stores all the images, all the used compilers, etc
 
 ```bash
 mkdir -p apptainer_imgs
+cd apptainer_imgs
 ```
 
-Then run the following commands to setup Dafny, Verus, and Lean environments.
+2. Build verifier images (scripts in `scripts/apptainer_setup/`):
 
 ```bash
-cd apptainer_imgs
 bash ../scripts/apptainer_setup/dafny.sh
 bash ../scripts/apptainer_setup/verus.sh
 bash ../scripts/apptainer_setup/lean.sh
 ```
 
-The scripts will also help you install necessary toolchains (Rust / Lean) in the apptainer_img folder. If errors happen, you can refer to VERIFIER_README.md for step-to-step instructions.
+Refer to VERIFIER_README.md for more details if you encounter environment errors.
 
-### Test the verifiers
+**Configuration**
+- Copy and edit a config template (adjust paths and credentials):
 
-First set up the config file in config/ folder (e.g. copying test/config_test.yaml) and modify the paths to your working directory. Then run the following commands and change to your config file in the following codes
+```bash
+# Edit config/config.yaml to set workspace paths and image locations
+cp test/config_test.yaml config/config.yaml
+```
+
+**Testing verifiers (quick checks)**
+Run the Python verifier tests (after configuring `config/config.yaml`):
 
 ```bash
 python -m test.test_dafny_verify.py
@@ -59,5 +66,65 @@ python -m test.test_lean_verify.py
 python -m test.test_verus_verify.py
 ```
 
-## 3. Quick Start
+These tests exercise the verifier harnesses and confirm that the verifier images are reachable from your environment.
+
+**Note**
+
+If you face difficulty installing the exact Mathlib version, you can indeed use your own version or use without Mathbib (for test, comment out the Mathlib import in test/test_lean_verify.py). AlgoVeri benchmark should be very robust to Mathlib version.
+
+**Quick Start — run the verification tests**
+
+For most users the simplest way to run the dataset verification harnesses is to use the provided Python test modules. After configuring `config/config.yaml`, run the verifier checks directly:
+
+```bash
+python -m test.test_dafny_verify.py
+python -m test.test_lean_verify.py
+python -m test.test_verus_verify.py
+```
+
+These runners exercise the verifier harnesses for the corresponding languages and are the recommended entry point for reproducing experiments or testing your environment.
+
+# Run AlgoVeri Benchmark
+
+The AlgoVeri benchmark is stored in `algoveri_data` folder.
+
+We provide initial starting scripts to run our AlgoVeri benchmark in `scripts/runs_example_scripts`. The scripts to run API models, including Gemini-3.0 Flash, GPT-5 mini, GPT-5.3-Codex, are relatively straightforward. After setting up the API keys in comment line, run
+
+```bash
+bash scripts/runs_example_scripts/run_task_gemini.sh
+bash scripts/runs_example_scripts/run_task_gpt-5-mini.sh
+bash scripts/runs_example_scripts/run_task_gpt-5-3-codex.sh
+```
+
+You can change the hyperparameters (including the language being used) in the scripts.
+
+To test open-source models using VLLM, we provide skeleton codes in other bash files (for SLURM environments).
+
+```bash
+bash scripts/runs_example_scripts/run_task_devstral_123b_instruct_with_server.sh
+bash scripts/runs_example_scripts/run_task_gpt_oss_120b_with_server.sh
+bash scripts/runs_example_scripts/run_task_qwen3_235b_instruct_with_server.sh
+bash scripts/runs_example_scripts/run_task_qwen3_next_80b_a3b_thinking_with_server.sh
+```
+
+To successfully run these codes, you should change the paths to fit your own system to successfully serve the model using VLLM. The general logic is to set up the VLLM server and then call the API.
+
+# License
+- This project is licensed under the Apache 2.0 License. See LICENSE for details.
+
+# Contact
+- For questions about the dataset and benchmark, open an issue on GitHub or email.
+
+# Citation
+
+If you find our work useful, please consider star this project and cite.
+
+```bibtex
+@article{zhao2026algoveri,
+  title={AlgoVeri: An Aligned Benchmark for Verified Code Generation on Classical Algorithms},
+  author={Zhao, Haoyu and Yang, Ziran and Li, Jiawei and He, Deyuan and Li, Zenan and Jin, Chi and Veeravalli, Venugopal V and Gupta, Aarti and Arora, Sanjeev},
+  journal={arXiv preprint arXiv:2602.09464},
+  year={2026}
+}
+```
 
