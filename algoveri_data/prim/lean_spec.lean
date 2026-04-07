@@ -77,7 +77,9 @@ def prim_mst_precond (graph : WeightedGraph) : Prop :=
   graph.well_formed ∧
   graph.size > 0 ∧
   graph.is_connected ∧
-  graph.weights_bounded
+  graph.weights_bounded ∧
+  -- Undirected: if u→v with weight w exists, then so does v→u with the same weight
+  (∀ u v w, graph.has_edge u v w → graph.has_edge v u w)
   -- !benchmark @end precond
 
 -- !benchmark @start auxcode
