@@ -5,7 +5,7 @@
 <div align="center">
 
 [![Hugging Face](https://img.shields.io/badge/-HuggingFace-3B4252?logo=huggingface)](https://huggingface.co/datasets/zzzzzhy/)
-[![arXiv](https://img.shields.io/badge/arXiv-2602.09464-b31b1b.svg?style=flat)](https://arxiv.org/)
+[![arXiv](https://img.shields.io/badge/arXiv-2602.09464-b31b1b.svg?style=flat)](https://arxiv.org/abs/2602.09464)
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 [![Email me](https://img.shields.io/badge/Contact-6fcf97?logo=gmail)](mailto:thomaszhao1998@gmail.com)
 
@@ -53,8 +53,8 @@ Refer to VERIFIER_README.md for more details if you encounter environment errors
 - Copy and edit a config template (adjust paths and credentials):
 
 ```bash
-cp config/config.example.yaml config/config.yaml
 # Edit config/config.yaml to set workspace paths and image locations
+cp test/config_test.yaml config/config.yaml
 ```
 
 **Testing verifiers (quick checks)**

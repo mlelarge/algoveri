@@ -23,7 +23,7 @@ def run_task(args):
     eval = SemanticEval(llm_client=llm_provider, max_rounds=args.max_rounds)
 
     # If stdin is piped, use that as the problem directory; otherwise use the default path.
-    default_dir = "/scratch/gpfs/ARORA/haoyu/algoveri/algoveri_data/bubble_sort"
+    default_dir = "algoveri_data/bubble_sort"
     problem_dir = default_dir
     try:
         if not sys.stdin.isatty():
@@ -96,11 +96,11 @@ if __name__ == "__main__":
     argparser.add_argument("--max_rounds", type=int, default=5)
     argparser.add_argument("--num_passes", type=int, default=1)
     argparser.add_argument("--debug", action="store_true")
-    argparser.add_argument("--cfg_path", type=str, default="/scratch/gpfs/ARORA/haoyu/algoveri/test/config_test.yaml")
-    argparser.add_argument("--results_root", type=str, default="test_results_scale")
+    argparser.add_argument("--cfg_path", type=str, default="algoveri/test/config_test.yaml")
+    argparser.add_argument("--results_root", type=str, default="test_results")
     argparser.add_argument("--language", type=str, default="lean")
     argparser.add_argument("--testmodel", type=str, default="gpt-oss-120b")
-    argparser.add_argument("--save_root", type=str, default="test_results_scale_filter")
+    argparser.add_argument("--save_root", type=str, default="test_results_filter")
     argparser.add_argument("--url", type=str, default="")
     args = argparser.parse_args()
     run_task(args)
