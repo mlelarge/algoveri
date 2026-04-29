@@ -1,0 +1,80 @@
+Bootstrap: docker
+From: ubuntu:22.04
+
+%labels
+    Author marc.lelarge@gmail.com
+    Description Frama-C 32 + Alt-Ergo 2.6.2 + Why3 1.8.2 + Z3 4.12.5 for acsl-benchmarks
+    Version 1.0
+
+%help
+    Frama-C / WP toolchain matching the macOS dev setup in SETUP.md.
+
+    Build:
+        apptainer build acsl.sif containers/apptainer/acsl.def
+
+    Run a single check (bind-mount the repo at /work):
+        apptainer exec --bind $(pwd):/work acsl.sif \
+            frama-c /work/algoveri-spec/dijkstra.c
+
+    Run WP on a single file:
+        apptainer exec --bind $(pwd):/work acsl.sif \
+            frama-c -wp -wp-timeout 10 -wp-prover alt-ergo,z3 \
+                    -wp-par 4 /work/algoveri-spec/dijkstra.c
+
+%post
+    set -eux
+    export DEBIAN_FRONTEND=noninteractive
+
+    apt-get update
+    apt-get install -y --no-install-recommends \
+        opam git ca-certificates curl unzip \
+        build-essential m4 autoconf pkg-config \
+        libgmp-dev zlib1g-dev libffi-dev \
+        python3
+    rm -rf /var/lib/apt/lists/*
+
+    # Z3 4.12.5 — pinned to match the macOS dev setup. The Ubuntu 22.04 apt
+    # version is 4.8.x; we pull the upstream binary release instead.
+    cd /tmp
+    curl -fsSL -o z3.zip \
+        https://github.com/Z3Prover/z3/releases/download/z3-4.12.5/z3-4.12.5-x64-glibc-2.31.zip
+    unzip -q z3.zip
+    install -m755 z3-4.12.5-x64-glibc-2.31/bin/z3 /usr/local/bin/z3
+    rm -rf z3.zip z3-4.12.5-x64-glibc-2.31
+
+    # opam: --disable-sandboxing because bwrap-in-container is fragile on
+    # many HPC kernels.
+    export OPAMROOT=/opt/opam
+    export OPAMYES=1
+    opam init --bare --disable-sandboxing --no-setup
+
+    opam switch create acsl ocaml-base-compiler.5.2.0 --no-install
+    eval "$(opam env --switch acsl --set-switch)"
+
+    opam install --assume-depexts \
+        frama-c.32.0 \
+        alt-ergo.2.6.2 \
+        why3.1.8.2
+
+    why3 config detect
+
+    # Make the toolchain world-readable: Apptainer runs as the invoking user.
+    chmod -R a+rX /opt/opam /root
+
+%environment
+    export OPAMROOT=/opt/opam
+    export PATH=/opt/opam/acsl/bin:/usr/local/bin:$PATH
+    export OCAML_TOPLEVEL_PATH=/opt/opam/acsl/lib/toplevel
+    export CAML_LD_LIBRARY_PATH=/opt/opam/acsl/lib/stublibs:/opt/opam/acsl/lib/ocaml/stublibs
+    # Frama-C / WP scratch lives under /tmp by default; Apptainer mounts the
+    # host /tmp, so this is writable at runtime without extra flags.
+
+%runscript
+    exec "$@"
+
+%test
+    set -eux
+    frama-c -version
+    alt-ergo --version
+    z3 --version
+    why3 --version
