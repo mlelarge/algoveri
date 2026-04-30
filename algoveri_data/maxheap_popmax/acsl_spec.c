@@ -39,6 +39,8 @@
   requires \valid(a + (0 .. *len - 1));
   requires 0 < *len <= 1023;
   requires is_heap(a, *len);
+  // Verus's &mut self gives field-disjointness for free; in ACSL it must be stated.
+  requires \separated(a + (0 .. *len - 1), len);
   assigns a[0 .. *len - 1], *len;
   ensures *len == \old(*len) - 1;
   ensures is_heap(a, *len);

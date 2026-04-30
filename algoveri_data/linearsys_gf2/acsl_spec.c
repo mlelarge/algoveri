@@ -74,6 +74,8 @@
   requires is_binary_matrix((uint64_t *)a, rows, cols);
   requires is_binary_vector((uint64_t *)b, rows);
   requires \valid(x_out + (0 .. cols - 1));
+  requires \separated(x_out + (0 .. cols - 1), a + (0 .. rows * cols - 1));
+  requires \separated(x_out + (0 .. cols - 1), b + (0 .. rows - 1));
   assigns x_out[0 .. cols - 1];
   ensures \result == 0 || \result == 1;
   ensures \result == 1 ==> is_solution((uint64_t *)a, (uint64_t *)b, rows, cols, x_out);

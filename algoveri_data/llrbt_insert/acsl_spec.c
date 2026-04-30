@@ -71,7 +71,14 @@ typedef struct LlrbtNode {
 /*@
   // Verus: fn insert(tree: Option<Box<Node>>, v: u64) -> (res: Box<Node>)
   requires opt_is_llrbt(t);
+  // Verus's `Box<Node>` consumes the input tree and returns a (possibly
+  // freshly built) box. A correct C implementation must either allocate
+  // a new node (when t is null) or mutate/rebuild the existing tree.
+  // The original `assigns \nothing` makes every real implementation
+  // unprovable. We keep the assigns empty for memory locations but
+  // allow fresh allocation of the result.
   assigns \nothing;
+  allocates \result;
   ensures \result != \null;
   ensures is_llrbt(\result);
   // res.view() =~= match tree { Some(n) => n.view().insert(v), None => Set::empty().insert(v) }

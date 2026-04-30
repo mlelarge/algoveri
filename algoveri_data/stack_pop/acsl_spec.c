@@ -11,6 +11,7 @@
   requires \valid(len);
   requires 0 < *len <= cap;
   requires \valid(data + (0 .. cap - 1));
+  requires \separated(len, data + (0 .. cap - 1));
   assigns *len;
   ensures *len == \old(*len) - 1;
   ensures \result == \at(data[\old(*len) - 1], Pre);

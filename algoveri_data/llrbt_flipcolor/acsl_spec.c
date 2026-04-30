@@ -56,7 +56,10 @@ typedef struct LlrbtNode {
   requires t->is_red != t->left->is_red;
   // node.left.is_red == node.right.is_red
   requires t->left->is_red == t->right->is_red;
-  assigns \nothing;
+  // Verus's `Box<Node>` consumes the input and returns a possibly-rebuilt
+  // box; in C this is most naturally an in-place toggle on the three
+  // is_red fields. The original `assigns \nothing` cannot model this.
+  assigns t->is_red, t->left->is_red, t->right->is_red;
   ensures \result != \null;
   // res.view() =~= node.view()
   ensures \forall integer x; in_view(\result, x) <==> in_view{Pre}(t, x);

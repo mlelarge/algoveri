@@ -18,6 +18,7 @@
   requires \valid(out_len);
   requires needle_len == 0 ==> \valid(out + (0 .. hay_len));
   requires needle_len > 0 ==> \valid(out + (0 .. hay_len - needle_len));
+  requires \separated(out_len, out + (0 .. hay_len));
   assigns out[0 .. hay_len], *out_len;
   ensures 0 <= *out_len <= hay_len + 1;
   ensures \forall integer i; 0 <= i < *out_len ==> matches_at((unsigned char *)hay, hay_len, (unsigned char *)needle, needle_len, out[i]);

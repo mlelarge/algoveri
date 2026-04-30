@@ -12,6 +12,8 @@
   requires \valid(len);
   requires 0 < *len <= 1024;
   requires \valid(data + (0 .. *len - 1));
+  // Verus's &mut self gives field-disjointness for free; in ACSL it must be stated.
+  requires \separated(data + (0 .. *len - 1), len);
   assigns data[0 .. *len - 2], *len;
   ensures \result == \old(data[0]);
   ensures *len == \old(*len) - 1;

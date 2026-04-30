@@ -47,6 +47,11 @@ typedef struct {
   // C: returns 1 and writes colors[] on success, returns 0 on failure.
   requires well_formed(g);
   requires \valid(colors + (0 .. g->n - 1));
+  requires \separated(colors + (0 .. g->n - 1), g);
+  requires \separated(colors + (0 .. g->n - 1), g->row_ptr + (0 .. g->n));
+  requires g->row_ptr[g->n] == 0 ||
+           \separated(colors + (0 .. g->n - 1),
+                      g->col_idx + (0 .. g->row_ptr[g->n] - 1));
   assigns colors[0 .. g->n - 1];
   ensures \result == 0 || \result == 1;
   ensures \result == 1 ==> is_valid_coloring(g, colors);

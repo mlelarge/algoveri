@@ -125,6 +125,20 @@ typedef struct {
   requires 0 <= start < g->n;
   requires \valid(dist + (0 .. g->n - 1));
   requires \valid(reachable + (0 .. g->n - 1));
+  requires \separated(dist + (0 .. g->n - 1), reachable + (0 .. g->n - 1));
+  requires \separated(dist + (0 .. g->n - 1), g);
+  requires \separated(reachable + (0 .. g->n - 1), g);
+  requires \separated(dist + (0 .. g->n - 1), g->row_ptr + (0 .. g->n));
+  requires \separated(reachable + (0 .. g->n - 1), g->row_ptr + (0 .. g->n));
+  requires g->row_ptr[g->n] == 0 ||
+           (\separated(dist + (0 .. g->n - 1),
+                       g->col_idx + (0 .. g->row_ptr[g->n] - 1)) &&
+            \separated(dist + (0 .. g->n - 1),
+                       g->col_weight + (0 .. g->row_ptr[g->n] - 1)) &&
+            \separated(reachable + (0 .. g->n - 1),
+                       g->col_idx + (0 .. g->row_ptr[g->n] - 1)) &&
+            \separated(reachable + (0 .. g->n - 1),
+                       g->col_weight + (0 .. g->row_ptr[g->n] - 1)));
   assigns dist[0 .. g->n - 1], reachable[0 .. g->n - 1];
   ensures \result == 0 || \result == 1;
   ensures \result == 1 ==>

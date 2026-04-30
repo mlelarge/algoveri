@@ -70,6 +70,9 @@
   requires coeffs_bounded((int64_t *)a, n);
   requires coeffs_bounded((int64_t *)b, n);
   requires \valid(out + (0 .. 2 * n - 2));
+  // Verus's owning Vec parameters guarantee non-aliasing; ACSL must state it.
+  requires \separated(out + (0 .. 2 * n - 2), a + (0 .. n - 1));
+  requires \separated(out + (0 .. 2 * n - 2), b + (0 .. n - 1));
   assigns out[0 .. 2 * n - 2];
   ensures \forall integer k; 0 <= k < 2 * n - 1 ==>
             out[k] == spec_poly_mul_coeff((int64_t *)a, n, (int64_t *)b, n, k);

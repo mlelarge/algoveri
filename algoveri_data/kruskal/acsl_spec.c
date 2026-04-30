@@ -135,6 +135,9 @@ typedef struct {
   requires \valid(out_u + (0 .. g->n - 1));
   requires \valid(out_v + (0 .. g->n - 1));
   requires \valid(out_w + (0 .. g->n - 1));
+  requires \separated(out_u + (0 .. g->n - 1), out_v + (0 .. g->n - 1));
+  requires \separated(out_u + (0 .. g->n - 1), out_w + (0 .. g->n - 1));
+  requires \separated(out_v + (0 .. g->n - 1), out_w + (0 .. g->n - 1));
   assigns out_u[0 .. g->n - 1], out_v[0 .. g->n - 1], out_w[0 .. g->n - 1];
   ensures \result == g->n - 1;
   ensures is_mst(g, out_u, out_v, out_w, \result);

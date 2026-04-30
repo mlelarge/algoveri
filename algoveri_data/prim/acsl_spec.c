@@ -145,6 +145,13 @@ typedef struct {
   requires \valid(out_u + (0 .. g->n - 1));
   requires \valid(out_v + (0 .. g->n - 1));
   requires \valid(out_w + (0 .. g->n - 1));
+  // The output buffers must not alias each other or the graph internals;
+  // Verus's &mut Vec on distinct outputs gives this implicitly.
+  requires \separated(out_u + (0 .. g->n - 1), out_v + (0 .. g->n - 1),
+                      out_w + (0 .. g->n - 1));
+  requires \separated(out_u + (0 .. g->n - 1), g, g->row_ptr + (0 .. g->n));
+  requires \separated(out_v + (0 .. g->n - 1), g, g->row_ptr + (0 .. g->n));
+  requires \separated(out_w + (0 .. g->n - 1), g, g->row_ptr + (0 .. g->n));
   assigns out_u[0 .. g->n - 1], out_v[0 .. g->n - 1], out_w[0 .. g->n - 1];
   ensures \result == g->n - 1;
   ensures is_mst(g, out_u, out_v, out_w, \result);

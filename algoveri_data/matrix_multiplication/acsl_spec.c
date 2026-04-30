@@ -54,6 +54,9 @@
   requires valid_matrix_a((uint64_t *)a, rows, mid);
   requires valid_matrix_b((uint64_t *)b, mid, cols);
   requires \valid(c + (0 .. rows * cols - 1));
+  // Verus's &Vec/&mut Vec on distinct vectors implies non-aliasing; ACSL must state it.
+  requires \separated(c + (0 .. rows * cols - 1), a + (0 .. rows * mid - 1));
+  requires \separated(c + (0 .. rows * cols - 1), b + (0 .. mid * cols - 1));
   assigns c[0 .. rows * cols - 1];
   ensures \forall integer r, col;
             0 <= r < rows && 0 <= col < cols ==>

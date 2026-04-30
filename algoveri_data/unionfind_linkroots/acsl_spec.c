@@ -44,6 +44,12 @@ typedef struct {
   // Both arguments must currently be roots.
   requires uf->parent[root_i] == root_i;
   requires uf->parent[root_j] == root_j;
+  // The link operation reads `rank` while writing `parent`; without this
+  // \separated clause WP cannot frame the rank reads against the parent
+  // updates. (Verus's borrow checker on `&mut self` makes this implicit.)
+  requires uf->n == 0 ||
+           \separated(uf->parent + (0 .. uf->n - 1),
+                      uf->rank + (0 .. uf->n - 1));
   assigns uf->parent[0 .. uf->n - 1], uf->rank[0 .. uf->n - 1];
   ensures is_valid_uf(uf);
   ensures uf->n == \at(uf->n, Pre);

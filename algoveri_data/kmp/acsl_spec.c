@@ -25,6 +25,7 @@
   requires \valid_read(needle + (0 .. needle_len - 1));
   requires \valid(out_indices + (0 .. hay_len));
   requires \valid(out_len);
+  requires \separated(out_len, out_indices + (0 .. hay_len));
   assigns out_indices[0 .. hay_len], *out_len;
   ensures 0 <= *out_len <= hay_len + 1;
   ensures \forall integer i; 0 <= i < *out_len ==>

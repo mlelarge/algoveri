@@ -30,6 +30,8 @@
   requires n == 0 || \valid_read(s + (0 .. n - 1));
   requires \valid(out_start);
   requires \valid(out_len);
+  // Verus's &mut + & references provide non-aliasing implicitly; ACSL must state it.
+  requires \separated(out_start, out_len, s + (0 .. n - 1));
   assigns *out_start, *out_len;
   ensures valid_subrange(n, *out_start, *out_len);
   ensures palindrome_range((unsigned char *)s, n, *out_start, *out_len);

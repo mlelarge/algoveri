@@ -128,6 +128,10 @@ typedef struct {
   requires 0 <= t < g->n;
   requires s != t;
   requires \valid(f + (0 .. (integer)g->n * (integer)g->n - 1));
+  // Writes to f must not invalidate the predicate reads of g's CSR fields;
+  // Verus's &mut FlowMap and &CapacityGraph on disjoint owners give this implicitly.
+  requires \separated(f + (0 .. (integer)g->n * (integer)g->n - 1),
+                      g, g->row_ptr + (0 .. g->n));
   assigns f[0 .. (integer)g->n * (integer)g->n - 1];
   ensures is_max_flow(g, f, s, t);
   ensures \result == flow_val(g, f, s);

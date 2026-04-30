@@ -56,6 +56,9 @@
   requires coeffs_bounded((int64_t *)a, na);
   requires coeffs_bounded((int64_t *)b, nb);
   requires \valid(out + (0 .. na + nb - 2));
+  // Verus's &mut/& on disjoint Vecs gives non-aliasing for free; ACSL must state it.
+  requires \separated(out + (0 .. na + nb - 2), a + (0 .. na - 1));
+  requires \separated(out + (0 .. na + nb - 2), b + (0 .. nb - 1));
   assigns out[0 .. na + nb - 2];
   ensures \forall integer k; 0 <= k < na + nb - 1 ==>
             out[k] == spec_poly_mul_coeff((int64_t *)a, na, (int64_t *)b, nb, k);

@@ -66,7 +66,12 @@ typedef struct LlrbtNode {
 /*@
   // Verus: fn delete(tree: Option<Box<Node>>, v: u64) -> (res: Option<Box<Node>>)
   requires opt_is_llrbt(t);
+  // Verus's `Box<Node>` consumes and rebuilds; in C the natural delete
+  // implementation either returns an existing subtree (no mutation) or
+  // mutates via rotations / fresh allocation during rebalancing. The
+  // original `assigns \nothing` rules out the rebalancing strategy.
   assigns \nothing;
+  allocates \result;
   // If the result is non-null: it is a valid LLRBT whose view = old view minus v.
   ensures \result != \null ==>
     is_llrbt(\result) &&

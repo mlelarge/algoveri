@@ -16,7 +16,7 @@
   requires n == 0 || \valid(primes + (0 .. n - 1));
   assigns primes[0 .. n - 1];
   ensures \forall integer i; 0 <= i < n ==>
-    (primes[i] != 0) <==> is_prime(i);
+    ((primes[i] != 0) <==> is_prime(i));
 */
 void sieve_of_eratosthenes(size_t n, bool *primes) {
   // Implement and verify sieve_of_eratosthenes here.

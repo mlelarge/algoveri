@@ -124,6 +124,7 @@ typedef struct {
   requires 0 <= start < g->n;
   requires \valid(dist + (0 .. g->n - 1));
   requires \valid(reachable + (0 .. g->n - 1));
+  requires \separated(dist + (0 .. g->n - 1), reachable + (0 .. g->n - 1));
   assigns dist[0 .. g->n - 1], reachable[0 .. g->n - 1];
   ensures \forall integer v; 0 <= v < g->n ==>
             (reachable[v] == 0 || reachable[v] == 1);

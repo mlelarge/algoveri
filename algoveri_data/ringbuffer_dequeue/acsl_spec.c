@@ -15,6 +15,7 @@
   requires \valid(len);
   requires 0 <= *head < cap;
   requires 0 < *len <= cap;
+  requires \separated(head, len, data + (0 .. cap - 1));
   assigns *head, *len;
   ensures \result == \at(data[\at(*head,Pre)], Pre);
   ensures *len == \at(*len,Pre) - 1;

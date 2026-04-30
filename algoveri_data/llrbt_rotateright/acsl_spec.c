@@ -52,7 +52,13 @@ typedef struct LlrbtNode {
   requires t->left != \null;
   requires \valid_read(t->left);
   requires t->left->is_red;
-  assigns \nothing;
+  // Verus's `Box<Node>` consumes the input and returns a possibly-rebuilt
+  // box; in C this is most naturally an in-place pointer rotation that
+  // reuses the existing nodes. The original `assigns \nothing` cannot
+  // model this. We mutate t (becomes new right child) and
+  // \at(t->left, Pre) (becomes new root).
+  assigns t->left, t->is_red,
+          \at(t->left, Pre)->right, \at(t->left, Pre)->is_red;
   ensures \result != \null;
   ensures is_bst(\result);
   // res.view() =~= node.view()

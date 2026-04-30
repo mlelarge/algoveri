@@ -51,6 +51,20 @@
   requires max_results == 0 ||
            (\valid(out_pids + (0 .. max_results - 1)) &&
             \valid(out_idxs + (0 .. max_results - 1)));
+  requires max_results == 0 ||
+           \separated(out_pids + (0 .. max_results - 1),
+                      out_idxs + (0 .. max_results - 1));
+  requires max_results == 0 || hay_len == 0 ||
+           \separated(out_pids + (0 .. max_results - 1),
+                      haystack + (0 .. hay_len - 1));
+  requires max_results == 0 || hay_len == 0 ||
+           \separated(out_idxs + (0 .. max_results - 1),
+                      haystack + (0 .. hay_len - 1));
+  requires max_results == 0 ||
+           (\separated(out_pids + (0 .. max_results - 1),
+                       pat_lens + (0 .. pat_count - 1)) &&
+            \separated(out_idxs + (0 .. max_results - 1),
+                       pat_lens + (0 .. pat_count - 1)));
   assigns out_pids[0 .. max_results - 1], out_idxs[0 .. max_results - 1];
   ensures 0 <= \result <= max_results;
   ensures \forall integer k;
