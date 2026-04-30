@@ -223,6 +223,10 @@ test_results_scale_filter/
 results_save_new/
 results_save_old/
 results/
+
+# Per-language solution workspaces (kept private to avoid leaking
+# benchmark answers; reproduce by copying algoveri_data/ in).
+algoveri_solution/
 test/top100.jsonl
 test/output_compiled.json
 test/test.txt
